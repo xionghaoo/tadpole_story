@@ -1,0 +1,38 @@
+apply from: '../tools.gradle'
+
+ext {
+    packageName = 'xx.xx.xx'
+
+    minSdkVersion = 21
+    compileSdkVersion = 30
+    targetSdkVersion = 29
+    buildToolsVersion = '30.0.2'
+
+    // ----------- 项目环境配置 start -----------
+    // 本地缓存数据库版本
+    cache_db_version = '1'
+    domain = [:]
+    domain.uat = '\"ip.jsontest.com\"'
+    domain.pre = '\"ip.jsontest.com\"'
+    domain.prod = '\"ip.jsontest.com\"'
+
+    tecentStorageHostUat = '\"https://cdn-vesta-dev.pgyscm.com\"'
+    tecentStorageHost = '\"https://cdn-vesta-pro.pgyscm.com\"'
+    // ----------- 项目环境配置 end -----------
+
+    // ----------- 版本管理 start ---------------
+    def lastUatReleaseCharacter = versionLastCharacter("./uat/release")
+    def lastPreReleaseCharacter = versionLastCharacter("./pre/release")
+    // 正式环境
+    prodVersionCode = 1
+    prodVersionName = "1.0.0"
+
+    // 测试环境
+    uatVersionCode = 2
+    uatVersionName = "${prodVersionName}_uat${today}${lastUatReleaseCharacter}"
+
+    // 预发布环境
+    preVerisonCode = 1
+    preVersionName = "${prodVersionName}_pre${today}${lastPreReleaseCharacter}"
+    // ----------- 版本管理 end ---------------
+}
