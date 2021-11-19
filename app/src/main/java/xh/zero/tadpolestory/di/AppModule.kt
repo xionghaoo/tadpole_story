@@ -16,9 +16,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
-import org.apache.commons.codec.binary.Base64
-import org.apache.commons.codec.digest.HmacAlgorithms
-import org.apache.commons.codec.digest.HmacUtils
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
@@ -33,6 +30,7 @@ import java.io.UnsupportedEncodingException
 import java.security.InvalidKeyException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Singleton
@@ -58,14 +56,15 @@ object AppModule {
             // 发起请求
             val request = chain.request()
             val randStr = "${Random(System.currentTimeMillis()).nextInt(10)}${
-                Random(System.currentTimeMillis()).nextLong(900000000) + 100000000
+                Random(System.currentTimeMillis()).nextLong(90000000) + 10000000
             }"
             val timestamp = System.currentTimeMillis().toString()
             val sigStr = "app_key=${Configs.XIMALAYA_APP_KEY}&sn=${Configs.XIMALAYA_SN}&" +
                 "client_os_type=2&device_id_type=Android_ID&device_id=${Build.ID}&" +
                 "nonce=${randStr}&timestamp=${timestamp}&version=${BuildConfig.VERSION_NAME}"
             Timber.d("sigStr: $sigStr")
-            val bas64Str: String = String(Base64.encodeBase64(sigStr.toByteArray()))
+//            val bas64Str: String = String(Base64.encodeBase64(sigStr.toByteArray()))
+            val bas64Str: String = Base64.getEncoder().encodeToString(sigStr.toByteArray())
             Timber.d("base64Str: $bas64Str")
 //            val signKey = SecretKeySpec(Configs.XIMALAYA_APP_KEY.toByteArray(), "HmacSHA1")
 //            val mac = Mac.getInstance("HmacSHA1")
@@ -76,6 +75,7 @@ object AppModule {
             Timber.d("sigSha1: $sigSha1")
             val sigMd5 = CryptoUtil.encryptToMD5(sigSha1)
             Timber.d("sigMd5: $sigMd5")
+            // 公共参数
             val httpUrl = request.url.newBuilder()
                 .addQueryParameter("app_key", Configs.XIMALAYA_APP_KEY)
                 .addQueryParameter("sn", Configs.XIMALAYA_SN)
