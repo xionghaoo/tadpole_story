@@ -1,6 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 apply from: '../versions.gradle'
@@ -11,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "xh.zero.tadpolestory"
-        minSdk 23
+        minSdk 26
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -23,6 +26,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            renameApk()
         }
     }
     compileOptions {
@@ -31,6 +35,26 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    flavorDimensions "default"
+    productFlavors {
+        prod {
+            // 生产版本
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+            buildConfigField('String', 'DOMAIN_RELEASE', domain.prod)
+        }
+        uat {
+            // 测试版本
+            versionName uatVersionName
+            buildConfigField('String', 'DOMAIN_RELEASE', domain.uat)
+        }
+        pre {
+            // 预发布环境
+            versionName preVersionName
+            buildConfigField('String', 'DOMAIN_RELEASE', domain.pre)
+        }
     }
 }
 
@@ -45,4 +69,36 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation dpes.core
+    implementation dpes.hilt.main
+    kapt dpes.hilt.android_compiler
+    kapt dpes.hilt.compiler
+
+    implementation dpes.lifecycle.extensions
+    implementation dpes.lifecycle.livedata_ktx
+    implementation dpes.lifecycle.viewmodel_ktx
+    implementation dpes.paging
+
+    implementation dpes.gson
+    implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
+    implementation dpes.retrofit.gson_converter
+    implementation dpes.retrofit.main
+
+    implementation "androidx.fragment:fragment-ktx:1.4.0-alpha04"
+
+    implementation "com.jakewharton.timber:timber:$versions.timber"
+
+    // glide框架
+    implementation dpes.glide.main
+    kapt dpes.glide.compiler
+
+    // Permission
+    implementation dpes.easy_permission
+    // loading 效果
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    // 下拉刷新
+    implementation dpes.smart_refresh_layout.kernel     //核心必须依赖
+    implementation dpes.smart_refresh_layout.classics_header    //经典刷新头
+
+    implementation dpes.flexbox
+    implementation 'commons-codec:commons-codec:1.15'
 }
