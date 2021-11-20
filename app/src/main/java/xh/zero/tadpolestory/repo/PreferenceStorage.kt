@@ -13,7 +13,8 @@ import kotlin.reflect.KProperty
  * key - value 存储
  */
 interface PreferenceStorage {
-    var loginUsername: String?
+    var refreshToken: String?
+    var accessToken: String?
     var serialNumber: String?
 
     fun clearCache()
@@ -28,7 +29,8 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
         }
     }
 
-    override var loginUsername by StringPreference(prefs, PREF_LOGIN_USERNAME, null)
+    override var refreshToken by StringPreference(prefs, PREF_REFRESH_TOKEN, null)
+    override var accessToken by StringPreference(prefs, PREF_ACCESS_TOKEN, null)
     override var serialNumber: String? by StringPreference(prefs, PREF_SERIAL_NUMBER, null)
 
     init {
@@ -37,12 +39,14 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
 
     // 登出时清理缓存
     override fun clearCache() {
-        loginUsername = null
+        refreshToken = null
+        accessToken = null
     }
 
     companion object {
         const val PREFS_NAME = "ubt_pref"
-        const val PREF_LOGIN_USERNAME = "pref_login_username"
+        const val PREF_REFRESH_TOKEN = "pref_refresh_token"
+        const val PREF_ACCESS_TOKEN = "pref_access_token"
         const val PREF_SERIAL_NUMBER = "pref_serial_number"
     }
 }

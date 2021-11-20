@@ -20,6 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import xh.zero.core.network.LiveDataCallAdapterFactory
 import xh.zero.core.utils.CryptoUtil
+import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.BuildConfig
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.repo.ApiService
@@ -91,26 +92,9 @@ object AppModule {
                 val contentType = response.body?.contentType()
                 val body = (responseString ?: "").toResponseBody(contentType)
                 return@addInterceptor response.newBuilder().body(body).build()
-            }
-
-//            if (responseCode == 403) {
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    prefs.clearCache()
-//                    ToastUtil.showToast(context, "无法确认设备ID")
-//                    LoginActivity.startWithNewTask(context)
-//                }
-//            }
-
-            if (responseCode >= 500) {
+            } else {
                 CoroutineScope(Dispatchers.Main).launch {
-//                    ToastUtil.showToast(context, "服务器请求错误")
-                }
-            }
-
-            if (responseCode >= 300) {
-                val failureUrl = newRequest.url.toString()
-                if (failureUrl.isNotEmpty()) {
-                    Timber.d("request failure: " + responseCode.toString() + ", " + failureUrl)
+                    ToastUtil.show(context, "服务器请求错误")
                 }
             }
             return@addInterceptor response

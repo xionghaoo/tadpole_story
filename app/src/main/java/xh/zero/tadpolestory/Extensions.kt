@@ -173,21 +173,6 @@ inline fun <reified T : BaseData> handleResponse(
 //    }
 //}
 
-/**
- * Allows calls like
- *
- * `supportFragmentManager.inTransaction { add(...) }`
- */
-inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
-    beginTransaction().func().commit()
-}
-
-fun <F> AppCompatActivity.replaceFragment(fragment: F, layoutId: Int) where F : Fragment {
-    supportFragmentManager.inTransaction {
-        replace(layoutId, fragment)
-    }
-}
-
 fun <T> Fragment.startPlainActivity(target: Class<T>) where T : AppCompatActivity {
     startActivity(Intent(context, target))
 }
