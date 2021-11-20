@@ -12,8 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,6 +26,7 @@ import xh.zero.tadpolestory.repo.ApiService
 import xh.zero.tadpolestory.repo.PreferenceStorage
 import xh.zero.tadpolestory.repo.SharedPreferenceStorage
 import java.io.UnsupportedEncodingException
+import java.lang.StringBuilder
 import java.security.InvalidKeyException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -55,47 +55,8 @@ object AppModule {
         client.addInterceptor { chain: Interceptor.Chain ->
             // 发起请求
             val request = chain.request()
-            val randStr = "${Random(System.currentTimeMillis()).nextInt(10)}${
-                Random(System.currentTimeMillis()).nextLong(90000000) + 10000000
-            }"
-            val timestamp = System.currentTimeMillis().toString()
-            val sigStr = "app_key=${Configs.XIMALAYA_APP_KEY}&sn=${Configs.XIMALAYA_SN}&" +
-                "client_os_type=2&device_id_type=Android_ID&device_id=${Build.ID}&" +
-                "nonce=${randStr}&timestamp=${timestamp}&version=${BuildConfig.VERSION_NAME}"
-            Timber.d("sigStr: $sigStr")
-//            val bas64Str: String = String(Base64.encodeBase64(sigStr.toByteArray()))
-            val bas64Str: String = Base64.getEncoder().encodeToString(sigStr.toByteArray())
-            Timber.d("base64Str: $bas64Str")
-//            val signKey = SecretKeySpec(Configs.XIMALAYA_APP_KEY.toByteArray(), "HmacSHA1")
-//            val mac = Mac.getInstance("HmacSHA1")
-//            mac.init(signKey)
-//            val sig = bytesToHex(mac.doFinal(bas64Str.toByteArray()))
-//            val sig = HmacUtils(HmacAlgorithms.HMAC_SHA_1, Configs.XIMALAYA_APP_KEY.toByteArray()).hmacHex(bas64Str)
-            val sigSha1 = hmacSha1(bas64Str, Configs.XIMALAYA_APP_KEY)
-            Timber.d("sigSha1: $sigSha1")
-            val sigMd5 = CryptoUtil.encryptToMD5(sigSha1)
-            Timber.d("sigMd5: $sigMd5")
-            // 公共参数
-            val httpUrl = request.url.newBuilder()
-                .addQueryParameter("app_key", Configs.XIMALAYA_APP_KEY)
-                .addQueryParameter("sn", Configs.XIMALAYA_SN)
-                .addQueryParameter("client_os_type", "2")
-                .addQueryParameter("device_id_type", "Android_ID")
-                .addQueryParameter("device_id", Build.ID)
-                // 随机字符串
-                .addQueryParameter("nonce", randStr)
-                .addQueryParameter("timestamp", timestamp)
-                .addQueryParameter("version", BuildConfig.VERSION_NAME)
-                .addQueryParameter("sig", sigMd5)
-                .build()
             val newRequestBuilder = request.newBuilder()
                 .addHeader("Content-Type", "application/json")
-//                .addHeader("client_os_type", "")
-//                .addHeader("device_id_type", "")
-//                .addHeader("device_id", "")
-
-//                .addHeader("X-UBT-AppId", Configs.ubtAppId)
-//                .addHeader("product", Configs.ubtProduct)
             // 登录接口占位符：invalid，其他接口会有具体的值
 //                    ?.addHeader(
 //                            preferenceStorage.tokenKey ?: "invalid",
@@ -103,18 +64,7 @@ object AppModule {
 //                    )
 //                    ?.addHeader("Api-Key", "admin")
 //                    ?.addHeader("Api-Secret", "SGeV1dFmCADUp8XWVpWObO62rIfbpf7Y")
-            // 如果device id为空，那么随机生成一个8位的id
-//            val deviceId = prefs.serialNumber ?: (Random(1).nextInt(90000000) + 10000000).toString()
-//            val androidID: String = Settings.Secure.getString(
-//                context.contentResolver,
-//                Settings.Secure.ANDROID_ID
-//            )
-//            if (androidID == null) {
-//
-//            }
-//            prefs.serialNumber = deviceId
-//            refreshSign(newRequestBuilder, prefs.serialNumber)
-            val newRequest = newRequestBuilder.url(httpUrl).build()
+            val newRequest = newRequestBuilder.url(createRequestUrl(request)).build()
             val response = chain.proceed(newRequest)
 
             // 接收响应
@@ -168,6 +118,62 @@ object AppModule {
         return client.build()
     }
 
+    /**
+     * 添加公共请求参加
+     */
+    private fun createRequestUrl(request: Request) : HttpUrl {
+        val appKey = Configs.XIMALAYA_APP_KEY
+        val timestamp = System.currentTimeMillis()
+        val randStr = "${Random(timestamp).nextInt(10)}${
+            Random(timestamp).nextLong(90000000) + 10000000
+        }"
+        val version = "1.0"
+        val deviceId = Build.ID
+        val deviceIdType = "Android_ID"
+        val sn = Configs.XIMALAYA_SN
+        val sigStr = "app_key=$appKey&" +
+            "client_os_type=2&" +
+            "device_id=$deviceId&" +
+            "device_id_type=${deviceIdType}&" +
+            "nonce=${randStr}&" +
+            "sn=$sn&" +
+            "timestamp=${timestamp}&" +
+            "version=$version"
+        // 公共参数
+        return request.url.newBuilder()
+            .addQueryParameter("app_key", appKey)
+            .addQueryParameter("client_os_type", "2")
+            .addQueryParameter("device_id", deviceId)
+            .addQueryParameter("device_id_type", deviceIdType)
+            // 随机字符串
+            .addQueryParameter("nonce", randStr)
+            .addQueryParameter("sn", sn)
+            .addQueryParameter("timestamp", timestamp.toString())
+            .addQueryParameter("version", version)
+            .addQueryParameter("sig", generateSign(sigStr))
+            .build()
+    }
+
+    /**
+     * 生成参数校验签名
+     */
+    private fun generateSign(sigStr: String) : String {
+        val bas64Str: String = Base64.getEncoder().encodeToString(sigStr.toByteArray())
+        val mac = Mac.getInstance("HmacSHA1")
+        mac.init(SecretKeySpec(Configs.XIMALAYA_APP_SECRET.toByteArray(), "HmacSHA1"))
+        val sha1 = mac.doFinal(bas64Str.toByteArray())
+        val md5 = MessageDigest.getInstance("MD5").digest(sha1)
+        val hs = StringBuilder()
+        for (b in md5) {
+            val s = Integer.toHexString(b.toInt() and 0XFF)
+            if (s.length == 1) {
+                hs.append('0')
+            }
+            hs.append(s)
+        }
+        return hs.toString()
+    }
+
     @Provides
     @Singleton
     fun provideApiService(client: OkHttpClient): ApiService =
@@ -182,86 +188,4 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): PreferenceStorage = SharedPreferenceStorage(application)
-
-    fun bytesToHex(bytes: ByteArray): String? {
-        val result = CharArray(bytes.size * 2)
-        for (index in bytes.indices) {
-            val v = bytes[index].toInt()
-            val upper = v ushr 4 and 0xF
-            result[index * 2] = (upper + if (upper < 10) 48 else 65 - 10).toChar()
-            val lower = v and 0xF
-            result[index * 2 + 1] = (lower + if (lower < 10) 48 else 65 - 10).toChar()
-        }
-        return String(result)
-    }
-
-    @Throws(
-        UnsupportedEncodingException::class,
-        NoSuchAlgorithmException::class,
-        InvalidKeyException::class
-    )
-    private fun hmacSha1(value: String, key: String): String? {
-        val type = "HmacSHA1"
-        val secret = SecretKeySpec(key.toByteArray(), type)
-        val mac = Mac.getInstance(type)
-        mac.init(secret)
-        val bytes = mac.doFinal(value.toByteArray())
-        return bytesToHex(bytes)
-    }
-
-    fun MD5(s: String): String? {
-        val hexDigits = charArrayOf(
-            '0',
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f'
-        )
-        return try {
-            //把字符串转换成字节码的形式
-            val strTemp = s.toByteArray()
-            //申明mdTemp为MD5加密的形式
-            val mdTemp: MessageDigest = MessageDigest.getInstance("MD5")
-            //进行字节加密并行进加密 转化成16位字节码的形式
-            mdTemp.update(strTemp)
-            val md: ByteArray = mdTemp.digest()
-            //j=32
-            val j = md.size
-            val str = CharArray(j * 2)
-            var k = 0
-            //对字符串进行重新编码成32位的形式
-            for (i in 0 until j) {
-                val byte0 = md[i]
-                str[k++] = hexDigits[byte0.toInt() ushr 4 and 0xf]
-                str[k++] = hexDigits[byte0.toInt() and 0xf]
-            }
-            String(str)
-        } catch (e: NoSuchAlgorithmException) {
-            null
-        }
-    }
-
-//    private val hexArray = "0123456789abcdef".toCharArray()
-//
-//    private fun bytesToHex(bytes: ByteArray): String? {
-//        val hexChars = CharArray(bytes.size * 2)
-//        var v: Int
-//        for (j in bytes.indices) {
-//            v = bytes[j] and 0xFF
-//            hexChars[j * 2] = hexArray[v ushr 4]
-//            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-//        }
-//        return String(hexChars)
-//    }
 }

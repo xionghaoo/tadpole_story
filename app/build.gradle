@@ -100,5 +100,5 @@ dependencies {
     implementation dpes.smart_refresh_layout.classics_header    //经典刷新头
 
     implementation dpes.flexbox
-    implementation 'commons-codec:commons-codec:1.15'
+//    implementation 'commons-codec:commons-codec:1.15'
 }
