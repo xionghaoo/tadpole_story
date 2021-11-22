@@ -35,6 +35,7 @@ import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Singleton
+import kotlin.Comparator
 import kotlin.random.Random
 
 @Module
@@ -103,7 +104,7 @@ object AppModule {
     }
 
     /**
-     * 添加公共请求参加
+     * 添加公共参数
      */
     private fun createRequestUrl(request: Request) : HttpUrl {
         val appKey = Configs.XIMALAYA_APP_KEY
@@ -115,14 +116,25 @@ object AppModule {
         val deviceId = Build.ID
         val deviceIdType = "Android_ID"
         val sn = Configs.XIMALAYA_SN
-        val sigStr = "app_key=$appKey&" +
-            "client_os_type=2&" +
-            "device_id=$deviceId&" +
-            "device_id_type=${deviceIdType}&" +
-            "nonce=${randStr}&" +
-            "sn=$sn&" +
-            "timestamp=${timestamp}&" +
-            "version=$version"
+        // 对除sig外的所有参数进行签名
+        val paramMap = TreeMap<String, Any?>(Comparator<String> { o1, o2 -> o1.compareTo(o2) })
+        request.url.queryParameterNames.forEachIndexed { index, key ->
+            val queryValue = request.url.queryParameterValue(index)
+            paramMap[key] = queryValue
+        }
+        paramMap["app_key"] = appKey
+        paramMap["client_os_type"] = 2
+        paramMap["device_id"] = deviceId
+        paramMap["device_id_type"] = deviceIdType
+        paramMap["nonce"] = randStr
+        paramMap["sn"] = sn
+        paramMap["timestamp"] = timestamp
+        paramMap["version"] = version
+        val sigStrBuilder = StringBuilder()
+        paramMap.forEach { (key, value) ->
+            sigStrBuilder.append("&").append("$key=$value")
+        }
+        sigStrBuilder.replace(0, 1, "")
         // 公共参数
         return request.url.newBuilder()
             .addQueryParameter("app_key", appKey)
@@ -134,7 +146,7 @@ object AppModule {
             .addQueryParameter("sn", sn)
             .addQueryParameter("timestamp", timestamp.toString())
             .addQueryParameter("version", version)
-            .addQueryParameter("sig", generateSign(sigStr))
+            .addQueryParameter("sig", generateSign(sigStrBuilder.toString()))
             .build()
     }
 
@@ -172,4 +184,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): PreferenceStorage = SharedPreferenceStorage(application)
+
+
 }
