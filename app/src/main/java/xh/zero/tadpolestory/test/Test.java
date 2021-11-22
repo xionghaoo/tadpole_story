@@ -3,20 +3,16 @@ package xh.zero.tadpolestory.test;
 public class Test {
 
     /**
-     * cover_url_large : http://imgopen.xmcdn.com/group10/M04/17/CD/wKgDZ1VxNZLQbdLjAAAJs3dohO8112.png
-     * category_name : 明星
-     * cover_url_small : http://imgopen.xmcdn.com/group10/M04/17/CD/wKgDZ1VxNZLQbdLjAAAJs3dohO8112.png
-     * kind : category
-     * id : 91
-     * order_num : 38
-     * cover_url_middle : http://imgopen.xmcdn.com/group10/M04/17/CD/wKgDZ1VxNZLQbdLjAAAJs3dohO8112.png
+     * category_id : 92
+     * total_count : 626
+     * tag_name :
+     * total_page : 32
+     * current_page : 1
      */
 
-    public String cover_url_large;
-    public String category_name;
-    public String cover_url_small;
-    public String kind;
-    public int id;
-    public int order_num;
-    public String cover_url_middle;
+    public int category_id;
+    public int total_count;
+    public String tag_name;
+    public int total_page;
+    public int current_page;
 }

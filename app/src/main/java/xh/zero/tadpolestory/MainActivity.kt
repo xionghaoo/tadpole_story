@@ -5,12 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.*
 import timber.log.Timber
 import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.ui.MainViewModel
-import xh.zero.tadpolestory.web.WebActivity
-import java.io.IOException
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -33,9 +30,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onViewClick(v: View) {
-        viewModel.getTagList().observe(this) {
+        viewModel.getAlbumsList().observe(this) {
             if (it.status == Status.SUCCESS) {
-
+                Timber.d("getAlbums: ${it.data?.albums?.size}")
             }
         }
 

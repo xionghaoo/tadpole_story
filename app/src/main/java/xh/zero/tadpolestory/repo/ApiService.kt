@@ -7,6 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 import xh.zero.core.vo.ApiResponse
 import xh.zero.tadpolestory.Configs
+import xh.zero.tadpolestory.repo.data.AlbumResponse
 import xh.zero.tadpolestory.repo.data.Category
 import xh.zero.tadpolestory.repo.data.GetLoginUrlResult
 import xh.zero.tadpolestory.repo.data.PlainData
@@ -53,7 +54,7 @@ interface ApiService {
         @Query("count") count: Int = 20,
         // 是否输出付费内容（即返回值是否包含付费内容）：true-是； false-否；默认不填为 false
         @Query("contains_paid") isPaid: Boolean = false,
-    ) : LiveData<ApiResponse<PlainData>>
+    ) : LiveData<ApiResponse<AlbumResponse>>
 
     @GET("$PREFIX/v2/tags/list")
     fun getTagList(
