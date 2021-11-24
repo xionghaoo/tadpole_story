@@ -35,6 +35,9 @@ class MusicService : MediaBrowserServiceCompat() {
         private const val TAG = "MusicService"
     }
 
+    private val remoteJsonSource: Uri =
+        Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
+
     private lateinit var notificationManager: StoryNotificationManager
     protected lateinit var mediaSession: MediaSessionCompat
     protected lateinit var mediaSessionConnector: MediaSessionConnector
@@ -137,6 +140,8 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(TadpolePlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(TadpoleQueueNavigator(mediaSession))
+
+        currentPlayer = exoPlayer
 
         notificationManager.showNotificationForPlayer(currentPlayer)
 
@@ -313,15 +318,15 @@ class MusicService : MediaBrowserServiceCompat() {
             exoPlayer.prepare(mediaSource)
             exoPlayer.seekTo(initialWindowIndex, playbackStartPositionMs)
         } else /* currentPlayer == castPlayer */ {
-            val items: Array<MediaQueueItem> = metadataList.map {
-                it.toMediaQueueItem()
-            }.toTypedArray()
-            castPlayer!!.loadItems(
-                items,
-                initialWindowIndex,
-                playbackStartPositionMs,
-                Player.REPEAT_MODE_OFF
-            )
+//            val items: Array<MediaQueueItem> = metadataList.map {
+//                it.toMediaQueueItem()
+//            }.toTypedArray()
+//            castPlayer!!.loadItems(
+//                items,
+//                initialWindowIndex,
+//                playbackStartPositionMs,
+//                Player.REPEAT_MODE_OFF
+//            )
         }
     }
 

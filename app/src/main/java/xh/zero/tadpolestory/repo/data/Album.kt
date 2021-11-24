@@ -69,6 +69,7 @@ class Album {
     var subscribe_count = 0
     var tracks_natural_ordered = false
     var short_rich_intro: String? = null
+    var tracks: List<Track>? = null
 
     /**
      * duration : 217.0
@@ -97,4 +98,6 @@ class Album {
         var track_title: String? = null
         var created_at: Long = 0
     }
+
+
 }

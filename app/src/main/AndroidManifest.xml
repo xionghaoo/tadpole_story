@@ -15,16 +15,16 @@
         android:name=".StoryApp"
         android:theme="@style/Theme.TadpoleStory">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
-            android:screenOrientation="userLandscape">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".web.WebActivity" android:screenOrientation="userLandscape"/>
+        <activity android:name=".web.WebActivity" android:screenOrientation="portrait"/>
 
         <!--
             MediaSession, prior to API 21, uses a broadcast receiver to communicate with a
@@ -51,6 +51,11 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name=".media.AlbumArtContentProvider"
+            android:authorities="${applicationId}"
+            android:exported="true" />
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package xh.zero.tadpolestory.di
 
 import android.app.Application
+import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import com.google.gson.Gson
@@ -23,6 +24,8 @@ import xh.zero.core.utils.CryptoUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.BuildConfig
 import xh.zero.tadpolestory.Configs
+import xh.zero.tadpolestory.media.MusicService
+import xh.zero.tadpolestory.media.MusicServiceConnection
 import xh.zero.tadpolestory.repo.ApiService
 import xh.zero.tadpolestory.repo.PreferenceStorage
 import xh.zero.tadpolestory.repo.SharedPreferenceStorage
@@ -185,5 +188,11 @@ object AppModule {
     @Singleton
     fun provideSharedPreferences(application: Application): PreferenceStorage = SharedPreferenceStorage(application)
 
+    @Provides
+    @Singleton
+    fun provideMusicServiceConnection(@ApplicationContext context: Context) = MusicServiceConnection.getInstance(
+        context,
+        ComponentName(context, MusicService::class.java)
+    )
 
 }
