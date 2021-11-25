@@ -3,17 +3,21 @@ package xh.zero.tadpolestory.ui
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.media.EMPTY_PLAYBACK_STATE
 import xh.zero.tadpolestory.media.MusicServiceConnection
 import xh.zero.tadpolestory.media.NOTHING_PLAYING
 import xh.zero.tadpolestory.media.extensions.id
+import xh.zero.tadpolestory.media.extensions.isPlayEnabled
 import xh.zero.tadpolestory.media.extensions.isPlaying
+import xh.zero.tadpolestory.media.extensions.isPrepared
 import xh.zero.tadpolestory.repo.Repository
 import javax.inject.Inject
 
@@ -32,7 +36,7 @@ class MainViewModel @Inject constructor(
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
 
     // TODO 测试
-    private val mediaId = "/"
+    private val mediaId = "__ALBUMS__"
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
@@ -108,6 +112,59 @@ class MainViewModel @Inject constructor(
             !isActive -> NO_RES
             isPlaying -> R.drawable.ic_pause_black_24dp
             else -> R.drawable.ic_play_arrow_black_24dp
+        }
+    }
+
+    /**
+     * This method takes a [MediaItemData] and does one of the following:
+     * - If the item is *not* the active item, then play it directly.
+     * - If the item *is* the active item, check whether "pause" is a permitted command. If it is,
+     *   then pause playback, otherwise send "play" to resume playback.
+     */
+    fun playMedia(mediaItem: MediaItemData, pauseAllowed: Boolean = true) {
+        val nowPlaying = musicServiceConnection.nowPlaying.value
+        val transportControls = musicServiceConnection.transportControls
+
+        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
+        if (isPrepared && mediaItem.mediaId == nowPlaying?.id) {
+            musicServiceConnection.playbackState.value?.let { playbackState ->
+                when {
+                    playbackState.isPlaying ->
+                        if (pauseAllowed) transportControls.pause() else Unit
+                    playbackState.isPlayEnabled -> transportControls.play()
+                    else -> {
+                        Timber.w(
+                            "Playable item clicked but neither play nor pause are enabled!" +
+                                    " (mediaId=${mediaItem.mediaId})"
+                        )
+                    }
+                }
+            }
+        } else {
+            transportControls.playFromMediaId(mediaItem.mediaId, null)
+        }
+    }
+
+    fun playMediaId(mediaId: String) {
+        val nowPlaying = musicServiceConnection.nowPlaying.value
+        val transportControls = musicServiceConnection.transportControls
+
+        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
+        if (isPrepared && mediaId == nowPlaying?.id) {
+            musicServiceConnection.playbackState.value?.let { playbackState ->
+                when {
+                    playbackState.isPlaying -> transportControls.pause()
+                    playbackState.isPlayEnabled -> transportControls.play()
+                    else -> {
+                        Timber.w(
+                            "Playable item clicked but neither play nor pause are enabled!" +
+                                    " (mediaId=$mediaId)"
+                        )
+                    }
+                }
+            }
+        } else {
+            transportControls.playFromMediaId(mediaId, null)
         }
     }
 

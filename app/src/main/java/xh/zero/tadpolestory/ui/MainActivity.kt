@@ -9,15 +9,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
+import xh.zero.tadpolestory.databinding.ActivityMainBinding
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var binding: ActivityMainBinding
+
+    private var mediaItem: MediaItemData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
 
@@ -29,6 +34,18 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 
+        viewModel.mediaItems.observe(this) { list ->
+            Timber.d("load media list: ${list.size}")
+            if (list.isNotEmpty()) {
+                mediaItem = list.first()
+            }
+        }
+
+        binding.btnMedia.setOnClickListener {
+            if (mediaItem != null) {
+                viewModel.playMedia(mediaItem!!)
+            }
+        }
 
 
     }
@@ -39,10 +56,6 @@ class MainActivity : AppCompatActivity() {
 //                Timber.d("getAlbums: ${it.data?.albums?.size}")
 //            }
 //        }
-
-        viewModel.mediaItems.observe(this) { list ->
-            Timber.d("load media list: ${list.size}")
-        }
 
 //        viewModel.getCategoriesList().observe(this) {
 //            if (it.status == Status.SUCCESS) {
