@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
+import com.example.android.uamp.common.MusicServiceConnection
+import com.example.android.uamp.media.MusicService
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -24,8 +26,6 @@ import xh.zero.core.utils.CryptoUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.BuildConfig
 import xh.zero.tadpolestory.Configs
-import xh.zero.tadpolestory.media.MusicService
-import xh.zero.tadpolestory.media.MusicServiceConnection
 import xh.zero.tadpolestory.repo.ApiService
 import xh.zero.tadpolestory.repo.PreferenceStorage
 import xh.zero.tadpolestory.repo.SharedPreferenceStorage

@@ -8,16 +8,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.example.android.uamp.common.EMPTY_PLAYBACK_STATE
+import com.example.android.uamp.common.MusicServiceConnection
+import com.example.android.uamp.common.NOTHING_PLAYING
+import com.example.android.uamp.media.extensions.id
+import com.example.android.uamp.media.extensions.isPlayEnabled
+import com.example.android.uamp.media.extensions.isPlaying
+import com.example.android.uamp.media.extensions.isPrepared
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import xh.zero.tadpolestory.R
-import xh.zero.tadpolestory.media.EMPTY_PLAYBACK_STATE
-import xh.zero.tadpolestory.media.MusicServiceConnection
-import xh.zero.tadpolestory.media.NOTHING_PLAYING
-import xh.zero.tadpolestory.media.extensions.id
-import xh.zero.tadpolestory.media.extensions.isPlayEnabled
-import xh.zero.tadpolestory.media.extensions.isPlaying
-import xh.zero.tadpolestory.media.extensions.isPrepared
 import xh.zero.tadpolestory.repo.Repository
 import javax.inject.Inject
 
