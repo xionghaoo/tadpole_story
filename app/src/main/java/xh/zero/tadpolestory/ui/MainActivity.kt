@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnMedia.setOnClickListener {
             if (mediaItem != null) {
-                viewModel.playMedia(mediaItem!!)
+                Timber.d("media id = ${mediaItem?.mediaId}\ntitle = ${mediaItem?.title}")
+                viewModel.playMedia(mediaItem!!, pauseAllowed = false)
             }
         }
 

@@ -36,7 +36,7 @@ class MainViewModel @Inject constructor(
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
 
     // TODO 测试
-    private val mediaId = "__ALBUMS__"
+    private val mediaId = "__RECOMMENDED__"
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
