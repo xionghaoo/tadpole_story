@@ -39,7 +39,7 @@ class AlbumArtContentProvider : ContentProvider() {
             val path = uri.encodedPath?.substring(1)?.replace('/', ':') ?: return Uri.EMPTY
             val contentUri = Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
-                .authority("com.example.android.uamp")
+                .authority("xh.zero.tadpolestory")
                 .path(path)
                 .build()
             uriMap[contentUri] = uri

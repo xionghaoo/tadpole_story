@@ -42,7 +42,10 @@ class TrackListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.rcTrackList.layoutManager = GridLayoutManager(requireContext(), 2)
-        adapter = TrackAdapter(emptyList())
+        adapter = TrackAdapter(emptyList()) { item ->
+            viewModel.playMedia(item, pauseAllowed = false)
+            // 显示正在播放页面
+        }
         binding.rcTrackList.adapter = adapter
         loadData()
     }
