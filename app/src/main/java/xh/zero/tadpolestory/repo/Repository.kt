@@ -35,4 +35,8 @@ class Repository @Inject constructor(
     fun getTagList() = remoteRequestStrategy {
         apiService.getTagList()
     }
+
+    fun getVoiceList(albumId: String, page: Int) = remoteRequestStrategy {
+        apiService.getVoiceList(album_id = albumId, page = page)
+    }
 }

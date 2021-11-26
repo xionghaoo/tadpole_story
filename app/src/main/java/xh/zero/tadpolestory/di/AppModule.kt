@@ -29,6 +29,7 @@ import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.repo.ApiService
 import xh.zero.tadpolestory.repo.PreferenceStorage
 import xh.zero.tadpolestory.repo.SharedPreferenceStorage
+import xh.zero.tadpolestory.repo.TadpoleMusicService
 import java.io.UnsupportedEncodingException
 import java.lang.StringBuilder
 import java.security.InvalidKeyException
@@ -192,7 +193,7 @@ object AppModule {
     @Singleton
     fun provideMusicServiceConnection(@ApplicationContext context: Context) = MusicServiceConnection.getInstance(
         context,
-        ComponentName(context, MusicService::class.java)
+        ComponentName(context, TadpoleMusicService::class.java)
     )
 
 }

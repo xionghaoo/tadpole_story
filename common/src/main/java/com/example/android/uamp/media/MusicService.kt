@@ -19,7 +19,6 @@ package com.example.android.uamp.media
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
-import android.drm.DrmErrorEvent.TYPE_OUT_OF_MEMORY
 import android.net.Uri
 import android.os.Bundle
 import android.os.ResultReceiver
@@ -42,7 +41,6 @@ import com.example.android.uamp.media.extensions.toMediaSource
 import com.example.android.uamp.media.extensions.trackNumber
 import com.example.android.uamp.media.library.AbstractMusicSource
 import com.example.android.uamp.media.library.BrowseTree
-import com.example.android.uamp.media.library.JsonSource
 import com.example.android.uamp.media.library.MEDIA_SEARCH_SUPPORTED
 import com.example.android.uamp.media.library.MusicSource
 import com.example.android.uamp.media.library.UAMP_BROWSABLE_ROOT
@@ -61,7 +59,6 @@ import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -81,7 +78,7 @@ import kotlinx.coroutines.launch
  * [CastPlayer](https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/ext/cast/CastPlayer.html),
  * otherwise they are passed to an ExoPlayer for local playback.
  */
-open class MusicService : MediaBrowserServiceCompat() {
+abstract class MusicService : MediaBrowserServiceCompat() {
 
     private lateinit var notificationManager: UampNotificationManager
     private lateinit var mediaSource: MusicSource
@@ -104,6 +101,8 @@ open class MusicService : MediaBrowserServiceCompat() {
      * This must be `by lazy` because the source won't initially be ready.
      * See [MusicService.onLoadChildren] to see where it's accessed (and first
      * constructed).
+     *
+     * browseTree的get方法在mediaSource whenReady时调用，确保mediaSource已被初始化
      */
     private val browseTree: BrowseTree by lazy {
         BrowseTree(applicationContext, mediaSource)
@@ -204,7 +203,7 @@ open class MusicService : MediaBrowserServiceCompat() {
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
-        mediaSource = JsonSource(source = remoteJsonSource)
+        mediaSource = createMusicSource()
         serviceScope.launch {
             mediaSource.load()
         }
@@ -262,6 +261,7 @@ open class MusicService : MediaBrowserServiceCompat() {
     /**
      * Returns the "root" media ID that the client should request to get the list of
      * [MediaItem]s to browse/play.
+     * 构建媒体根目录
      */
     override fun onGetRoot(
         clientPackageName: String,
@@ -310,6 +310,9 @@ open class MusicService : MediaBrowserServiceCompat() {
      * Returns (via the [result] parameter) a list of [MediaItem]s that are child
      * items of the provided [parentMediaId]. See [BrowseTree] for more details on
      * how this is build/more details about the relationships.
+     *
+     * 每次browser subscribe到服务时，都会调用loadChildren方法，这里面可以根据订阅时的mediaId来构建目录树。
+     * rootMediaId是固定的，但是其他的id可以自己约定，根据不同的id的异步加载不同媒体目录。
      */
     override fun onLoadChildren(
         parentMediaId: String,
@@ -370,6 +373,8 @@ open class MusicService : MediaBrowserServiceCompat() {
             result.detach()
         }
     }
+
+    abstract fun createMusicSource() : MusicSource
 
     /**
      * Load the supplied list of songs and the song to play into the current player.

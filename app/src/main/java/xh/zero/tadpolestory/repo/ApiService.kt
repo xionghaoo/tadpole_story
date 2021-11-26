@@ -51,7 +51,7 @@ interface ApiService {
         // 返回结果排序维度：1-最火，2-最新，3-最多播放
         @Query("calc_dimension") calcDimension: Int = 1,
         @Query("page") page: Int,
-        @Query("count") count: Int = 20,
+        @Query("count") count: Int = Configs.PAGE_SIZE,
         // 是否输出付费内容（即返回值是否包含付费内容）：true-是； false-否；默认不填为 false
         @Query("contains_paid") isPaid: Boolean = false,
     ) : LiveData<ApiResponse<AlbumResponse>>
@@ -60,5 +60,13 @@ interface ApiService {
     fun getTagList(
         @Query("category_id") categoryId: Int = 92,
         @Query("type") type: Int = 0
+    ) : LiveData<ApiResponse<PlainData>>
+
+    @GET("$PREFIX/albums/browse")
+    fun getVoiceList(
+        @Query("album_id") album_id: String,
+        @Query("sort") sort: String = "asc",
+        @Query("page") page: Int,
+        @Query("count") count: Int = Configs.PAGE_SIZE
     ) : LiveData<ApiResponse<PlainData>>
 }
