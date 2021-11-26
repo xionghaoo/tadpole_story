@@ -7,10 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 import xh.zero.core.vo.ApiResponse
 import xh.zero.tadpolestory.Configs
-import xh.zero.tadpolestory.repo.data.AlbumResponse
-import xh.zero.tadpolestory.repo.data.Category
-import xh.zero.tadpolestory.repo.data.GetLoginUrlResult
-import xh.zero.tadpolestory.repo.data.PlainData
+import xh.zero.tadpolestory.repo.data.*
 
 /**
  * post 参数 application/x-www-form-urlencoded; charset=UTF-8
@@ -60,7 +57,7 @@ interface ApiService {
     fun getTagList(
         @Query("category_id") categoryId: Int = 92,
         @Query("type") type: Int = 0
-    ) : LiveData<ApiResponse<PlainData>>
+    ) : LiveData<ApiResponse<List<AlbumTag>>>
 
     @GET("$PREFIX/albums/browse")
     fun getVoiceList(

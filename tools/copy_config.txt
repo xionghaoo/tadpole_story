@@ -1,3 +1,5 @@
-矩形备份 3(1).png;ic_settings_page3_card1.png
-矩形备份 3.png;ic_settings_page3_card2.png
-kd／1通用／二级按钮／前往(3).png;ic_settings_next.png
+kd／1通用／二级按钮／返回.png;ic_home_button.png
+kd／1通用／功能按钮／筛选.png;ic_filter_button.png
+kd／1通用／功能按钮／儿童故事-选中.png;ic_home_menu_1.png
+kd／1通用／功能按钮／少儿素养-默认.png;ic_home_menu_2.png
+kd／1通用／功能按钮／跟多-默认.png;ic_home_menu_3.png

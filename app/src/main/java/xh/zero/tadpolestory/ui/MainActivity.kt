@@ -7,14 +7,16 @@ import android.view.View
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import xh.zero.core.utils.SystemUtil
 import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
+import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.startPlainActivity
 import xh.zero.tadpolestory.test.TestActivity
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
@@ -26,10 +28,18 @@ class MainActivity : AppCompatActivity() {
 
         volumeControlStream = AudioManager.STREAM_MUSIC
 
-        binding.btnMedia.setOnClickListener {
-            startPlainActivity(TestActivity::class.java)
+        SystemUtil.setDarkStatusBar(window)
+
+        binding.btnHome.setOnClickListener {
+            onBackPressed()
         }
 
+        loadData()
+    }
 
+    private fun loadData() {
+        viewModel.getTagList().observe(this) {
+
+        }
     }
 }

@@ -6,8 +6,8 @@ from os import listdir
 from os.path import isfile, join
 
 
-# SOURCE_DIR = '/Users/destiny/work/ubtech/蝌蚪项目/icons'
-SOURCE_DIR = 'E:\\icons'
+SOURCE_DIR = '/Users/destiny/work/ubtech/蝌蚪项目/tadpole_story/icons'
+# SOURCE_DIR = 'E:\\icons'
 TARGET_DIR = '../app/src/main/res'
 CONFIG_FILE = 'copy_config.txt'
 # 将';'号左边的文件名修改成右边的名称
