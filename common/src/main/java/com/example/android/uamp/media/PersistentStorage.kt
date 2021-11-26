@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.example.android.uamp.media.extensions.asAlbumArtContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class PersistentStorage private constructor(val context: Context) {
 
@@ -59,9 +60,14 @@ class PersistentStorage private constructor(val context: Context) {
              * from the network as it may be too slow or unavailable immediately after boot. Instead
              * we convert the iconUri to point to the Glide on-disk cache.
              */
-            val localIconUri = Glide.with(context).asFile().load(description.iconUri)
-                .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE).get()
-                .asAlbumArtContentUri()
+
+            val localIconUri: Uri? = try {
+                Glide.with(context).asFile().load(description.iconUri)
+                    .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE).get()
+                    .asAlbumArtContentUri()
+            } catch (e: Exception) {
+                null
+            }
 
             preferences.edit()
                 .putString(RECENT_SONG_MEDIA_ID_KEY, description.mediaId)

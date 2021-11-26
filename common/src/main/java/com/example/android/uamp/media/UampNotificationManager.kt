@@ -33,6 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.lang.Exception
 
 const val NOW_PLAYING_CHANNEL_ID = "com.example.android.uamp.media.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification
@@ -56,24 +58,6 @@ class UampNotificationManager(
 
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
-
-//        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
-//            context,
-//            NOW_PLAYING_CHANNEL_ID,
-//            R.string.notification_channel,
-//            R.string.notification_channel_description,
-//            NOW_PLAYING_NOTIFICATION_ID,
-//            DescriptionAdapter(mediaController),
-//            notificationListener
-//        ).apply {
-//
-//            setMediaSessionToken(sessionToken)
-//            setSmallIcon(R.drawable.ic_notification)
-//
-//            // Don't display the rewind or fast-forward buttons.
-//            setRewindIncrementMs(0)
-//            setFastForwardIncrementMs(0)
-//        }
 
         notificationManager = PlayerNotificationManager.Builder(context, NOW_PLAYING_NOTIFICATION_ID, NOW_PLAYING_CHANNEL_ID)
             .setChannelNameResourceId(R.string.notification_channel)
@@ -139,14 +123,20 @@ class UampNotificationManager(
 
         private suspend fun resolveUriAsBitmap(uri: Uri): Bitmap? {
             return withContext(Dispatchers.IO) {
-                // Block on downloading artwork.
-                Glide.with(context).applyDefaultRequestOptions(glideOptions)
-                    .asBitmap()
-                    .load(uri)
-                    .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                    .get()
+                try {
+                    // Block on downloading artwork.
+                    Glide.with(context).applyDefaultRequestOptions(glideOptions)
+                        .asBitmap()
+                        .load(uri)
+                        .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
+                        .get()
+                } catch (e: Exception) {
+                    return@withContext null
+                }
             }
         }
+
+
     }
 }
 
