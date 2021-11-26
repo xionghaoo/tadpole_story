@@ -11,6 +11,9 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
+import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.repo.data.Track
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -23,15 +26,18 @@ class TadpoleMusicSource(
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
 
-    init {
-        state = STATE_INITIALIZING
-    }
+//    init {
+//        state = STATE_INITIALIZING
+//    }
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
-    override suspend fun load() {
-        // https://storage.googleapis.com/uamp/catalog.json
-        updateCatalog(Uri.parse("https://storage.googleapis.com/uamp/catalog.json"))?.let { updatedCatalog ->
+    override suspend fun load(mediaId: String) {
+        state = STATE_INITIALIZING
+        Timber.d("mediaId: $mediaId")
+        // 根据albumId来查询音频
+        // Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
+        updateCatalog(mediaId)?.let { updatedCatalog ->
             catalog = updatedCatalog
             state = STATE_INITIALIZED
         } ?: run {
@@ -46,29 +52,31 @@ class TadpoleMusicSource(
      * Function to connect to a remote URI and download/process the JSON file that corresponds to
      * [MediaMetadataCompat] objects.
      */
-    private suspend fun updateCatalog(catalogUri: Uri): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(albumId: String): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             val musicCat = try {
-                downloadJson(catalogUri)
+//                downloadJson(catalogUri)
+                getAlbumVoices(albumId)
             } catch (ioException: IOException) {
                 return@withContext null
             }
 
             // Get the base URI to fix up relative references later.
-            val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
+//            val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
 
-            val mediaMetadataCompats = musicCat.music.map { song ->
+            val mediaMetadataCompats = musicCat?.tracks?.map { song ->
                 // The JSON may have paths that are relative to the source of the JSON
                 // itself. We need to fix them up here to turn them into absolute paths.
-                catalogUri.scheme?.let { scheme ->
-                    if (!song.source.startsWith(scheme)) {
-                        song.source = baseUri + song.source
-                    }
-                    if (!song.image.startsWith(scheme)) {
-                        song.image = baseUri + song.image
-                    }
-                }
-                val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.image))
+//                catalogUri.scheme?.let { scheme ->
+//                    if (!song.source.startsWith(scheme)) {
+//                        song.source = baseUri + song.source
+//                    }
+//                    if (!song.image.startsWith(scheme)) {
+//                        song.image = baseUri + song.image
+//                    }
+//                }
+//                song.play_url_32 =
+                val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle))
 
                 MediaMetadataCompat.Builder()
                     .from(song)
@@ -77,10 +85,10 @@ class TadpoleMusicSource(
                         albumArtUri = imageUri.toString()
                     }
                     .build()
-            }.toList()
+            }?.toList()
             // Add description keys to be used by the ExoPlayer MediaSession extension when
             // announcing metadata changes.
-            mediaMetadataCompats.forEach { it.description.extras?.putAll(it.bundle) }
+            mediaMetadataCompats?.forEach { it.description.extras?.putAll(it.bundle) }
             mediaMetadataCompats
         }
     }
@@ -91,6 +99,16 @@ class TadpoleMusicSource(
         val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
         return Gson().fromJson(reader, JsonCatalog::class.java)
     }
+
+    @Throws(IOException::class)
+    private fun getAlbumVoices(albumId: String) : Album? {
+        val response = repo.getVoiceListFormAlbum(albumId, page = 1).execute()
+        if (response.isSuccessful) {
+            return response.body()
+        } else {
+            return null
+        }
+    }
 }
 
 
@@ -98,28 +116,28 @@ class TadpoleMusicSource(
  * Extension method for [MediaMetadataCompat.Builder] to set the fields from
  * our JSON constructed object (to make the code a bit easier to see).
  */
-fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.Builder {
+fun MediaMetadataCompat.Builder.from(jsonMusic: Track): MediaMetadataCompat.Builder {
     // The duration from the JSON is given in seconds, but the rest of the code works in
     // milliseconds. Here's where we convert to the proper units.
     val durationMs = TimeUnit.SECONDS.toMillis(jsonMusic.duration)
 
-    id = jsonMusic.id
-    title = jsonMusic.title
-    artist = jsonMusic.artist
-    album = jsonMusic.album
+    id = jsonMusic.id.toString()
+    title = jsonMusic.track_title
+    artist = jsonMusic.announcer?.nickname
+    album = jsonMusic.subordinated_album?.album_title
     duration = durationMs
-    genre = jsonMusic.genre
-    mediaUri = jsonMusic.source
-    albumArtUri = jsonMusic.image
-    trackNumber = jsonMusic.trackNumber
-    trackCount = jsonMusic.totalTrackCount
+    genre = "none"
+    mediaUri = jsonMusic.play_url_32
+    albumArtUri = jsonMusic.cover_url_middle
+    trackNumber = 0
+    trackCount = 0
     flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 
     // To make things easier for *displaying* these, set the display properties as well.
-    displayTitle = jsonMusic.title
-    displaySubtitle = jsonMusic.artist
-    displayDescription = jsonMusic.album
-    displayIconUri = jsonMusic.image
+    displayTitle = jsonMusic.track_title
+    displaySubtitle = jsonMusic.announcer?.nickname
+    displayDescription = jsonMusic.subordinated_album?.album_title
+    displayIconUri = jsonMusic.cover_url_middle
 
     // Add downloadStatus to force the creation of an "extras" bundle in the resulting
     // MediaMetadataCompat object. This is needed to send accurate metadata to the

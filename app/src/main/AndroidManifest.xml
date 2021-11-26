@@ -15,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TadpoleStory">
         <activity
+            android:name=".ui.album.AlbumDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DailyRecommendActivity"
+            android:exported="false" />
+        <activity
             android:name=".test.TestActivity"
             android:exported="false" />
         <activity

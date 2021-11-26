@@ -62,7 +62,7 @@ class JsonSource(private val source: Uri) : AbstractMusicSource() {
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
-    override suspend fun load() {
+    override suspend fun load(mediaId: String) {
         updateCatalog(source)?.let { updatedCatalog ->
             catalog = updatedCatalog
             state = STATE_INITIALIZED

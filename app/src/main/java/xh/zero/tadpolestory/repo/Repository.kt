@@ -3,6 +3,8 @@ package xh.zero.tadpolestory.repo
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import xh.zero.tadpolestory.remoteRequestStrategy
+import xh.zero.tadpolestory.repo.data.Album
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,7 +38,17 @@ class Repository @Inject constructor(
         apiService.getTagList()
     }
 
-    fun getVoiceList(albumId: String, page: Int) = remoteRequestStrategy {
-        apiService.getVoiceList(album_id = albumId, page = page)
+//    fun getVoiceListFormAlbum(albumId: Int, page: Int) = remoteRequestStrategy {
+//        apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
+//    }
+
+    fun getDailyRecommendAlbums(token: String, page: Int) = remoteRequestStrategy {
+        apiService.getDailyRecommendAlbums(access_token = token, page = page)
     }
+
+    fun getTemporaryToken() = remoteRequestStrategy {
+        apiService.getTemporaryToken()
+    }
+
+    fun getVoiceListFormAlbum(albumId: String, page: Int) = apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
 }

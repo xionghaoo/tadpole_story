@@ -1,5 +1,2 @@
-kd／1通用／二级按钮／返回.png;ic_home_button.png
-kd／1通用／功能按钮／筛选.png;ic_filter_button.png
-kd／1通用／功能按钮／儿童故事-选中.png;ic_home_menu_1.png
-kd／1通用／功能按钮／少儿素养-默认.png;ic_home_menu_2.png
-kd／1通用／功能按钮／跟多-默认.png;ic_home_menu_3.png
+kd／1通用／二级按钮／iocn-下拉单.png;ic_drop_16.png
+kd／1通用／ioc-播放备份.png;ic_clock_18.png

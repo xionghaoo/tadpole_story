@@ -10,13 +10,14 @@ import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityTestBinding
 import xh.zero.tadpolestory.ui.MainViewModel
 import xh.zero.tadpolestory.ui.MediaItemData
+import xh.zero.tadpolestory.ui.album.AlbumViewModel
 
 @AndroidEntryPoint
 class TestActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTestBinding
     private var mediaItem: MediaItemData? = null
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: AlbumViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +38,12 @@ class TestActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnLoad.setOnClickListener {
-            viewModel.getAlbumsList().observe(this) {
-                if (it.status == Status.SUCCESS) {
-                    Timber.d("getAlbums: ${it.data?.albums?.size}")
-                }
-            }
-        }
+//        binding.btnLoad.setOnClickListener {
+//            viewModel.getAlbumsList().observe(this) {
+//                if (it.status == Status.SUCCESS) {
+//                    Timber.d("getAlbums: ${it.data?.albums?.size}")
+//                }
+//            }
+//        }
     }
 }

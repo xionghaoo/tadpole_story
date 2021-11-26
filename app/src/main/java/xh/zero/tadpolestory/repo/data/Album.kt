@@ -59,10 +59,10 @@ class Album {
     var homemade = 0
     var kind: String? = null
     var quality_score: String? = null
-    var play_count = 0
-    var include_track_count = 0
+    var play_count: Long = 0
+    var include_track_count: Long = 0
     var is_finished = 0
-    var share_count = 0
+    var share_count: Long = 0
     var meta: String? = null
     var album_tags: String? = null
     var selling_point: String? = null

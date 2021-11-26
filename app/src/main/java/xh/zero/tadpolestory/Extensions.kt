@@ -84,7 +84,7 @@ inline fun <T> Repository.remoteRequestStrategy(
  * loading: 扩展回调
  * error: 扩展回调
  */
-inline fun <reified T : BaseData> handleResponse(
+inline fun <T> handleResponse(
     resource: Resource<T>,
     refreshLayout: SmartRefreshLayout? = null,
     networkLayout: NetworkStateLayout? = null,
@@ -98,29 +98,6 @@ inline fun <reified T : BaseData> handleResponse(
 ) {
     networkLayout?.networkStatus(resource.status)
     if (resource.status == Status.SUCCESS) {
-        if (resource.data?.code == 200) {
-            refreshLayout?.finishRefresh(true)
-            // networkStateLayout空状态
-            val empty = isEmpty(resource.data)
-            if (empty == null || empty) {
-                networkLayout?.empty()
-            } else {
-                // 返回的结果有效
-                resource.data.also { onSuccess(it!!) }
-            }
-        } else if (resource.data?.code == 2042) {
-//            if (context != null) {
-//                ToastUtil.showToast(context, resource.data?.msg ?: "")
-//                LoginActivity.startWithNewTask(context)
-//            }
-        } else {
-            onDataError(resource.data?.msg.orEmpty())
-            networkLayout?.error()
-            refreshLayout?.finishRefresh(false)
-            if (context != null) {
-                ToastUtil.show(context, resource.data?.msg ?: "")
-            }
-        }
         resource.data?.also { onSuccess(it) }
         refreshLayout?.finishRefresh(true)
         // networkStateLayout空状态
@@ -128,7 +105,6 @@ inline fun <reified T : BaseData> handleResponse(
         if (empty == null || empty) {
             networkLayout?.empty()
         }
-
         progressDialog?.dismiss()
     } else if (resource.status == Status.LOADING) {
         progressDialog?.show()
@@ -139,46 +115,6 @@ inline fun <reified T : BaseData> handleResponse(
         progressDialog?.dismiss()
         onError()
     }
-}
-//
-///**
-// * 缓存请求结果处理，用于cacheRequestStrategy
-// * loading状态会有缓存数据传递，不需要加载过程
-// */
-//inline fun <reified T : BaseData> handleCacheResponse(
-//    resource: Resource<T>,
-//    context: Context? = null,
-//    error: () -> Unit = {},
-//    success: (T) -> Unit
-//) {
-//    if (resource.status == Status.SUCCESS) {
-//        // 网络数据，加载成功传递给页面，如果缓存数据有修改，这里可以及时刷新
-//        if (resource.data?.code == 0) {
-//            resource.data?.also {
-//                success(it)
-//            }
-//        } else {
-//            error()
-//            context?.also { ToastUtil.show(context, resource.data?.message) }
-//        }
-//    } else if (resource.status == Status.LOADING) {
-//        // 缓存数据，在loading状态时传递给页面
-//        if (resource.data?.code == 0) {
-//            resource.data?.also {
-//                success(it)
-//            }
-//        }
-//    } else if (resource.status == Status.ERROR) {
-//        error()
-//    }
-//}
-
-fun <T> Fragment.startPlainActivity(target: Class<T>) where T : AppCompatActivity {
-    startActivity(Intent(context, target))
-}
-
-fun <T> AppCompatActivity.startPlainActivity(target: Class<T>) where T : AppCompatActivity {
-    startActivity(Intent(this, target))
 }
 
 // 金额处理，分转元

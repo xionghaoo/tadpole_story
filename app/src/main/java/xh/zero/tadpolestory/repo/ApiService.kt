@@ -1,6 +1,7 @@
 package xh.zero.tadpolestory.repo
 
 import androidx.lifecycle.LiveData
+import retrofit2.Call
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -59,11 +60,30 @@ interface ApiService {
         @Query("type") type: Int = 0
     ) : LiveData<ApiResponse<List<AlbumTag>>>
 
+    /**
+     * 专辑浏览
+     */
     @GET("$PREFIX/albums/browse")
-    fun getVoiceList(
+    fun getVoiceListFormAlbum(
         @Query("album_id") album_id: String,
         @Query("sort") sort: String = "asc",
         @Query("page") page: Int,
         @Query("count") count: Int = Configs.PAGE_SIZE
-    ) : LiveData<ApiResponse<PlainData>>
+    ) : Call<Album>
+
+    /**
+     * 每日推荐
+     */
+    @GET("$PREFIX/operation/recommend_albums")
+    fun getDailyRecommendAlbums(
+        @Query("access_token") access_token: String,
+        @Query("page") page: Int,
+        @Query("count") count: Int = 4
+    ) : LiveData<ApiResponse<AlbumResponse>>
+
+    /**
+     * 获取临时token
+     */
+    @GET("$PREFIX/oauth2/secure_access_token")
+    fun getTemporaryToken() : LiveData<ApiResponse<TemporaryToken>>
 }

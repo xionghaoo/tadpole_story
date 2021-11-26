@@ -118,9 +118,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
     private var isForegroundService = false
 
-    private val remoteJsonSource: Uri =
-        Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
-
     private val uAmpAudioAttributes = AudioAttributes.Builder()
         .setContentType(C.CONTENT_TYPE_MUSIC)
         .setUsage(C.USAGE_MEDIA)
@@ -203,10 +200,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
-        mediaSource = createMusicSource()
-        serviceScope.launch {
-            mediaSource.load()
-        }
 
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession)
@@ -318,17 +311,23 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         parentMediaId: String,
         result: Result<List<MediaItem>>
     ) {
-
         /**
          * If the caller requests the recent root, return the most recently played song.
          */
         if (parentMediaId == UAMP_RECENT_ROOT) {
             result.sendResult(storage.loadRecentSong()?.let { song -> listOf(song) })
         } else {
+            /**
+             * mediaSource的创建和加载必须要在一起，不然内部state会缺少一个STATE_CREATED状态
+             */
+            mediaSource = createMusicSource()
+            serviceScope.launch {
+                mediaSource.load(parentMediaId)
+            }
             // If the media source is ready, the results will be set synchronously here.
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
-                    val children = browseTree[parentMediaId]?.map { item ->
+                    val children = mediaSource.map { item ->
                         MediaItem(item.description, item.flag)
                     }
                     result.sendResult(children)
@@ -347,6 +346,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             if (!resultsSent) {
                 result.detach()
             }
+//            result.detach()
+
         }
     }
 
