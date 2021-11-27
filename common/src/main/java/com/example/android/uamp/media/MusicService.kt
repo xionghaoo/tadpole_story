@@ -33,12 +33,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
-import com.example.android.uamp.media.extensions.album
-import com.example.android.uamp.media.extensions.flag
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.toMediaQueueItem
-import com.example.android.uamp.media.extensions.toMediaSource
-import com.example.android.uamp.media.extensions.trackNumber
+import com.example.android.uamp.media.extensions.*
 import com.example.android.uamp.media.library.AbstractMusicSource
 import com.example.android.uamp.media.library.BrowseTree
 import com.example.android.uamp.media.library.MEDIA_SEARCH_SUPPORTED
@@ -161,6 +156,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 //    @ExperimentalCoroutinesApi
     override fun onCreate() {
         super.onCreate()
+        Log.d(TAG, "onCreate")
 
         // Build a PendingIntent that can be used to launch the UI.
         val sessionActivityPendingIntent =
@@ -261,7 +257,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot? {
-
+        Log.d(TAG, "onGetRoot: $clientPackageName")
         /*
          * By default, all known clients are permitted to search, but only tell unknown callers
          * about search if permitted by the [BrowseTree].
@@ -311,6 +307,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         parentMediaId: String,
         result: Result<List<MediaItem>>
     ) {
+        Log.d(TAG, "onLoadChildren: $parentMediaId")
         /**
          * If the caller requests the recent root, return the most recently played song.
          */
@@ -328,6 +325,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
                     val children = mediaSource.map { item ->
+                        item.description.extras?.putLong("duration", item.duration)
+                        // MediaMetaData -> MediaItem
                         MediaItem(item.description, item.flag)
                     }
                     result.sendResult(children)
@@ -359,7 +358,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         extras: Bundle?,
         result: Result<List<MediaItem>>
     ) {
-
+        Log.d(TAG, "onSearch")
         val resultsSent = mediaSource.whenReady { successfullyInitialized ->
             if (successfullyInitialized) {
                 val resultsList = mediaSource.search(query, extras ?: Bundle.EMPTY)
@@ -386,6 +385,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         playWhenReady: Boolean,
         playbackStartPositionMs: Long
     ) {
+        Log.d(TAG, "preparePlaylist, ${metadataList.size}, $playWhenReady")
+
         // Since the playlist was probably based on some ordering (such as tracks
         // on an album), find which window index to play first so that the song the
         // user actually wants to hear plays first.
@@ -436,7 +437,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     }
 
     private fun saveRecentSongToStorage() {
-
+        Log.d(TAG, "saveRecentSongToStorage")
         // Obtain the current song details *before* saving them on a separate thread, otherwise
         // the current player may have been unloaded by the time the save routine runs.
         val description = currentPlaylistItems[currentPlayer.currentWindowIndex].description
@@ -490,6 +491,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
                     PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
 
         override fun onPrepare(playWhenReady: Boolean) {
+            Log.d(TAG, "UampPlaybackPreparer::onPrepare")
             val recentSong = storage.loadRecentSong() ?: return
             onPrepareFromMediaId(
                 recentSong.mediaId!!,
@@ -503,6 +505,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
+            Log.d(TAG, "UampPlaybackPreparer::onPrepareFromMediaId:$mediaId, $playWhenReady, $extras")
             mediaSource.whenReady {
                 val itemToPlay: MediaMetadataCompat? = mediaSource.find { item ->
                     item.id == mediaId
@@ -535,6 +538,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
          * For details on how search is handled, see [AbstractMusicSource.search].
          */
         override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) {
+            Log.d(TAG, "UampPlaybackPreparer::onPrepareFromSearch")
             mediaSource.whenReady {
                 val metadataList = mediaSource.search(query, extras ?: Bundle.EMPTY)
                 if (metadataList.isNotEmpty()) {
@@ -563,7 +567,11 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             command: String,
             extras: Bundle?,
             cb: ResultReceiver?
-        ): Boolean = false
+        ): Boolean {
+            Log.d(TAG, "UampPlaybackPreparer::onCommand: $command, $extras")
+
+            return false
+        }
 
         /**
          * Builds a playlist based on a [MediaMetadataCompat].
@@ -613,6 +621,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             when (playbackState) {
                 Player.STATE_BUFFERING,
                 Player.STATE_READY -> {
+                    Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playbackState,")
+
                     notificationManager.showNotificationForPlayer(currentPlayer)
                     if (playbackState == Player.STATE_READY) {
 
@@ -638,6 +648,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
 
         override fun onPlayerError(error: PlaybackException) {
+            Log.d(TAG, "PlayerEventListener::onPlayerError ${error.errorCodeName}")
             Toast.makeText(
                 applicationContext,
                 error.message,

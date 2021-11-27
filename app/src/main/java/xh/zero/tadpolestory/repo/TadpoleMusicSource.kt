@@ -79,7 +79,7 @@ class TadpoleMusicSource(
                 val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle))
 
                 MediaMetadataCompat.Builder()
-                    .from(song)
+                    .from(song, musicCat.include_track_count)
                     .apply {
                         displayIconUri = imageUri.toString() // Used by ExoPlayer and Notification
                         albumArtUri = imageUri.toString()
@@ -116,7 +116,7 @@ class TadpoleMusicSource(
  * Extension method for [MediaMetadataCompat.Builder] to set the fields from
  * our JSON constructed object (to make the code a bit easier to see).
  */
-fun MediaMetadataCompat.Builder.from(jsonMusic: Track): MediaMetadataCompat.Builder {
+fun MediaMetadataCompat.Builder.from(jsonMusic: Track, total: Long): MediaMetadataCompat.Builder {
     // The duration from the JSON is given in seconds, but the rest of the code works in
     // milliseconds. Here's where we convert to the proper units.
     val durationMs = TimeUnit.SECONDS.toMillis(jsonMusic.duration)
@@ -129,8 +129,8 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: Track): MediaMetadataCompat.Buil
     genre = "none"
     mediaUri = jsonMusic.play_url_32
     albumArtUri = jsonMusic.cover_url_middle
-    trackNumber = 0
-    trackCount = 0
+    trackNumber = jsonMusic.order_num
+    trackCount = total
     flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 
     // To make things easier for *displaying* these, set the display properties as well.

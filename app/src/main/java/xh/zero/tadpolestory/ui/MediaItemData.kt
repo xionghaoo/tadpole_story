@@ -36,7 +36,8 @@ data class MediaItemData(
     val subtitle: String,
     val albumArtUri: Uri,
     val browsable: Boolean,
-    var playbackRes: Int
+    var playbackRes: Int,
+    val duration: Long
 ) {
 
     companion object {

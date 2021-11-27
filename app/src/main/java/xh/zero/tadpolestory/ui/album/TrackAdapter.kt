@@ -5,6 +5,7 @@ import android.widget.TextView
 import xh.zero.core.adapter.PlainListAdapter
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.ui.MediaItemData
+import xh.zero.tadpolestory.utils.TimeUtil
 
 class TrackAdapter(
     items: List<MediaItemData>,
@@ -13,7 +14,7 @@ class TrackAdapter(
     override fun bindView(v: View, item: MediaItemData, position: Int) {
         v.findViewById<TextView>(R.id.tv_track_index).text = "${position + 1}"
         v.findViewById<TextView>(R.id.tv_track_title).text = item.title
-        v.findViewById<TextView>(R.id.tv_track_time_count).text = item.mediaId
+        v.findViewById<TextView>(R.id.tv_track_time_count).text = TimeUtil.secondsFormat(item.duration)
         v.setOnClickListener {
             onItemClick(item)
         }

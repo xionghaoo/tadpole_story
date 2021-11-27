@@ -36,13 +36,15 @@ class AlbumViewModel @AssistedInject constructor(
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
+                val duration = child.description.extras?.getLong("duration")
                 MediaItemData(
                     child.mediaId!!,
                     child.description.title.toString(),
                     subtitle.toString(),
                     child.description.iconUri!!,
                     child.isBrowsable,
-                    getResourceForMediaId(child.mediaId!!)
+                    getResourceForMediaId(child.mediaId!!),
+                    duration ?: 0
                 )
             }
             _mediaItems.postValue(itemsList)

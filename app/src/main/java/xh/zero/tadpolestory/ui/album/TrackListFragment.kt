@@ -27,6 +27,10 @@ class TrackListFragment : Fragment() {
         arguments?.getString(ARG_ALBUM_ID) ?: ""
     }
 
+    private val total: Int by lazy {
+        arguments?.getInt(ARG_TOTAL, 0) ?: 0
+    }
+
     private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
 
@@ -41,6 +45,7 @@ class TrackListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.tvTotalAlbum.text = "共${total}集"
         binding.rcTrackList.layoutManager = GridLayoutManager(requireContext(), 2)
         adapter = TrackAdapter(emptyList()) { item ->
             viewModel.playMedia(item, pauseAllowed = false)
@@ -62,10 +67,12 @@ class TrackListFragment : Fragment() {
     companion object {
 
         private const val ARG_ALBUM_ID = "ARG_ALBUM_ID"
+        private const val ARG_TOTAL = "ARG_TOTAL"
 
-        fun newInstance(albumId: String) = TrackListFragment().apply {
+        fun newInstance(albumId: String, total: Int) = TrackListFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ALBUM_ID, albumId)
+                putInt(ARG_TOTAL, total)
             }
         }
     }

@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingStart="@dimen/_100dp"
+    android:paddingEnd="@dimen/_100dp"
     tools:context=".ui.album.TrackListFragment">
 
 
@@ -26,6 +28,7 @@
             android:background="@android:color/holo_red_dark" />
 
         <TextView
+            android:id="@+id/tv_total_album"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_10dp"
