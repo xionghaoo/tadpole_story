@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_main_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.album.NowPlayingFragment">
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/_106dp"
+        android:layout_height="@dimen/_88dp"
+        android:src="@mipmap/ic_back"
+        android:layout_marginTop="@dimen/_48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/btn_media_album_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="猴子警长探案集-第三季|侦探推理|宝宝巴士"
+        android:textSize="@dimen/_30sp"
+        android:textColor="@color/color_07070D"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/_32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_back"
+        app:layout_constraintStart_toEndOf="@+id/btn_back"
+        app:layout_constraintTop_toTopOf="@+id/btn_back" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/textView16"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_400dp"
+        android:layout_marginTop="@dimen/_17dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_back" >
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_media_cover_img"
+            android:layout_width="@dimen/_250dp"
+            android:layout_height="@dimen/_250dp"
+            android:layout_marginStart="@dimen/_132dp"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_media_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="宝宝巴士-pony妈妈"
+            android:textSize="@dimen/_30sp"
+            android:textColor="@color/color_515151"
+            android:layout_marginStart="@dimen/_42dp"
+            android:layout_marginTop="@dimen/_24dp"
+            app:layout_constraintStart_toEndOf="@+id/iv_media_cover_img"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_media_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="pony妈妈讲猴子警长探案集"
+            android:textSize="@dimen/_24sp"
+            android:textColor="@color/color_5E5F62"
+            android:layout_marginTop="@dimen/_16dp"
+            app:layout_constraintStart_toStartOf="@+id/tv_media_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_media_title" />
+
+        <TextView
+            android:id="@+id/tv_media_subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="订阅量：9.6w"
+            android:text="订阅量：0"
+            android:textColor="@color/color_6F6F72"
+            android:textSize="@dimen/_20sp"
+            android:layout_marginBottom="@dimen/_28dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_media_cover_img"
+            app:layout_constraintStart_toStartOf="@+id/tv_media_title" />
+
+        <LinearLayout
+            android:id="@+id/btn_subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_58dp"
+            android:layout_marginTop="@dimen/_57dp"
+            android:layout_marginEnd="@dimen/_182dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/_22dp"
+            android:paddingEnd="@dimen/_22dp"
+            android:background="@drawable/shape_btn_subscribe"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+            <ImageView
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
+                android:src="@mipmap/ic_subscribe_30"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8dp"
+                android:textSize="@dimen/_24sp"
+                android:textColor="@color/white"
+                android:paddingStart="@dimen/_10dp"
+                android:paddingEnd="@dimen/_10dp"
+                android:text="订阅"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_meida_play_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="01:58"
+            android:text="00:00"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_16sp"
+            android:layout_marginTop="@dimen/_26dp"
+            android:layout_marginStart="@dimen/_118dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_media_cover_img" />
+
+        <SeekBar
+            android:id="@+id/pb_media_progress"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_24dp"
+            android:layout_marginStart="@dimen/_13dp"
+            android:layout_marginEnd="@dimen/_13dp"
+            android:splitTrack="false"
+            android:max="500"
+            android:paddingStart="@dimen/_15dp"
+            android:paddingEnd="@dimen/_15dp"
+            style="@style/CustomSeekbarStyle"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_meida_play_position"
+            app:layout_constraintEnd_toStartOf="@+id/tv_media_duration"
+            app:layout_constraintStart_toEndOf="@+id/tv_meida_play_position"
+            app:layout_constraintTop_toTopOf="@+id/tv_meida_play_position" />
+
+        <TextView
+            android:id="@+id/tv_media_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="01:58"
+            android:text="00:00"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_16sp"
+            android:layout_marginEnd="@dimen/_118dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_meida_play_position"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_meida_play_position" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_media_play"
+            android:layout_width="@dimen/_74dp"
+            android:layout_height="@dimen/_74dp"
+            android:layout_marginTop="@dimen/_8dp"
+            android:src="@mipmap/ic_media_play"
+            android:layout_marginStart="@dimen/_24dp"
+            app:layout_constraintStart_toEndOf="@+id/btn_media_pre"
+            app:layout_constraintTop_toBottomOf="@+id/tv_meida_play_position" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_media_pre"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginStart="@dimen/_122dp"
+            android:src="@mipmap/ic_media_pre"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_media_play"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_media_play" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_media_next"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:src="@mipmap/ic_media_next"
+            android:layout_marginStart="@dimen/_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_media_play"
+            app:layout_constraintStart_toEndOf="@+id/btn_media_play"
+            app:layout_constraintTop_toTopOf="@+id/btn_media_play" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView30"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginStart="@dimen/_28dp"
+            android:src="@mipmap/ic_media_pre_15s"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_media_play"
+            app:layout_constraintStart_toEndOf="@+id/btn_media_next"
+            app:layout_constraintTop_toTopOf="@+id/btn_media_play" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView31"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:src="@mipmap/ic_media_next_15s"
+            android:layout_marginStart="@dimen/_27dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView30"
+            app:layout_constraintStart_toEndOf="@+id/textView30"
+            app:layout_constraintTop_toTopOf="@+id/textView30" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView32"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginStart="@dimen/_41dp"
+            android:src="@mipmap/ic_media_multiple"
+            app:layout_constraintBottom_toBottomOf="@+id/textView31"
+            app:layout_constraintStart_toEndOf="@+id/textView31"
+            app:layout_constraintTop_toTopOf="@+id/textView31" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView33"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginEnd="@dimen/_122dp"
+            android:src="@mipmap/ic_media_folder"
+            app:layout_constraintBottom_toBottomOf="@+id/textView32"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView32" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView34"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:src="@mipmap/ic_media_clock_52"
+            app:layout_constraintBottom_toBottomOf="@+id/textView33"
+            app:layout_constraintEnd_toStartOf="@+id/textView33"
+            app:layout_constraintTop_toTopOf="@+id/textView33" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:background="@color/color_B4B4B4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView16" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

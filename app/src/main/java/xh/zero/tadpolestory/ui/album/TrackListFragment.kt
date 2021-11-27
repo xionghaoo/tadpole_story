@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import xh.zero.core.startPlainActivity
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentTrackListBinding
 import javax.inject.Inject
@@ -50,6 +51,7 @@ class TrackListFragment : Fragment() {
         adapter = TrackAdapter(emptyList()) { item ->
             viewModel.playMedia(item, pauseAllowed = false)
             // 显示正在播放页面
+            startPlainActivity(NowPlayingActivity::class.java)
         }
         binding.rcTrackList.adapter = adapter
         loadData()

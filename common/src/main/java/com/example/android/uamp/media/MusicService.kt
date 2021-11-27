@@ -451,6 +451,24 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
+    fun seekToPosition(posMs: Long) {
+        currentPlayer.seekTo(posMs)
+    }
+
+    fun toPrev() : Boolean {
+        if (currentPlayer.hasPreviousMediaItem()) {
+            currentPlayer.seekToPrevious()
+            return true
+        } else return false
+    }
+
+    fun toNext() : Boolean {
+        if (currentPlayer.hasNextMediaItem()) {
+            currentPlayer.seekToNext()
+            return true
+        } else return false
+    }
+
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
 
         /**

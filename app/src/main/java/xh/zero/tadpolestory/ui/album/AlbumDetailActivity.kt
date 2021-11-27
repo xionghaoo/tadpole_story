@@ -50,8 +50,6 @@ class AlbumDetailActivity : BaseActivity() {
         }
 
         replaceFragment(TrackListFragment.newInstance(albumId.toString(), total), R.id.fragment_container)
-
     }
-
 
 }

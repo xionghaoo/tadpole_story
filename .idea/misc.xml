@@ -4,14 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/android/tadpole_story/app/src/main/res/drawable/ic_play_arrow_black_24dp.xml" value="0.2989583333333333" />
+        <entry key="app/src/main/res/drawable/color_seekbar_progress.xml" value="0.30092592592592593" />
+        <entry key="app/src/main/res/drawable/seekbar_progress_drawable.xml" value="0.30092592592592593" />
+        <entry key="app/src/main/res/drawable/seekbar_slider_1.xml" value="0.2361111111111111" />
+        <entry key="app/src/main/res/drawable/seekbar_slider_2.xml" value="0.2361111111111111" />
+        <entry key="app/src/main/res/drawable/seekbar_slider_drawable.xml" value="0.2361111111111111" />
         <entry key="app/src/main/res/drawable/shape_album_tag.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/shape_album_tag_selected.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/shape_btn_subscribe.xml" value="0.26875" />
         <entry key="app/src/main/res/drawable/shape_home_album.xml" value="0.31574074074074077" />
         <entry key="app/src/main/res/drawable/shape_search.xml" value="0.2625" />
         <entry key="app/src/main/res/layout/activity_album_detail.xml" value="0.25833333333333336" />
         <entry key="app/src/main/res/layout/activity_daily_recommend.xml" value="0.27239583333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4389690662893091" />
-        <entry key="app/src/main/res/layout/activity_test.xml" value="0.3378623188405797" />
+        <entry key="app/src/main/res/layout/activity_now_playing.xml" value="0.28396739130434784" />
+        <entry key="app/src/main/res/layout/activity_test.xml" value="0.5943127962085308" />
+        <entry key="app/src/main/res/layout/fragment_now_playing.xml" value="0.51803528172974" />
         <entry key="app/src/main/res/layout/fragment_track_list.xml" value="0.5946424577512911" />
         <entry key="app/src/main/res/layout/item_home_content.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_home_album.xml" value="0.30480072463768115" />

@@ -39,8 +39,6 @@ class MainActivity : BaseActivity() {
 
         volumeControlStream = AudioManager.STREAM_MUSIC
 
-        SystemUtil.setDarkStatusBar(window)
-
         binding.btnHome.setOnClickListener {
             onBackPressed()
         }

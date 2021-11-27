@@ -115,5 +115,4 @@ dependencies {
     implementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
 
     implementation "androidx.media:media:1.4.3"
-
 }

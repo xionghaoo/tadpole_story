@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--定义seekbar滑动条的底色-->
+    <item>
+        <shape>
+            <size android:width="@dimen/_24dp" android:height="@dimen/_24dp"/>
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <size android:width="@dimen/_24dp" android:height="@dimen/_24dp"/>
+            <solid android:color="@color/color_4121FF"/>
+        </shape>
+    </item>
+    <item
+        android:width="@dimen/_16dp"
+        android:height="@dimen/_16dp"
+        android:top="@dimen/_4dp"
+        android:left="@dimen/_4dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
+</layer-list>

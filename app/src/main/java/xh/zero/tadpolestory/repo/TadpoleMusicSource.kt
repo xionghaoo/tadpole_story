@@ -79,7 +79,7 @@ class TadpoleMusicSource(
                 val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle))
 
                 MediaMetadataCompat.Builder()
-                    .from(song, musicCat.include_track_count)
+                    .from(song, musicCat.tracks?.size?.toLong() ?: 0)
                     .apply {
                         displayIconUri = imageUri.toString() // Used by ExoPlayer and Notification
                         albumArtUri = imageUri.toString()

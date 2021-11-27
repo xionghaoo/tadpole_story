@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TadpoleStory">
         <activity
+            android:name=".ui.album.NowPlayingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.album.AlbumDetailActivity"
             android:exported="false" />
         <activity
@@ -22,16 +25,22 @@
             android:exported="false" />
         <activity
             android:name=".test.TestActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:screenOrientation="userLandscape">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:screenOrientation="userLandscape">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
             android:name=".web.WebActivity"

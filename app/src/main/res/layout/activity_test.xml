@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity"
+    android:background="@android:color/holo_blue_bright"
+    android:orientation="vertical"
     android:gravity="center">
 
     <Button
@@ -18,5 +20,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="加载测试"/>
+
+    <xh.zero.tadpolestory.widgets.PlaySeekBar
+        android:layout_marginTop="@dimen/_30dp"
+        android:layout_width="@dimen/_500dp"
+        android:layout_height="@dimen/_50dp"/>
+
+    <SeekBar
+        android:id="@+id/skb_player"
+        android:layout_width="@dimen/_500dp"
+        android:layout_height="@dimen/_24dp"
+        android:layout_marginTop="@dimen/_30dp"
+        android:splitTrack="false"
+        android:max="100"
+        style="@style/CustomSeekbarStyle"/>
 
 </LinearLayout>

@@ -10,6 +10,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SystemUtil.statusBarTransparent(window)
+        SystemUtil.setDarkStatusBar(window)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
