@@ -5,12 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 @AndroidEntryPoint
@@ -19,6 +25,12 @@ class NowPlayingFragment : Fragment() {
     private lateinit var binding: FragmentNowPlayingBinding
     private val viewModel: NowPlayingViewModel by viewModels()
     private var isTouchingSeekBar = false
+
+    private var hasInit = false
+    private var originX = 0f
+    private var originY = 0f
+    private var targetX = 0f
+    private var targetY = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,17 +43,23 @@ class NowPlayingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener {
-            activity?.onBackPressed()
-        }
-
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
             binding.tvMediaDuration.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(mediaItem.duration)
             binding.tvMediaTitle.text = mediaItem.title
+            binding.topTvMediaTitle.text = mediaItem.title
             binding.tvMediaSubtitle.text = mediaItem.subtitle
+            binding.topTvMediaSubtitle.text = mediaItem.subtitle
             GlideApp.with(this)
                 .load(mediaItem.albumArtUri)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners(resources.getDimension(R.dimen._24dp).roundToInt())))
                 .into(binding.ivMediaCoverImg)
+
+
+            val rate = resources.getDimension(R.dimen._140dp) / resources.getDimension(R.dimen._250dp)
+            GlideApp.with(this)
+                .load(mediaItem.albumArtUri)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
+                .into(binding.topIvMediaCoverImg)
         }
 
         viewModel.mediaPosition.observe(viewLifecycleOwner) { pos ->
@@ -116,6 +134,88 @@ class NowPlayingFragment : Fragment() {
         })
 
 
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            if (!hasInit) {
+                hasInit = true
+                val target = binding.ivMediaCoverImg
+                val origin = binding.topIvMediaCoverImg
+                targetX = target.x
+                targetY = binding.containerPlayer.y
+                originX = origin.x
+                originY = origin.y
+            }
+        }
+
+        binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+//            Timber.d("scrollY = $scrollY, oldScrollY = $oldScrollY")
+            // 0 -> topIvMediaCoverImg.y
+            if (scrollY > 0) {
+//                binding.topIvMediaCoverImg.visibility = View.VISIBLE
+                binding.ivMediaCoverImg.visibility = View.INVISIBLE
+
+                // 起始状态 0 -> topIvMediaCoverImg.y
+                val target = binding.ivMediaCoverImg
+                val origin = binding.topIvMediaCoverImg
+                // 1- 20 / 200 = 0.9
+                // 1- 40 / 200 = 0.8
+                // scale
+                // target 300 origin 200  scaleX 1.5 -> 1  1 + (1.5 - 1) * 0.9
+                //
+
+
+                var percent: Float = 1f - (scrollY).toFloat() / targetY
+                if (percent > 1f) percent = 1f
+                if (percent < 0f) percent = 0f
+                origin.pivotX = 0f
+                origin.pivotY = 0f
+                origin.visibility = View.VISIBLE
+                origin.scaleX = 1f + (target.width / origin.width.toFloat() - 1f) * percent
+                origin.scaleY = 1f + (target.height / origin.height.toFloat() - 1f) * percent
+//                origin.scaleX = target.width / origin.width.toFloat()
+//                origin.scaleY = target.height / origin.height.toFloat()
+                val yDiff = targetY - originY
+                origin.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
+                val xDiff = originX - targetX
+                origin.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
+
+                binding.tvMediaTitle.alpha = percent
+                binding.tvMediaSubtitle.alpha = percent
+                binding.tvMediaDuration.alpha = percent
+                binding.tvMeidaPlayPosition.alpha = percent
+                binding.tvMediaSubscribe.alpha = percent
+                binding.btnSubscribe.alpha = percent
+
+                binding.topTvMediaTitle.visibility = View.VISIBLE
+                binding.topTvMediaSubtitle.visibility = View.VISIBLE
+                binding.topTvMediaAlbumTitle.visibility = View.VISIBLE
+                binding.topTvMediaTitle.alpha = 1f - percent
+                binding.topTvMediaSubtitle.alpha = 1f - percent
+
+
+            } else {
+                binding.topIvMediaCoverImg.visibility = View.INVISIBLE
+                binding.ivMediaCoverImg.visibility = View.VISIBLE
+
+                binding.topTvMediaTitle.visibility = View.INVISIBLE
+                binding.topTvMediaSubtitle.visibility = View.INVISIBLE
+                binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
+            }
+        }
+    }
+
+    private fun initialTopLayout() {
+        val target = binding.ivMediaCoverImg
+        val origin = binding.topIvMediaCoverImg
+        origin.visibility = View.VISIBLE
+        origin.scaleX = target.width / origin.width.toFloat()
+        origin.scaleY = target.height / origin.height.toFloat()
+        origin.translationY = target.y
+        origin.translationX = target.x
+        origin.animate()
+            .scaleX(0f)
+            .scaleY(0f)
+            .translationX(0f)
+            .translationY(0f)
     }
 
     companion object {
