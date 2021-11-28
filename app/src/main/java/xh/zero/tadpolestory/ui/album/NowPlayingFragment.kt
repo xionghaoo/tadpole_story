@@ -3,21 +3,21 @@ package xh.zero.tadpolestory.ui.album
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import timber.log.Timber
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
-import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -29,12 +29,26 @@ class NowPlayingFragment : Fragment() {
     private var isTouchingSeekBar = false
 
     private var hasInit = false
-    private var originX = 0f
-    private var originY = 0f
-    private var targetX = 0f
-    private var targetY = 0f
+    private var topCoverImgX = 0f
+    private var topCoverImgY = 0f
+    private var coverImgX = 0f
+    private var coverImgY = 0f
+
+    private var topTvAlbumTitleX = 0f
+    private var topTvAlbumTitleY = 0f
+    private var tvAlbumTitleX = 0f
+    private var tvAlbumTitleY = 0f
+
+    private var progressBarScrollDiff = 0f
+    private var relativeAlbumExtra1ScrollDiff = 0f
+
+    private var currentPlayMediaId: String? = null
+    private var currentScrollY: Int = 0
 
     private lateinit var relativeAlbumAdapter: RelativeAlbumAdapter
+    private val albumTitle: String by lazy {
+        arguments?.getString(ARG_ALBUM_TITLE) ?: ""
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,25 +62,7 @@ class NowPlayingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
-            binding.tvMediaDuration.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(mediaItem.duration)
-            binding.tvMediaTitle.text = mediaItem.title
-            binding.topTvMediaTitle.text = mediaItem.title
-            binding.tvMediaSubtitle.text = mediaItem.subtitle
-            binding.topTvMediaSubtitle.text = mediaItem.subtitle
-            GlideApp.with(this)
-                .load(mediaItem.albumArtUri)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(resources.getDimension(R.dimen._24dp).roundToInt())))
-                .into(binding.ivMediaCoverImg)
-
-
-            val rate = resources.getDimension(R.dimen._140dp) / resources.getDimension(R.dimen._250dp)
-            GlideApp.with(this)
-                .load(mediaItem.albumArtUri)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
-                .into(binding.topIvMediaCoverImg)
-
-            loadRelativeAlbum(mediaItem.id.toInt())
-
+            updateUI(mediaItem)
         }
 
         viewModel.mediaPosition.observe(viewLifecycleOwner) { pos ->
@@ -80,6 +76,7 @@ class NowPlayingFragment : Fragment() {
         viewModel.mediaProgress.observe(viewLifecycleOwner) { progress ->
             if (!isTouchingSeekBar) {
                 binding.pbMediaProgress.setProgress(progress, true)
+                binding.topPbMediaProgress.setProgress(progress, true)
             }
         }
 
@@ -141,79 +138,257 @@ class NowPlayingFragment : Fragment() {
             }
         })
 
-
+        // 初始化View位置参数
         binding.root.viewTreeObserver.addOnGlobalLayoutListener {
             if (!hasInit) {
                 hasInit = true
                 val target = binding.ivMediaCoverImg
                 val origin = binding.topIvMediaCoverImg
-                targetX = target.x
-                targetY = binding.containerPlayer.y
-                originX = origin.x
-                originY = origin.y
+                coverImgX = target.x
+                coverImgY = binding.containerPlayer.y - SCROLL_THRESHOLD
+                topCoverImgX = origin.x
+                topCoverImgY = origin.y
+
+                topTvAlbumTitleX = binding.topTvMediaAlbumTitle.x
+                topTvAlbumTitleY = binding.topTvMediaAlbumTitle.y
+                tvAlbumTitleX = binding.tvMediaAlbumTitle.x
+                tvAlbumTitleY = binding.tvMediaAlbumTitle.y
+
+                progressBarScrollDiff = binding.pbMediaProgress.y + binding.containerPlayer.y - binding.topPbMediaProgress.y
+                relativeAlbumExtra1ScrollDiff = binding.layoutRelativeAlbums.tvMediaRelativeExtra1.y +
+                        binding.layoutRelativeAlbums.root.y - binding.topTvMediaRelativeExtra1.y
             }
         }
 
         binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (scrollY > 0) {
-                // 起始状态 0 -> topIvMediaCoverImg.y
-                val target = binding.ivMediaCoverImg
-                val origin = binding.topIvMediaCoverImg
-                target.visibility = View.INVISIBLE
-                var percent: Float = 1f - (scrollY).toFloat() / targetY
-                if (percent > 1f) percent = 1f
-                if (percent < 0f) percent = 0f
-                origin.pivotX = 0f
-                origin.pivotY = 0f
-                origin.visibility = View.VISIBLE
-                origin.scaleX = 1f + (target.width / origin.width.toFloat() - 1f) * percent
-                origin.scaleY = 1f + (target.height / origin.height.toFloat() - 1f) * percent
-                val yDiff = targetY - originY
-                origin.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
-                val xDiff = originX - targetX
-                origin.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
-
-                binding.tvMediaTitle.alpha = percent
-                binding.tvMediaSubtitle.alpha = percent
-                binding.tvMediaDuration.alpha = percent
-                binding.tvMeidaPlayPosition.alpha = percent
-                binding.tvMediaSubscribe.alpha = percent
-                binding.btnSubscribe.alpha = percent
-
-                binding.topTvMediaTitle.visibility = View.VISIBLE
-                binding.topTvMediaSubtitle.visibility = View.VISIBLE
-                binding.topTvMediaAlbumTitle.visibility = View.VISIBLE
-                binding.topTvMediaTitle.alpha = 1f - percent
-                binding.topTvMediaSubtitle.alpha = 1f - percent
-
-
-            } else {
-                binding.topIvMediaCoverImg.visibility = View.INVISIBLE
-                binding.ivMediaCoverImg.visibility = View.VISIBLE
-
-                binding.topTvMediaTitle.visibility = View.INVISIBLE
-                binding.topTvMediaSubtitle.visibility = View.INVISIBLE
-                binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
-            }
+            handleTransform(scrollY)
         }
 
+        binding.scrollView.setOnTouchListener { v, event ->
+            if (event?.action == MotionEvent.ACTION_UP
+                || event?.action == MotionEvent.ACTION_CANCEL) {
+                Timber.d("current scroll y = $currentScrollY, $progressBarScrollDiff, $relativeAlbumExtra1ScrollDiff")
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(100)
+                    withContext(Dispatchers.Main) {
+                        if (currentScrollY < progressBarScrollDiff / 3) {
+                            binding.scrollView.smoothScrollTo(0, 0)
+                        } else if (currentScrollY >= progressBarScrollDiff / 3 && currentScrollY < progressBarScrollDiff) {
+                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
+                        } else if (currentScrollY < progressBarScrollDiff + (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff) / 3) {
+                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
+                        } else if (currentScrollY < relativeAlbumExtra1ScrollDiff){
+                            binding.scrollView.smoothScrollTo(0, relativeAlbumExtra1ScrollDiff.toInt())
+                        }
+                    }
+                }
+            }
+            return@setOnTouchListener false
+        }
+    }
+
+    private fun updateUI(mediaItem: NowPlayingViewModel.NowPlayingMetadata) {
+        // 播放状态发生变化时，会触发mediaItem的变化
+        if (currentPlayMediaId == mediaItem.id) return
+        currentPlayMediaId = mediaItem.id
+        binding.tvMediaDuration.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(mediaItem.duration)
+        binding.tvMediaAlbumTitle.text = albumTitle
+        binding.tvMediaTitle.text = mediaItem.title
+        binding.tvMediaSubtitle.text = mediaItem.subtitle
+        GlideApp.with(this)
+            .load(mediaItem.albumArtUri)
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(resources.getDimension(R.dimen._24dp).roundToInt())))
+            .into(binding.ivMediaCoverImg)
+
+        binding.topTvMediaAlbumTitle.text = albumTitle
+        binding.topTvMediaTitle.text = mediaItem.title
+        binding.topTvMediaSubtitle.text = mediaItem.subtitle
+        val rate = resources.getDimension(R.dimen._140dp) / resources.getDimension(R.dimen._250dp)
+        GlideApp.with(this)
+            .load(mediaItem.albumArtUri)
+            .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
+            .into(binding.topIvMediaCoverImg)
+//        loadRelativeAlbum(mediaItem.id.toInt())
     }
 
     private fun loadRelativeAlbum(trackId: Int) {
-        binding.layoutRelativeAlbums.rcRelativeAlbums.layoutManager = GridLayoutManager(requireContext(), 6)
-        relativeAlbumAdapter = RelativeAlbumAdapter(emptyList()) {
+//        binding.layoutRelativeAlbums.rcRelativeAlbums.layoutManager = GridLayoutManager(requireContext(), 6)
+//        relativeAlbumAdapter = RelativeAlbumAdapter(emptyList()) {
+//
+//        }
+//        binding.layoutRelativeAlbums.rcRelativeAlbums.adapter = relativeAlbumAdapter
+//
+//        viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
+//            handleResponse(it) { r ->
+//                relativeAlbumAdapter.updateData(r)
+//            }
+//        }
+    }
 
-        }
-        binding.layoutRelativeAlbums.rcRelativeAlbums.adapter = relativeAlbumAdapter
+    private fun handleTransform(scrollY: Int) {
+        currentScrollY = scrollY
+        // 当前播放向上滚动的百分比，由100%逐渐减小到0
+        if (scrollY > SCROLL_THRESHOLD) {
+            var percent: Float = 1f - (scrollY).toFloat() / coverImgY
+            if (percent > 1f) percent = 1f
+            if (percent < 0f) percent = 0f
+            Timber.d("handleTransform:: percent: $percent, ${relativeAlbumExtra1ScrollDiff}, $scrollY")
 
-        viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
-            handleResponse(it) { r ->
-                relativeAlbumAdapter.updateData(r)
+            transformCoverImage(percent)
+            transformAlbumTitle(percent)
+//            transformView(binding.topIvMediaCoverImg, binding.ivMediaCoverImg, percent)
+//            transformView(binding.topTvMediaAlbumTitle, binding.tvMediaAlbumTitle, percent)
+
+            binding.tvMediaTitle.alpha = percent
+            binding.tvMediaSubtitle.alpha = percent
+            binding.tvMediaDuration.alpha = percent
+            binding.tvMeidaPlayPosition.alpha = percent
+            binding.tvMediaSubscribe.alpha = percent
+            binding.btnSubscribe.alpha = percent
+
+//            binding.topTvMediaAlbumTitle.visibility = View.VISIBLE
+
+            // 加载背景
+            if (percent > 0.4f) {
+                binding.topBackground.visibility = View.VISIBLE
+                binding.topBackground.alpha = 1f - (percent - 0.4f) / (1f - 0.4f)
+            } else {
+                binding.topBackground.alpha = 1f
             }
+
+            if (percent <= 0.4f) {
+                val alpha = (0.4f - percent) / 0.4f
+                // 显示top view
+                binding.topTvMediaTitle.visibility = View.VISIBLE
+                binding.topTvMediaSubtitle.visibility = View.VISIBLE
+                binding.topTvMediaTitle.alpha = alpha
+                binding.topTvMediaSubtitle.alpha = alpha
+            }  else {
+//                binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
+                binding.topTvMediaTitle.visibility = View.INVISIBLE
+                binding.topTvMediaSubtitle.visibility = View.INVISIBLE
+            }
+
+            // 滚动到进度条时
+            if (scrollY > progressBarScrollDiff) {
+                binding.topPbMediaProgress.visibility = View.VISIBLE
+                binding.pbMediaProgress.visibility = View.INVISIBLE
+
+//                // 加载top视图
+//                if (percent <= 0.15f) {
+//                    binding.topPbMediaProgress.visibility = View.VISIBLE
+//                    binding.topPbMediaProgress.alpha = (0.15f - percent) / 0.15f
+//
+////                binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
+//                } else {
+//                    binding.topPbMediaProgress.visibility = View.INVISIBLE
+////                binding.topTvMediaRelativeExtra1.visibility = View.INVISIBLE
+//                }
+            } else {
+                binding.topPbMediaProgress.visibility = View.INVISIBLE
+                binding.pbMediaProgress.visibility = View.VISIBLE
+            }
+
+            if (scrollY > relativeAlbumExtra1ScrollDiff) {
+                binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
+                binding.topTvMediaRelativeExtra2.visibility = View.VISIBLE
+                binding.topTvMediaRelativeMore.visibility = View.VISIBLE
+                binding.topBackground2.visibility = View.VISIBLE
+
+                binding.layoutRelativeAlbums.tvMediaRelativeExtra1.visibility = View.INVISIBLE
+                binding.layoutRelativeAlbums.tvMediaRelativeExtra2.visibility = View.INVISIBLE
+                binding.layoutRelativeAlbums.tvMediaRelativeMore.visibility = View.INVISIBLE
+
+            } else {
+                binding.topTvMediaRelativeExtra1.visibility = View.INVISIBLE
+                binding.topTvMediaRelativeExtra2.visibility = View.INVISIBLE
+                binding.topTvMediaRelativeMore.visibility = View.INVISIBLE
+                binding.topBackground2.visibility = View.INVISIBLE
+
+                binding.layoutRelativeAlbums.tvMediaRelativeExtra1.visibility = View.VISIBLE
+                binding.layoutRelativeAlbums.tvMediaRelativeExtra2.visibility = View.VISIBLE
+                binding.layoutRelativeAlbums.tvMediaRelativeMore.visibility = View.VISIBLE
+            }
+        } else {
+            binding.ivMediaCoverImg.visibility = View.VISIBLE
+            binding.tvMediaAlbumTitle.visibility = View.VISIBLE
+
+            // 隐藏top view
+            binding.topIvMediaCoverImg.visibility = View.INVISIBLE
+            binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
+
+            binding.topTvMediaTitle.visibility = View.INVISIBLE
+            binding.topTvMediaSubtitle.visibility = View.INVISIBLE
+            binding.topBackground.visibility = View.INVISIBLE
+            binding.topPbMediaProgress.visibility = View.INVISIBLE
+
         }
     }
 
+    private fun transformCoverImage(percent: Float) {
+        val coverImg = binding.ivMediaCoverImg
+        val topCoverImg = binding.topIvMediaCoverImg
+        coverImg.visibility = View.INVISIBLE
+        topCoverImg.visibility = View.VISIBLE
+        // 设置动画中心
+        topCoverImg.pivotX = 0f
+        topCoverImg.pivotY = 0f
+        topCoverImg.scaleX = 1f + (coverImg.width / topCoverImg.width.toFloat() - 1f) * percent
+        topCoverImg.scaleY = 1f + (coverImg.height / topCoverImg.height.toFloat() - 1f) * percent
+        val yDiff = coverImgY - topCoverImgY
+        topCoverImg.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
+        val xDiff = topCoverImgX - coverImgX
+        topCoverImg.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
+
+    }
+
+    private fun transformAlbumTitle(percent: Float) {
+        val tvAlbumTitle = binding.tvMediaAlbumTitle
+        val topTvAlbumTitle = binding.topTvMediaAlbumTitle
+        topTvAlbumTitle.pivotX = 0f
+        topTvAlbumTitle.pivotY = 0f
+        tvAlbumTitle.visibility = View.INVISIBLE
+        topTvAlbumTitle.visibility = View.VISIBLE
+//        topTvAlbumTitle.scaleX = 1f + (tvAlbumTitle.width / topTvAlbumTitle.width.toFloat() - 1f) * percent
+//        topTvAlbumTitle.scaleY = 1f + (tvAlbumTitle.height / topTvAlbumTitle.height.toFloat() - 1f) * percent
+
+        val yDiff = tvAlbumTitleY - topTvAlbumTitleY
+        topTvAlbumTitle.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
+        val xDiff = topTvAlbumTitleX - tvAlbumTitleX
+        topTvAlbumTitle.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
+
+
+    }
+
+    private fun transformView(
+        animView: View,
+        originView: View,
+        percent: Float,
+//        hasTransformX: Boolean,
+    ) {
+//        val coverImg = binding.ivMediaCoverImg
+//        val topCoverImg = binding.topIvMediaCoverImg
+        originView.visibility = View.INVISIBLE
+        animView.visibility = View.VISIBLE
+        // 设置动画中心
+        animView.pivotX = 0f
+        animView.pivotY = 0f
+        animView.scaleX = 1f + (originView.width / animView.width.toFloat() - 1f) * percent
+        animView.scaleY = 1f + (originView.height / animView.height.toFloat() - 1f) * percent
+        val yDiff = coverImgY - topCoverImgY
+        animView.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
+        val xDiff = topCoverImgX - coverImgX
+        animView.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
+    }
+
     companion object {
-        fun newInstance() = NowPlayingFragment()
+        private const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
+        private const val SCROLL_THRESHOLD = 0
+
+        fun newInstance(albumTitle: String) = NowPlayingFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_ALBUM_TITLE, albumTitle)
+            }
+        }
     }
 }

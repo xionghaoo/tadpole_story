@@ -8,7 +8,7 @@
     android:paddingEnd="@dimen/_114dp">
 
     <TextView
-        android:id="@+id/textView15"
+        android:id="@+id/tv_media_relative_extra_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="听了本节目的人还在听"
@@ -19,34 +19,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/rc_relative_albums"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_500dp"
         android:layout_marginTop="@dimen/_16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView15"/>
+        app:layout_constraintTop_toBottomOf="@+id/tv_media_relative_extra_1"/>
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/textView18"
+        android:id="@+id/tv_media_relative_extra_2"
         android:layout_width="@dimen/_16dp"
         android:layout_height="@dimen/_16dp"
         android:src="@mipmap/ic_more_16"
-        app:layout_constraintBottom_toBottomOf="@+id/textView15"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_media_relative_extra_1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView15" />
+        app:layout_constraintTop_toTopOf="@+id/tv_media_relative_extra_1" />
 
     <TextView
-        android:id="@+id/textView20"
+        android:id="@+id/tv_media_relative_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="更多"
         android:layout_marginEnd="@dimen/_4dp"
         android:textSize="@dimen/_22sp"
         android:textColor="@color/color_42444B"
-        app:layout_constraintBottom_toBottomOf="@+id/textView18"
-        app:layout_constraintEnd_toStartOf="@+id/textView18"
-        app:layout_constraintTop_toTopOf="@+id/textView18" />
+        app:layout_constraintBottom_toBottomOf="@+id/tv_media_relative_extra_2"
+        app:layout_constraintEnd_toStartOf="@+id/tv_media_relative_extra_2"
+        app:layout_constraintTop_toTopOf="@+id/tv_media_relative_extra_2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,7 +10,8 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="visible">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -23,17 +24,22 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/btn_media_album_title"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_media_album_title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                tools:text="猴子警长探案集-第三季|侦探推理|宝宝巴士"
-                android:textSize="@dimen/_30sp"
-                android:textColor="@color/color_07070D"
-                android:textStyle="bold"
                 android:layout_marginStart="@dimen/_32dp"
+                android:textColor="@color/color_07070D"
+                android:textSize="@dimen/_30sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_marginEnd="@dimen/_118dp"
                 app:layout_constraintBottom_toBottomOf="@+id/v_back"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/v_back"
-                app:layout_constraintTop_toTopOf="@+id/v_back" />
+                app:layout_constraintTop_toTopOf="@+id/v_back"
+                tools:text="猴子警长探案集-第三季|侦探推理|宝宝巴士" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/container_player"
@@ -190,7 +196,7 @@
                     app:layout_constraintTop_toTopOf="@+id/btn_media_play" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/textView30"
+                    android:id="@+id/btn_media_prev_15s"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:layout_marginStart="@dimen/_28dp"
@@ -200,44 +206,44 @@
                     app:layout_constraintTop_toTopOf="@+id/btn_media_play" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/textView31"
+                    android:id="@+id/btn_media_next_15s"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:src="@mipmap/ic_media_next_15s"
                     android:layout_marginStart="@dimen/_27dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
-                    app:layout_constraintStart_toEndOf="@+id/textView30"
-                    app:layout_constraintTop_toTopOf="@+id/textView30" />
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_media_prev_15s"
+                    app:layout_constraintStart_toEndOf="@+id/btn_media_prev_15s"
+                    app:layout_constraintTop_toTopOf="@+id/btn_media_prev_15s" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/textView32"
+                    android:id="@+id/btn_media_multiple"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:layout_marginStart="@dimen/_41dp"
                     android:src="@mipmap/ic_media_multiple"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
-                    app:layout_constraintStart_toEndOf="@+id/textView31"
-                    app:layout_constraintTop_toTopOf="@+id/textView31" />
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_media_next_15s"
+                    app:layout_constraintStart_toEndOf="@+id/btn_media_next_15s"
+                    app:layout_constraintTop_toTopOf="@+id/btn_media_next_15s" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/textView33"
+                    android:id="@+id/btn_media_catelog"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:layout_marginEnd="@dimen/_122dp"
                     android:src="@mipmap/ic_media_folder"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView32"
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_media_multiple"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView32" />
+                    app:layout_constraintTop_toTopOf="@+id/btn_media_multiple" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/textView34"
+                    android:id="@+id/btn_media_timing"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:layout_marginEnd="@dimen/_16dp"
                     android:src="@mipmap/ic_media_clock_52"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView33"
-                    app:layout_constraintEnd_toStartOf="@+id/textView33"
-                    app:layout_constraintTop_toTopOf="@+id/textView33" />
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_media_catelog"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_media_catelog"
+                    app:layout_constraintTop_toTopOf="@+id/btn_media_catelog" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -264,8 +270,31 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_container"
+        android:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_400dp">
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/top_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            android:background="@color/color_main_background"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/top_pb_media_progress"/>
+
+        <View
+            android:id="@+id/top_background2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            android:background="@color/color_main_background"
+            app:layout_constraintTop_toBottomOf="@+id/top_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/top_placeholder"/>
 
         <View
             android:id="@+id/top_v_back"
@@ -287,40 +316,179 @@
 
         <TextView
             android:id="@+id/top_tv_media_album_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="猴子警长探案集-第三季|侦探推理|宝宝巴"
             android:layout_marginStart="@dimen/_16dp"
             android:layout_marginTop="@dimen/_4dp"
+            android:textColor="@color/color_0A1A2A"
             android:textSize="@dimen/_28sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:visibility="invisible"
-            android:textColor="@color/color_0A1A2A"
+            app:layout_constraintEnd_toEndOf="@+id/top_btn_subscribe"
             app:layout_constraintStart_toEndOf="@+id/top_iv_media_cover_img"
-            app:layout_constraintTop_toTopOf="@+id/top_iv_media_cover_img" />
+            app:layout_constraintTop_toTopOf="@+id/top_iv_media_cover_img"
+            tools:text="猴子警长探案集-第三季|侦探推理|宝宝巴" />
 
         <TextView
             android:id="@+id/top_tv_media_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="宝宝巴士-pony妈妈"
-            android:textSize="@dimen/_24sp"
             android:textColor="@color/color_515151"
+            android:textSize="@dimen/_24sp"
+            android:layout_marginEnd="@dimen/_20dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/top_btn_subscribe"
             app:layout_constraintStart_toStartOf="@+id/top_tv_media_album_title"
-            app:layout_constraintTop_toBottomOf="@+id/top_tv_media_album_title" />
+            app:layout_constraintTop_toBottomOf="@+id/top_tv_media_album_title"
+            tools:text="宝宝巴士-pony妈妈" />
 
         <TextView
             android:id="@+id/top_tv_media_subtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="pony妈妈讲猴子警长探案集"
+            android:layout_marginBottom="@dimen/_14dp"
             android:textColor="@color/color_5E5F62"
             android:textSize="@dimen/_18sp"
-            android:layout_marginBottom="@dimen/_14dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/top_iv_media_cover_img"
-            app:layout_constraintStart_toStartOf="@+id/top_tv_media_album_title" />
+            app:layout_constraintEnd_toEndOf="@+id/top_tv_media_title"
+            app:layout_constraintStart_toStartOf="@+id/top_tv_media_album_title"
+            tools:text="pony妈妈讲猴子警长探案集" />
+
+        <LinearLayout
+            android:id="@+id/top_btn_subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_58dp"
+            android:layout_marginBottom="@dimen/_21dp"
+            android:background="@drawable/shape_btn_subscribe"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/_22dp"
+            android:paddingEnd="@dimen/_22dp"
+            android:layout_marginEnd="@dimen/_129dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/top_iv_media_cover_img"
+            app:layout_constraintEnd_toStartOf="@+id/top_btn_media_play">
+
+            <ImageView
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
+                android:src="@mipmap/ic_subscribe_30" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8dp"
+                android:paddingStart="@dimen/_10dp"
+                android:paddingEnd="@dimen/_10dp"
+                android:text="订阅"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_24sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginEnd="@dimen/_68dp"
+            app:layout_constraintBottom_toBottomOf="@+id/top_iv_media_cover_img"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/top_iv_media_cover_img" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="@dimen/_52dp"
+            android:layout_height="@dimen/_52dp"
+            android:layout_marginEnd="@dimen/_32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView16"
+            app:layout_constraintEnd_toStartOf="@+id/textView16"
+            app:layout_constraintTop_toTopOf="@+id/textView16" />
+
+        <TextView
+            android:id="@+id/top_btn_media_play"
+            android:layout_width="@dimen/_74dp"
+            android:layout_height="@dimen/_74dp"
+            android:layout_marginEnd="@dimen/_32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView21"
+            app:layout_constraintEnd_toStartOf="@+id/textView21"
+            app:layout_constraintTop_toTopOf="@+id/textView21" />
+
+        <SeekBar
+            android:id="@+id/top_pb_media_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:splitTrack="false"
+            android:max="500"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:maxHeight="@dimen/_10dp"
+            android:minHeight="@dimen/_10dp"
+            android:indeterminateOnly="false"
+            android:thumb="@android:color/transparent"
+            android:visibility="invisible"
+            android:indeterminateDrawable="@color/colorAccent"
+            android:progressDrawable="@drawable/seekbar_progress_drawable"
+            android:layout_marginTop="@dimen/_16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_iv_media_cover_img" />
+
+        <TextView
+            android:id="@+id/top_tv_media_relative_extra_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_114dp"
+            android:layout_marginTop="@dimen/_9dp"
+            android:text="听了本节目的人还在听"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_28sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_pb_media_progress" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/top_tv_media_relative_extra_2"
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:src="@mipmap/ic_more_16"
+            android:layout_marginEnd="@dimen/_114dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/top_tv_media_relative_extra_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/top_tv_media_relative_extra_1" />
+
+        <TextView
+            android:id="@+id/top_tv_media_relative_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="更多"
+            android:visibility="invisible"
+            android:layout_marginEnd="@dimen/_4dp"
+            android:textSize="@dimen/_22sp"
+            android:textColor="@color/color_42444B"
+            app:layout_constraintBottom_toBottomOf="@+id/top_tv_media_relative_extra_2"
+            app:layout_constraintEnd_toStartOf="@+id/top_tv_media_relative_extra_2"
+            app:layout_constraintTop_toTopOf="@+id/top_tv_media_relative_extra_2" />
+
+        <View
+            android:id="@+id/top_placeholder"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_150dp"
+            android:layout_marginTop="@dimen/_10dp"
+            app:layout_constraintTop_toBottomOf="@+id/top_tv_media_relative_extra_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

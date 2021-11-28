@@ -74,7 +74,7 @@ class MainActivity : BaseActivity() {
         val rcAlbumList = layout.findViewById<RecyclerView>(R.id.rc_album_list)
         rcAlbumList.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         rcAlbumList.adapter = RecommendAlbumAdapter(albums) { item ->
-            AlbumDetailActivity.start(this, item.id, item.include_track_count.toInt())
+            AlbumDetailActivity.start(this, item.id, item.include_track_count.toInt(), item.album_title.orEmpty())
         }
         binding.llContentList.addView(layout)
     }

@@ -21,11 +21,13 @@ class AlbumDetailActivity : BaseActivity() {
     companion object {
         private const val EXTRA_ALBUM_ID = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.EXTRA_ALBUM_ID"
         private const val EXTRA_TOTAL = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.EXTRA_TOTAL"
+        private const val EXTRA_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.EXTRA_ALBUM_TITLE"
 
-        fun start(context: Context?, albumId: Int, total: Int) {
+        fun start(context: Context?, albumId: Int, total: Int, albumTitle: String) {
             context?.startActivity(Intent(context, AlbumDetailActivity::class.java).apply {
                 putExtra(EXTRA_ALBUM_ID, albumId)
                 putExtra(EXTRA_TOTAL, total)
+                putExtra(EXTRA_ALBUM_TITLE, albumTitle)
             })
         }
     }
@@ -40,6 +42,10 @@ class AlbumDetailActivity : BaseActivity() {
         intent.getIntExtra(EXTRA_TOTAL, -1)
     }
 
+    private val albumTitle: String by lazy {
+        intent.getStringExtra(EXTRA_ALBUM_TITLE) ?: ""
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAlbumDetailBinding.inflate(layoutInflater)
@@ -49,7 +55,7 @@ class AlbumDetailActivity : BaseActivity() {
             onBackPressed()
         }
 
-        replaceFragment(TrackListFragment.newInstance(albumId.toString(), total), R.id.fragment_container)
+        replaceFragment(TrackListFragment.newInstance(albumId.toString(), total, albumTitle), R.id.fragment_container)
     }
 
 }

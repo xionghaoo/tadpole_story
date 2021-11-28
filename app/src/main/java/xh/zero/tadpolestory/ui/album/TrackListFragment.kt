@@ -32,6 +32,10 @@ class TrackListFragment : Fragment() {
         arguments?.getInt(ARG_TOTAL, 0) ?: 0
     }
 
+    private val albumTitle: String by lazy {
+        arguments?.getString(ARG_ALBUM_TITLE) ?: ""
+    }
+
     private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
 
@@ -51,7 +55,8 @@ class TrackListFragment : Fragment() {
         adapter = TrackAdapter(emptyList()) { item ->
             viewModel.playMedia(item, pauseAllowed = false)
             // 显示正在播放页面
-            startPlainActivity(NowPlayingActivity::class.java)
+//            startPlainActivity(NowPlayingActivity::class.java)
+            NowPlayingActivity.start(context, albumTitle)
         }
         binding.rcTrackList.adapter = adapter
         loadData()
@@ -70,11 +75,13 @@ class TrackListFragment : Fragment() {
 
         private const val ARG_ALBUM_ID = "ARG_ALBUM_ID"
         private const val ARG_TOTAL = "ARG_TOTAL"
+        private const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
 
-        fun newInstance(albumId: String, total: Int) = TrackListFragment().apply {
+        fun newInstance(albumId: String, total: Int, albumTitle: String) = TrackListFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ALBUM_ID, albumId)
                 putInt(ARG_TOTAL, total)
+                putString(ARG_ALBUM_TITLE, albumTitle)
             }
         }
     }
