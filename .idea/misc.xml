@@ -6,6 +6,7 @@
         <entry key="..\:/Projects/android/tadpole_story/app/src/main/res/drawable/ic_play_arrow_black_24dp.xml" value="0.2989583333333333" />
         <entry key="app/src/main/res/drawable/color_seekbar_progress.xml" value="0.30092592592592593" />
         <entry key="app/src/main/res/drawable/seekbar_progress_drawable.xml" value="0.30092592592592593" />
+        <entry key="app/src/main/res/drawable/seekbar_progress_drawable_top.xml" value="0.24166666666666667" />
         <entry key="app/src/main/res/drawable/seekbar_slider_1.xml" value="0.2361111111111111" />
         <entry key="app/src/main/res/drawable/seekbar_slider_2.xml" value="0.2361111111111111" />
         <entry key="app/src/main/res/drawable/seekbar_slider_drawable.xml" value="0.2361111111111111" />

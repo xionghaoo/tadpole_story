@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.core.graphics.drawable.updateBounds
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -45,6 +47,11 @@ class NowPlayingFragment : Fragment() {
     private var tvAlbumTitleX = 0f
     private var tvAlbumTitleY = 0f
 
+    private var topPbMediaProgressX = 0f
+    private var topPbMediaProgressY = 0f
+    private var pbMediaProgressX = 0f
+    private var pbMediaProgressY = 0f
+
     private var progressBarScrollDiff = 0f
     private var relativeAlbumExtra1ScrollDiff = 0f
 
@@ -78,13 +85,7 @@ class NowPlayingFragment : Fragment() {
             binding.btnMediaPlay.setImageResource(res)
         }
 
-        isTouchingSeekBar = false
-        viewModel.mediaProgress.observe(viewLifecycleOwner) { progress ->
-            if (!isTouchingSeekBar) {
-                binding.pbMediaProgress.setProgress(progress, true)
-                binding.topPbMediaProgress.setProgress(progress, true)
-            }
-        }
+        initialProgressBar()
 
         binding.btnMediaPlay.setOnClickListener {
             viewModel.mediaMetadata.value?.let {
@@ -121,29 +122,6 @@ class NowPlayingFragment : Fragment() {
             )
         }
 
-        binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                isTouchingSeekBar = true
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                isTouchingSeekBar = false
-                viewModel.mediaMetadata.value?.let {
-                    val posMs = (it.duration * (seekBar?.progress ?: 0f).toFloat() / 500f).roundToLong()
-                    viewModel.seekToPosition(
-                        if (posMs < 0) 0 else if (posMs > it.duration) it.duration else posMs
-                    ) {
-                        viewModel.rePlay()
-                    }
-                }
-            }
-        })
-
         // 初始化View位置参数
         binding.root.viewTreeObserver.addOnGlobalLayoutListener {
             if (!hasInit) {
@@ -159,6 +137,11 @@ class NowPlayingFragment : Fragment() {
                 topTvAlbumTitleY = binding.topTvMediaAlbumTitle.y
                 tvAlbumTitleX = binding.tvMediaAlbumTitle.x
                 tvAlbumTitleY = binding.tvMediaAlbumTitle.y
+
+                pbMediaProgressX = binding.pbMediaProgress.x
+                pbMediaProgressY = binding.pbMediaProgress.y + binding.containerPlayer.y
+                topPbMediaProgressX = binding.topPbMediaProgress.x
+                topPbMediaProgressY = binding.topPbMediaProgress.y
 
                 progressBarScrollDiff = binding.pbMediaProgress.y + binding.containerPlayer.y - binding.topPbMediaProgress.y
                 relativeAlbumExtra1ScrollDiff = binding.layoutRelativeAlbums.tvMediaRelativeExtra1.y +
@@ -255,6 +238,80 @@ class NowPlayingFragment : Fragment() {
         }
     }
 
+    private fun initialProgressBar() {
+        isTouchingSeekBar = false
+        viewModel.mediaProgress.observe(viewLifecycleOwner) { progress ->
+            if (!isTouchingSeekBar) {
+                binding.pbMediaProgress.setProgress(progress, true)
+                binding.topPbMediaProgress.setProgress(progress, true)
+                binding.topPbMediaProgress2.setProgress(progress, true)
+            }
+        }
+
+        binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = true
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = false
+                if (binding.pbMediaProgress.isVisible) {
+                    seekToPosition(seekBar)
+                }
+            }
+        })
+
+        binding.topPbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = true
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = false
+                if (binding.topPbMediaProgress.isVisible) {
+                    seekToPosition(seekBar)
+                }
+            }
+        })
+
+        binding.topPbMediaProgress2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = true
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isTouchingSeekBar = false
+                if (binding.topPbMediaProgress2.isVisible) {
+                   seekToPosition(seekBar)
+                }
+            }
+        })
+    }
+
+    private fun seekToPosition(seekBar: SeekBar?) {
+        viewModel.mediaMetadata.value?.let {
+            val posMs = (it.duration * (seekBar?.progress ?: 0f).toFloat() / 500f).roundToLong()
+            viewModel.seekToPosition(
+                if (posMs < 0) 0 else if (posMs > it.duration) it.duration else posMs
+            ) {
+                viewModel.rePlay()
+            }
+        }
+    }
+
     private fun handleTransform(scrollY: Int) {
         currentScrollY = scrollY
         // 当前播放向上滚动的百分比，由100%逐渐减小到0
@@ -266,8 +323,7 @@ class NowPlayingFragment : Fragment() {
 
             transformCoverImage(percent)
             transformAlbumTitle(percent)
-//            transformView(binding.topIvMediaCoverImg, binding.ivMediaCoverImg, percent)
-//            transformView(binding.topTvMediaAlbumTitle, binding.tvMediaAlbumTitle, percent)
+            transformProgressBar(percent)
 
             binding.tvMediaTitle.alpha = percent
             binding.tvMediaSubtitle.alpha = percent
@@ -300,25 +356,15 @@ class NowPlayingFragment : Fragment() {
             }
 
             // 滚动到进度条时
-            if (scrollY > progressBarScrollDiff) {
-                binding.topPbMediaProgress.visibility = View.VISIBLE
-                binding.pbMediaProgress.visibility = View.INVISIBLE
+//            if (scrollY > progressBarScrollDiff) {
+//                binding.topPbMediaProgress.visibility = View.VISIBLE
+//                binding.pbMediaProgress.visibility = View.INVISIBLE
+//            } else {
+//                binding.topPbMediaProgress.visibility = View.INVISIBLE
+//                binding.pbMediaProgress.visibility = View.VISIBLE
+//            }
 
-//                // 加载top视图
-//                if (percent <= 0.15f) {
-//                    binding.topPbMediaProgress.visibility = View.VISIBLE
-//                    binding.topPbMediaProgress.alpha = (0.15f - percent) / 0.15f
-//
-////                binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
-//                } else {
-//                    binding.topPbMediaProgress.visibility = View.INVISIBLE
-////                binding.topTvMediaRelativeExtra1.visibility = View.INVISIBLE
-//                }
-            } else {
-                binding.topPbMediaProgress.visibility = View.INVISIBLE
-                binding.pbMediaProgress.visibility = View.VISIBLE
-            }
-
+            // 滚到到推荐内容
             if (scrollY > relativeAlbumExtra1ScrollDiff) {
                 binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.VISIBLE
@@ -329,6 +375,9 @@ class NowPlayingFragment : Fragment() {
                 binding.layoutRelativeAlbums.tvMediaRelativeExtra2.visibility = View.INVISIBLE
                 binding.layoutRelativeAlbums.tvMediaRelativeMore.visibility = View.INVISIBLE
 
+                // 显示第三状态进度条
+                binding.topPbMediaProgress2.visibility = View.VISIBLE
+                binding.topPbMediaProgress.visibility = View.INVISIBLE
             } else {
                 binding.topTvMediaRelativeExtra1.visibility = View.INVISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.INVISIBLE
@@ -338,10 +387,15 @@ class NowPlayingFragment : Fragment() {
                 binding.layoutRelativeAlbums.tvMediaRelativeExtra1.visibility = View.VISIBLE
                 binding.layoutRelativeAlbums.tvMediaRelativeExtra2.visibility = View.VISIBLE
                 binding.layoutRelativeAlbums.tvMediaRelativeMore.visibility = View.VISIBLE
+
+                // 隐藏第三状态进度条
+                binding.topPbMediaProgress2.visibility = View.INVISIBLE
+                binding.topPbMediaProgress.visibility = View.VISIBLE
             }
         } else {
             binding.ivMediaCoverImg.visibility = View.VISIBLE
             binding.tvMediaAlbumTitle.visibility = View.VISIBLE
+            binding.pbMediaProgress.visibility = View.VISIBLE
 
             // 隐藏top view
             binding.topIvMediaCoverImg.visibility = View.INVISIBLE
@@ -386,8 +440,18 @@ class NowPlayingFragment : Fragment() {
         topTvAlbumTitle.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
         val xDiff = topTvAlbumTitleX - tvAlbumTitleX
         topTvAlbumTitle.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
+    }
 
+    private fun transformProgressBar(percent: Float) {
+        val pbMediaProgress = binding.pbMediaProgress
+        val topPbMediaProgress = binding.topPbMediaProgress
+//        topPbMediaProgress.pivotX = 0f
+        pbMediaProgress.visibility = View.INVISIBLE
+        topPbMediaProgress.visibility = View.VISIBLE
+        topPbMediaProgress.scaleX = 1f + (pbMediaProgress.width / topPbMediaProgress.width.toFloat() - 1f) * percent
 
+        val yDiff = pbMediaProgressY - topPbMediaProgressY
+        topPbMediaProgress.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
     }
 
     private fun transformView(
