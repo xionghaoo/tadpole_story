@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class NowPlayingViewModel @Inject constructor(
+    private val repo: Repository,
     musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
@@ -66,6 +67,8 @@ class NowPlayingViewModel @Inject constructor(
     val switchState = MutableLiveData<Pair<Boolean, Boolean>>().apply {
         postValue(Pair(first = false, second = true))
     }
+
+    fun getRelativeAlbum(trackId: Int) = repo.getRelativeAlbum(trackId)
 
     /**
      * When the session's [PlaybackStateCompat] changes, the [mediaItems] need to be updated

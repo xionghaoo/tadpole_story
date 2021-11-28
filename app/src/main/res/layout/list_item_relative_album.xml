@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="@dimen/_160dp"
+    android:layout_height="@dimen/_224dp"
+    android:layout_marginTop="@dimen/_24dp"
+    android:background="@drawable/shape_home_album"
+    android:gravity="center_horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_album_icon"
+        android:layout_width="@dimen/_160dp"
+        android:layout_height="@dimen/_160dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_album_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_7dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingStart="@dimen/_10dp"
+        android:paddingEnd="@dimen/_10dp"
+        android:singleLine="true"
+        android:textColor="@color/color_0A1A2A"
+        android:textSize="@dimen/_20sp"
+        android:textStyle="bold"
+        tools:text="宝宝巴士" />
+
+    <TextView
+        android:id="@+id/tv_album_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingStart="@dimen/_10dp"
+        android:paddingEnd="@dimen/_10dp"
+        android:singleLine="true"
+        android:textColor="@color/color_9B9B9B"
+        android:textSize="@dimen/_16sp"
+        tools:text="宝宝巴士" />
+
+</LinearLayout>

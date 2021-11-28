@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,7 @@ import timber.log.Timber
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
+import xh.zero.tadpolestory.handleResponse
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -31,6 +33,8 @@ class NowPlayingFragment : Fragment() {
     private var originY = 0f
     private var targetX = 0f
     private var targetY = 0f
+
+    private lateinit var relativeAlbumAdapter: RelativeAlbumAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +64,9 @@ class NowPlayingFragment : Fragment() {
                 .load(mediaItem.albumArtUri)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
                 .into(binding.topIvMediaCoverImg)
+
+            loadRelativeAlbum(mediaItem.id.toInt())
+
         }
 
         viewModel.mediaPosition.observe(viewLifecycleOwner) { pos ->
@@ -113,6 +120,7 @@ class NowPlayingFragment : Fragment() {
 
         binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -147,22 +155,11 @@ class NowPlayingFragment : Fragment() {
         }
 
         binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//            Timber.d("scrollY = $scrollY, oldScrollY = $oldScrollY")
-            // 0 -> topIvMediaCoverImg.y
             if (scrollY > 0) {
-//                binding.topIvMediaCoverImg.visibility = View.VISIBLE
-                binding.ivMediaCoverImg.visibility = View.INVISIBLE
-
                 // 起始状态 0 -> topIvMediaCoverImg.y
                 val target = binding.ivMediaCoverImg
                 val origin = binding.topIvMediaCoverImg
-                // 1- 20 / 200 = 0.9
-                // 1- 40 / 200 = 0.8
-                // scale
-                // target 300 origin 200  scaleX 1.5 -> 1  1 + (1.5 - 1) * 0.9
-                //
-
-
+                target.visibility = View.INVISIBLE
                 var percent: Float = 1f - (scrollY).toFloat() / targetY
                 if (percent > 1f) percent = 1f
                 if (percent < 0f) percent = 0f
@@ -171,8 +168,6 @@ class NowPlayingFragment : Fragment() {
                 origin.visibility = View.VISIBLE
                 origin.scaleX = 1f + (target.width / origin.width.toFloat() - 1f) * percent
                 origin.scaleY = 1f + (target.height / origin.height.toFloat() - 1f) * percent
-//                origin.scaleX = target.width / origin.width.toFloat()
-//                origin.scaleY = target.height / origin.height.toFloat()
                 val yDiff = targetY - originY
                 origin.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
                 val xDiff = originX - targetX
@@ -201,21 +196,21 @@ class NowPlayingFragment : Fragment() {
                 binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
             }
         }
+
     }
 
-    private fun initialTopLayout() {
-        val target = binding.ivMediaCoverImg
-        val origin = binding.topIvMediaCoverImg
-        origin.visibility = View.VISIBLE
-        origin.scaleX = target.width / origin.width.toFloat()
-        origin.scaleY = target.height / origin.height.toFloat()
-        origin.translationY = target.y
-        origin.translationX = target.x
-        origin.animate()
-            .scaleX(0f)
-            .scaleY(0f)
-            .translationX(0f)
-            .translationY(0f)
+    private fun loadRelativeAlbum(trackId: Int) {
+        binding.layoutRelativeAlbums.rcRelativeAlbums.layoutManager = GridLayoutManager(requireContext(), 6)
+        relativeAlbumAdapter = RelativeAlbumAdapter(emptyList()) {
+
+        }
+        binding.layoutRelativeAlbums.rcRelativeAlbums.adapter = relativeAlbumAdapter
+
+        viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
+            handleResponse(it) { r ->
+                relativeAlbumAdapter.updateData(r)
+            }
+        }
     }
 
     companion object {

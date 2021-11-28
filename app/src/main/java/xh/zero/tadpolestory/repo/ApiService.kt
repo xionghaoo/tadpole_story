@@ -86,4 +86,9 @@ interface ApiService {
      */
     @GET("$PREFIX/oauth2/secure_access_token")
     fun getTemporaryToken() : LiveData<ApiResponse<TemporaryToken>>
+
+    @GET("$PREFIX/v2/tracks/relative_album")
+    fun getRelativeAlbum(
+        @Query("track_id") trackId: Int?
+    ) : LiveData<ApiResponse<List<Album>>>
 }

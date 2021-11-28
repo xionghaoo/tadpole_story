@@ -50,5 +50,9 @@ class Repository @Inject constructor(
         apiService.getTemporaryToken()
     }
 
+    fun getRelativeAlbum(trackId: Int?) = remoteRequestStrategy {
+        apiService.getRelativeAlbum(trackId)
+    }
+
     fun getVoiceListFormAlbum(albumId: String, page: Int) = apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
 }
