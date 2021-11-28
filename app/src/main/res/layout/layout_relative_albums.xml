@@ -22,8 +22,10 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/rc_relative_albums"
         android:layout_width="0dp"
-        android:layout_height="@dimen/_500dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_16dp"
+        app:justifyContent="flex_start"
+        app:flexWrap="wrap"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

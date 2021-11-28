@@ -6,14 +6,20 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.flexbox.FlexboxItemDecoration
+import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
+import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
@@ -208,7 +214,7 @@ class NowPlayingFragment : Fragment() {
             .load(mediaItem.albumArtUri)
             .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
             .into(binding.topIvMediaCoverImg)
-//        loadRelativeAlbum(mediaItem.id.toInt())
+        loadRelativeAlbum(mediaItem.id.toInt())
     }
 
     private fun loadRelativeAlbum(trackId: Int) {
@@ -217,12 +223,36 @@ class NowPlayingFragment : Fragment() {
 //
 //        }
 //        binding.layoutRelativeAlbums.rcRelativeAlbums.adapter = relativeAlbumAdapter
-//
-//        viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
-//            handleResponse(it) { r ->
+        viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
+            handleResponse(it) { r ->
 //                relativeAlbumAdapter.updateData(r)
-//            }
-//        }
+                val container = binding.layoutRelativeAlbums.rcRelativeAlbums
+                val itemDecoration = FlexboxItemDecoration(requireContext())
+                itemDecoration.setOrientation(FlexboxItemDecoration.HORIZONTAL)
+                container.removeAllViews()
+                r.forEachIndexed { index, item ->
+                    val v = LayoutInflater.from(requireContext()).inflate(R.layout.list_item_relative_album, null)
+                    v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
+                    v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro
+                    Glide.with(v.context)
+                        .load(item.cover_url_large)
+                        .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._18dp).roundToInt())))
+                        .into(v.findViewById<ImageView>(R.id.iv_album_icon))
+
+                    v.setOnClickListener {
+                        ToastUtil.show(requireContext(), "查看专辑详情")
+                    }
+                    container.addView(v)
+                    // horizon = 16, vertical = 12
+                    val lp = (v.layoutParams as FlexboxLayout.LayoutParams)
+                    lp.width = resources.getDimension(R.dimen._160dp).toInt()
+                    lp.height = resources.getDimension(R.dimen._224dp).toInt()
+                    lp.topMargin = resources.getDimension(R.dimen._12dp).toInt()
+                    lp.bottomMargin = resources.getDimension(R.dimen._12dp).toInt()
+                    lp.marginStart = if (index % 6 == 0) 0 else resources.getDimension(R.dimen._16dp).toInt()
+                }
+            }
+        }
     }
 
     private fun handleTransform(scrollY: Int) {

@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:layout_width="@dimen/_160dp"
     android:layout_height="@dimen/_224dp"
-    android:layout_marginTop="@dimen/_24dp"
     android:background="@drawable/shape_home_album"
     android:gravity="center_horizontal">
 
