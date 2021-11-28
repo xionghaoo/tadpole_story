@@ -395,32 +395,38 @@
                 android:textSize="@dimen/_24sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView16"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/top_btn_media_multiple"
             android:layout_width="@dimen/_52dp"
             android:layout_height="@dimen/_52dp"
             android:layout_marginEnd="@dimen/_68dp"
+            android:src="@mipmap/ic_media_multiple"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/top_iv_media_cover_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/top_iv_media_cover_img" />
 
-        <TextView
-            android:id="@+id/textView21"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/top_btn_media_next_15s"
             android:layout_width="@dimen/_52dp"
             android:layout_height="@dimen/_52dp"
             android:layout_marginEnd="@dimen/_32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView16"
-            app:layout_constraintEnd_toStartOf="@+id/textView16"
-            app:layout_constraintTop_toTopOf="@+id/textView16" />
+            android:src="@mipmap/ic_media_next_15s"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/top_btn_media_multiple"
+            app:layout_constraintEnd_toStartOf="@+id/top_btn_media_multiple"
+            app:layout_constraintTop_toTopOf="@+id/top_btn_media_multiple" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/top_btn_media_play"
             android:layout_width="@dimen/_74dp"
             android:layout_height="@dimen/_74dp"
             android:layout_marginEnd="@dimen/_32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView21"
-            app:layout_constraintEnd_toStartOf="@+id/textView21"
-            app:layout_constraintTop_toTopOf="@+id/textView21" />
+            android:src="@mipmap/ic_media_play"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/top_btn_media_next_15s"
+            app:layout_constraintEnd_toStartOf="@+id/top_btn_media_next_15s"
+            app:layout_constraintTop_toTopOf="@+id/top_btn_media_next_15s" />
 
         <SeekBar
             android:id="@+id/top_pb_media_progress_2"

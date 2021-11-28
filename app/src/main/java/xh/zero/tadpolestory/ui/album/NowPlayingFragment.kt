@@ -21,11 +21,13 @@ import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
+import xh.zero.core.utils.SystemUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
+import xh.zero.tadpolestory.repo.data.Album
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -58,7 +60,6 @@ class NowPlayingFragment : Fragment() {
     private var currentPlayMediaId: String? = null
     private var currentScrollY: Int = 0
 
-    private lateinit var relativeAlbumAdapter: RelativeAlbumAdapter
     private val albumTitle: String by lazy {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
     }
@@ -83,11 +84,17 @@ class NowPlayingFragment : Fragment() {
         }
         viewModel.mediaButtonRes.observe(viewLifecycleOwner) { res ->
             binding.btnMediaPlay.setImageResource(res)
+            binding.topBtnMediaPlay.setImageResource(res)
         }
 
         initialProgressBar()
 
         binding.btnMediaPlay.setOnClickListener {
+            viewModel.mediaMetadata.value?.let {
+                viewModel.playMediaId(it.id)
+            }
+        }
+        binding.topBtnMediaPlay.setOnClickListener {
             viewModel.mediaMetadata.value?.let {
                 viewModel.playMediaId(it.id)
             }
@@ -101,6 +108,7 @@ class NowPlayingFragment : Fragment() {
             viewModel.next()
         }
 
+        // 上一曲，下一曲按钮状态
         viewModel.switchState.observe(viewLifecycleOwner) {
             binding.btnMediaPre.setImageResource(
                 if (it.first) {
@@ -166,8 +174,9 @@ class NowPlayingFragment : Fragment() {
                             binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
                         } else if (currentScrollY < progressBarScrollDiff + (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff) / 3) {
                             binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
-                        } else if (currentScrollY < relativeAlbumExtra1ScrollDiff){
+                        } else if (currentScrollY < relativeAlbumExtra1ScrollDiff) {
                             binding.scrollView.smoothScrollTo(0, relativeAlbumExtra1ScrollDiff.toInt())
+
                         }
                     }
                 }
@@ -201,14 +210,8 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun loadRelativeAlbum(trackId: Int) {
-//        binding.layoutRelativeAlbums.rcRelativeAlbums.layoutManager = GridLayoutManager(requireContext(), 6)
-//        relativeAlbumAdapter = RelativeAlbumAdapter(emptyList()) {
-//
-//        }
-//        binding.layoutRelativeAlbums.rcRelativeAlbums.adapter = relativeAlbumAdapter
         viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
-//                relativeAlbumAdapter.updateData(r)
                 val container = binding.layoutRelativeAlbums.rcRelativeAlbums
                 val itemDecoration = FlexboxItemDecoration(requireContext())
                 itemDecoration.setOrientation(FlexboxItemDecoration.HORIZONTAL)
@@ -233,6 +236,18 @@ class NowPlayingFragment : Fragment() {
                     lp.topMargin = resources.getDimension(R.dimen._12dp).toInt()
                     lp.bottomMargin = resources.getDimension(R.dimen._12dp).toInt()
                     lp.marginStart = if (index % 6 == 0) 0 else resources.getDimension(R.dimen._16dp).toInt()
+                }
+
+                if (r.isNotEmpty()) {
+                    // 填充不够滚动的空间
+                    val display = SystemUtil.displayInfo(requireContext())
+                    val requireRelativeHeight = display.heightPixels - binding.topBackground2.y.toInt() - binding.topBackground2.height
+                    val actualRelativeHeight = resources.getDimension(R.dimen._248dp).toInt() * (r.size / 6 + 1)
+                    if (actualRelativeHeight < requireRelativeHeight) {
+                        container.setPadding(
+                            0, 0, 0, requireRelativeHeight - actualRelativeHeight
+                        )
+                    }
                 }
             }
         }
@@ -316,7 +331,7 @@ class NowPlayingFragment : Fragment() {
         currentScrollY = scrollY
         // 当前播放向上滚动的百分比，由100%逐渐减小到0
         if (scrollY > SCROLL_THRESHOLD) {
-            var percent: Float = 1f - (scrollY).toFloat() / coverImgY
+            var percent: Float = 1f - scrollY.toFloat() / coverImgY
             if (percent > 1f) percent = 1f
             if (percent < 0f) percent = 0f
             Timber.d("handleTransform:: percent: $percent, ${relativeAlbumExtra1ScrollDiff}, $scrollY")
@@ -332,8 +347,6 @@ class NowPlayingFragment : Fragment() {
             binding.tvMediaSubscribe.alpha = percent
             binding.btnSubscribe.alpha = percent
 
-//            binding.topTvMediaAlbumTitle.visibility = View.VISIBLE
-
             // 加载背景
             if (percent > 0.4f) {
                 binding.topBackground.visibility = View.VISIBLE
@@ -342,30 +355,47 @@ class NowPlayingFragment : Fragment() {
                 binding.topBackground.alpha = 1f
             }
 
+            // 刚开始滚动，到40%时开始变换显示内容
             if (percent <= 0.4f) {
                 val alpha = (0.4f - percent) / 0.4f
                 // 显示top view
                 binding.topTvMediaTitle.visibility = View.VISIBLE
                 binding.topTvMediaSubtitle.visibility = View.VISIBLE
+                binding.topBtnSubscribe.visibility = View.VISIBLE
+
                 binding.topTvMediaTitle.alpha = alpha
                 binding.topTvMediaSubtitle.alpha = alpha
+                binding.topBtnSubscribe.alpha = alpha
             }  else {
-//                binding.topTvMediaAlbumTitle.visibility = View.INVISIBLE
                 binding.topTvMediaTitle.visibility = View.INVISIBLE
                 binding.topTvMediaSubtitle.visibility = View.INVISIBLE
+                binding.topBtnSubscribe.visibility = View.INVISIBLE
             }
 
-            // 滚动到进度条时
-//            if (scrollY > progressBarScrollDiff) {
-//                binding.topPbMediaProgress.visibility = View.VISIBLE
-//                binding.pbMediaProgress.visibility = View.INVISIBLE
-//            } else {
-//                binding.topPbMediaProgress.visibility = View.INVISIBLE
-//                binding.pbMediaProgress.visibility = View.VISIBLE
-//            }
+            // 滚动到进度条
+            if (scrollY > progressBarScrollDiff) {
+                var pbPercent: Float = 1f - (scrollY.toFloat() - progressBarScrollDiff) / (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff)
+                if (pbPercent > 1f) pbPercent = 1f
+                if (pbPercent < 0f) pbPercent = 0f
+                binding.topBtnMediaPlay.visibility = View.VISIBLE
+                binding.topBtnMediaPlay.translationY = binding.topBtnMediaPlay.height.toFloat() / 3 * pbPercent
+                binding.topBtnMediaPlay.alpha = 1 - pbPercent
+
+                binding.topBtnMediaNext15s.visibility = View.VISIBLE
+                binding.topBtnMediaNext15s.translationY = binding.topBtnMediaNext15s.height.toFloat() / 3 * pbPercent
+                binding.topBtnMediaNext15s.alpha = 1 - pbPercent
+
+                binding.topBtnMediaMultiple.visibility = View.VISIBLE
+                binding.topBtnMediaMultiple.translationY = binding.topBtnMediaMultiple.height.toFloat() / 3 * pbPercent
+                binding.topBtnMediaMultiple.alpha = 1 - pbPercent
+            } else {
+                binding.topBtnMediaPlay.visibility = View.INVISIBLE
+                binding.topBtnMediaNext15s.visibility = View.INVISIBLE
+                binding.topBtnMediaMultiple.visibility = View.INVISIBLE
+            }
 
             // 滚到到推荐内容
-            if (scrollY > relativeAlbumExtra1ScrollDiff) {
+            if (scrollY >= relativeAlbumExtra1ScrollDiff) {
                 binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.VISIBLE
                 binding.topTvMediaRelativeMore.visibility = View.VISIBLE
@@ -433,8 +463,6 @@ class NowPlayingFragment : Fragment() {
         topTvAlbumTitle.pivotY = 0f
         tvAlbumTitle.visibility = View.INVISIBLE
         topTvAlbumTitle.visibility = View.VISIBLE
-//        topTvAlbumTitle.scaleX = 1f + (tvAlbumTitle.width / topTvAlbumTitle.width.toFloat() - 1f) * percent
-//        topTvAlbumTitle.scaleY = 1f + (tvAlbumTitle.height / topTvAlbumTitle.height.toFloat() - 1f) * percent
 
         val yDiff = tvAlbumTitleY - topTvAlbumTitleY
         topTvAlbumTitle.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
@@ -445,34 +473,12 @@ class NowPlayingFragment : Fragment() {
     private fun transformProgressBar(percent: Float) {
         val pbMediaProgress = binding.pbMediaProgress
         val topPbMediaProgress = binding.topPbMediaProgress
-//        topPbMediaProgress.pivotX = 0f
         pbMediaProgress.visibility = View.INVISIBLE
         topPbMediaProgress.visibility = View.VISIBLE
         topPbMediaProgress.scaleX = 1f + (pbMediaProgress.width / topPbMediaProgress.width.toFloat() - 1f) * percent
 
         val yDiff = pbMediaProgressY - topPbMediaProgressY
         topPbMediaProgress.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
-    }
-
-    private fun transformView(
-        animView: View,
-        originView: View,
-        percent: Float,
-//        hasTransformX: Boolean,
-    ) {
-//        val coverImg = binding.ivMediaCoverImg
-//        val topCoverImg = binding.topIvMediaCoverImg
-        originView.visibility = View.INVISIBLE
-        animView.visibility = View.VISIBLE
-        // 设置动画中心
-        animView.pivotX = 0f
-        animView.pivotY = 0f
-        animView.scaleX = 1f + (originView.width / animView.width.toFloat() - 1f) * percent
-        animView.scaleY = 1f + (originView.height / animView.height.toFloat() - 1f) * percent
-        val yDiff = coverImgY - topCoverImgY
-        animView.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
-        val xDiff = topCoverImgX - coverImgX
-        animView.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
     }
 
     companion object {
