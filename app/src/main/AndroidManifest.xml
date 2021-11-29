@@ -16,12 +16,15 @@
         android:theme="@style/Theme.TadpoleStory">
         <activity
             android:name=".ui.album.NowPlayingActivity"
+            android:screenOrientation="userLandscape"
             android:exported="false" />
         <activity
             android:name=".ui.album.AlbumDetailActivity"
+            android:screenOrientation="userLandscape"
             android:exported="false" />
         <activity
             android:name=".ui.DailyRecommendActivity"
+            android:screenOrientation="userLandscape"
             android:exported="false" />
         <activity
             android:name=".test.TestActivity"

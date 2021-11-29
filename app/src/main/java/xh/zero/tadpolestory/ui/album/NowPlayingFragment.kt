@@ -242,7 +242,9 @@ class NowPlayingFragment : Fragment() {
                     // 填充不够滚动的空间
                     val display = SystemUtil.displayInfo(requireContext())
                     val requireRelativeHeight = display.heightPixels - binding.topBackground2.y.toInt() - binding.topBackground2.height
-                    val actualRelativeHeight = resources.getDimension(R.dimen._248dp).toInt() * (r.size / 6 + 1)
+                    val n = r.size / 6
+                    val num = if (r.size % 6 == 0) n else n + 1
+                    val actualRelativeHeight = resources.getDimension(R.dimen._248dp).toInt() * num
                     if (actualRelativeHeight < requireRelativeHeight) {
                         container.setPadding(
                             0, 0, 0, requireRelativeHeight - actualRelativeHeight
