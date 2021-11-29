@@ -92,14 +92,11 @@ class MainFragment : Fragment() {
         val rcAlbumList = layout.findViewById<RecyclerView>(R.id.rc_album_list)
         rcAlbumList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         rcAlbumList.adapter = RecommendAlbumAdapter(albums) { item ->
-            findNavController().navigate(
-                MainFragmentDirections.actionMainFragmentToAlbumDetailFragment().actionId,
-                bundleOf(
-                    AlbumDetailFragment.ARG_ALBUM_ID to item.id,
-                    AlbumDetailFragment.ARG_TOTAL to item.include_track_count.toInt(),
-                    AlbumDetailFragment.ARG_ALBUM_TITLE to item.include_track_count.toInt(),
-                )
-            )
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
+                albumId = item.id,
+                totalCount = item.include_track_count.toInt(),
+                albumTitle = item.album_title.orEmpty(),
+            ))
         }
         binding.llContentList.addView(layout)
     }

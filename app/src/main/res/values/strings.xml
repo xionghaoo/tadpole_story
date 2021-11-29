@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TadpoleStory</string>
+    <string name="app_name">蝌蚪听故事</string>
 
     <string name="notification_channel">Now Playing</string>
     <string name="notification_channel_description">Shows what music is currently playing in UAMP</string>

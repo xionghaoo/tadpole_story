@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.core.replaceFragment
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
@@ -38,5 +39,10 @@ class NowPlayingActivity : BaseActivity() {
             onBackPressed()
         }
         replaceFragment(NowPlayingFragment.newInstance(albumTitle), R.id.fragment_container)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Timber.d("onNewIntent")
     }
 }

@@ -36,6 +36,7 @@ class TestActivity : AppCompatActivity() {
         binding.btnLoad.setOnClickListener {
             startPlainActivity(TestActivity::class.java)
         }
+        android.R.attr.activityOpenEnterAnimation
     }
 
     private fun showPopWindow() {

@@ -18,6 +18,7 @@
         <activity
             android:name=".ui.album.NowPlayingActivity"
             android:screenOrientation="userLandscape"
+            android:launchMode="singleTop"
             android:exported="false" />
         <activity
             android:name=".ui.album.AlbumDetailActivity"

@@ -18,19 +18,7 @@ class AlbumDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentAlbumDetailBinding
 
-//    val args: AlbumDetailFragmentArgs by navArgs()
-
-    private val albumId: Int by lazy {
-        arguments?.getInt(ARG_ALBUM_ID, -1) ?: -1
-    }
-
-    private val total: Int by lazy {
-        arguments?.getInt(ARG_TOTAL, -1) ?: -1
-    }
-
-    private val albumTitle: String by lazy {
-        arguments?.getString(ARG_ALBUM_TITLE) ?: ""
-    }
+    val args: AlbumDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,22 +35,22 @@ class AlbumDetailFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-        replaceFragment(TrackListFragment.newInstance(albumId.toString(), total, albumTitle), R.id.fragment_container)
+        replaceFragment(TrackListFragment.newInstance(args.albumId.toString(), args.totalCount, args.albumTitle), R.id.fragment_container)
     }
 
-    companion object {
-
-        const val ARG_ALBUM_ID = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_ID"
-        const val ARG_TOTAL = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_TOTAL"
-        const val ARG_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_TITLE"
-
-        fun newInstance(albumId: Int, total: Int, albumTitle: String) =
-            AlbumDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_ALBUM_ID, albumId)
-                    putInt(ARG_TOTAL, total)
-                    putString(ARG_ALBUM_TITLE, albumTitle)
-                }
-            }
-    }
+//    companion object {
+//
+//        const val ARG_ALBUM_ID = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_ID"
+//        const val ARG_TOTAL = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_TOTAL"
+//        const val ARG_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_TITLE"
+//
+//        fun newInstance(albumId: Int, total: Int, albumTitle: String) =
+//            AlbumDetailFragment().apply {
+//                arguments = Bundle().apply {
+//                    putInt(ARG_ALBUM_ID, albumId)
+//                    putInt(ARG_TOTAL, total)
+//                    putString(ARG_ALBUM_TITLE, albumTitle)
+//                }
+//            }
+//    }
 }
