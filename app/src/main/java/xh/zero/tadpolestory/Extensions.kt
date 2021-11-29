@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LiveData
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import xh.zero.core.inTransaction
 import xh.zero.core.network.RemoteRequestStrategy
 import xh.zero.core.utils.ToastUtil
 import xh.zero.core.vo.ApiResponse
@@ -114,6 +115,12 @@ inline fun <T> handleResponse(
         networkLayout?.error()
         progressDialog?.dismiss()
         onError()
+    }
+}
+
+fun <F> Fragment.replaceFragment(fragment: F, layoutId: Int) where F : Fragment {
+    childFragmentManager.inTransaction {
+        replace(layoutId, fragment)
     }
 }
 

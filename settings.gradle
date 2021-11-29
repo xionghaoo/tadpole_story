@@ -10,3 +10,4 @@ dependencyResolutionManagement {
 rootProject.name = "TadpoleStory"
 include ':app'
 include ':common'
+include ':easyfloat'

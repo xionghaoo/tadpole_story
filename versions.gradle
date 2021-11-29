@@ -28,6 +28,7 @@ ext {
     versions.qrcode = '4.2.0'
     versions.blurry = '4.0.0'
     versions.paging = '2.1.2'
+    versions.nav_version = '2.3.5'
 
     dpes = [:]
     dpes.core = "com.github.xionghaoo:core:$versions.core"
@@ -86,4 +87,8 @@ ext {
     // 毛玻璃背景
     dpes.blurry = "jp.wasabeef:blurry:$versions.blurry"
     dpes.paging = "androidx.paging:paging-runtime:$versions.paging"
+    dpes.navigation = [
+            "fragment_ktx": "androidx.navigation:navigation-fragment-ktx:$versions.nav_version",
+            "ui_ktx": "androidx.navigation:navigation-ui-ktx:$versions.nav_version"
+    ]
 }

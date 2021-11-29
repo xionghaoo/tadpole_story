@@ -8,4 +8,9 @@
         <item name="android:minHeight">@dimen/_10dp</item>
         <item name="android:thumb">@drawable/seekbar_slider_drawable</item>
     </style>
+
+    <style name="pop_animation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/pop_in</item>
+        <item name="android:windowExitAnimation">@anim/pop_out</item>
+    </style>
 </resources>
