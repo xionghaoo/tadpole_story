@@ -10,6 +10,8 @@
     <color name="white_62">#9EFFFFFF</color>
     <color name="color_main_background">#FFFBF2</color>
 
+    <color name="color_divider">#DADADA</color>
+
     <color name="color_E0E0E0">#E0E0E0</color>
     <color name="color_FF6C6C">#FF6C6C</color>
     <color name="color_07070D">#07070D</color>

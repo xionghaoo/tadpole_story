@@ -30,8 +30,12 @@ class Repository @Inject constructor(
         apiService.getCategoriesList()
     }
 
-    fun getAlbumsList() = remoteRequestStrategy {
-        apiService.getAlbumsList(page = 1)
+    fun getAlbumsList(tagName: String) = remoteRequestStrategy {
+        apiService.getAlbumsList(page = 1, tagName = tagName)
+    }
+
+    fun searchAlbums(page: Int, tags: String) = remoteRequestStrategy {
+        apiService.searchAlbums(page = page, tags = tags)
     }
 
     fun getTagList() = remoteRequestStrategy {

@@ -14,6 +14,9 @@ class Configs {
         const val XIMALAYA_APP_SECRET = "C459397E1F4308BA84CC287DFEE1FD4F"
         const val XIMALAYA_SN = "11780_00_100780"
 
+        // 6: 儿童，92: 少儿教育
+        const val CATEGORY_ID = 6
+//        const val CATEGORY_ID = 92
 
     }
 

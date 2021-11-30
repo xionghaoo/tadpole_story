@@ -44,7 +44,7 @@ interface ApiService {
      */
     @GET("$PREFIX/v2/albums/list")
     fun getAlbumsList(
-        @Query("category_id") categoryId: Int = 92,
+        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
         @Query("tag_name") tagName: String? = null,
         // 返回结果排序维度：1-最火，2-最新，3-最多播放
         @Query("calc_dimension") calcDimension: Int = 1,
@@ -54,9 +54,30 @@ interface ApiService {
         @Query("contains_paid") isPaid: Boolean = false,
     ) : LiveData<ApiResponse<AlbumResponse>>
 
+    @GET("$PREFIX/v2/search/albums")
+    fun searchAlbums(
+        @Query("industry_id") industry_id: Int? = null,
+        @Query("id") id: Int? = null,
+        @Query("title") title: String? = null,
+        @Query("uid") uid: Int? = null,
+        @Query("nickname") nickname: String? = null,
+        @Query("tags") tags: String? = null,
+        @Query("is_paid") is_paid: Int = 0,
+        @Query("price_type") price_type: Int? = null,
+        @Query("category_id") category_id: Long? = null,
+        @Query("category_name") category_name: String? = null,
+        @Query("sort_by") sort_by: String? = null,
+        @Query("desc") desc: Boolean = true,
+        @Query("page") page: Int,
+        @Query("count") count: Int = Configs.PAGE_SIZE,
+    ) : LiveData<ApiResponse<AlbumResponse>>
+
+    /**
+     * 标签列表
+     */
     @GET("$PREFIX/v2/tags/list")
     fun getTagList(
-        @Query("category_id") categoryId: Int = 92,
+        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
         @Query("type") type: Int = 0
     ) : LiveData<ApiResponse<List<AlbumTag>>>
 
@@ -101,4 +122,9 @@ interface ApiService {
     fun getRelativeAlbum(
         @Query("track_id") trackId: Int?
     ) : LiveData<ApiResponse<List<Album>>>
+
+    /**
+     * 多条件筛选
+     */
+
 }
