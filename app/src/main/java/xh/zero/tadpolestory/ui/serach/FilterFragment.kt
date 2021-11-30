@@ -50,9 +50,9 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 5) {
+                if (dy > 10) {
                     binding.containerSearchTagsList.visibility = View.GONE
-                } else if (dy < -5) {
+                } else if (dy < -10) {
                     binding.containerSearchTagsList.visibility = View.VISIBLE
                 }
             }
