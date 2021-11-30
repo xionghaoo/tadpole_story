@@ -6,7 +6,6 @@
     android:layout_width="@dimen/_216dp"
     android:layout_height="@dimen/_292dp"
     android:background="@drawable/shape_home_album"
-    android:layout_marginEnd="@dimen/_24dp"
     android:gravity="center_horizontal">
 
     <androidx.appcompat.widget.AppCompatImageView

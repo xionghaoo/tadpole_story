@@ -46,6 +46,11 @@ class Repository @Inject constructor(
         apiService.getDailyRecommendAlbums(access_token = token, page = page)
     }
 
+
+    fun getGuessLikeAlbums(count: Int) = remoteRequestStrategy {
+        apiService.getGuessLikeAlbums(count)
+    }
+
     fun getTemporaryToken() = remoteRequestStrategy {
         apiService.getTemporaryToken()
     }

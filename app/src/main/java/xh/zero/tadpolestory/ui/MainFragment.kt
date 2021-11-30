@@ -7,16 +7,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MediatorLiveData
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import xh.zero.tadpolestory.R
@@ -26,41 +33,92 @@ import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.album.AlbumDetailFragment
 import xh.zero.tadpolestory.ui.album.AlbumDetailFragmentArgs
 import xh.zero.tadpolestory.ui.home.RecommendAlbumAdapter
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
+class MainFragment : BaseFragment<FragmentMainBinding>() {
 
-    private var _binding: FragmentMainBinding? = null
-    private val binding: FragmentMainBinding get() = _binding!!
+//    private var _binding: FragmentMainBinding? = null
+//    private val binding: FragmentMainBinding get() = _binding!!
     private val viewModel: MainViewModel by viewModels()
     private var selectedIndex = 0
+//    private var isInitial = false
+    private var selectedMenuPos = 0
+//    private var contentTitles = arrayOf("每日推荐", "猜你喜欢")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.d("onCreate")
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        Timber.d("onCreate")
+//
+//    }
 
-    }
+//    override fun onCreateView(
+//        inflater: LayoutInflater, container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        Timber.d("onCreateView")
+//        if (_binding == null) {
+//            isInitial = true
+//            _binding = FragmentMainBinding.inflate(layoutInflater, container, false)
+//        }
+//        return binding.root
+//    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateBindLayout(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        Timber.d("onCreateView")
-        if (_binding == null) {
-            _binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-        }
-        return binding.root
-    }
+    ): FragmentMainBinding = FragmentMainBinding.inflate(layoutInflater, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
+    override fun rootView(): View = binding.root
+
+    override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnHome.setOnClickListener {
             activity?.onBackPressed()
         }
 
+        binding.btnHomeMenu1.setOnClickListener {
+            selectedMenuPos = 0
+        }
+        binding.btnHomeMenu1.setOnClickListener {
+            selectedMenuPos = 1
+        }
+        binding.btnHomeMenu1.setOnClickListener {
+            selectedMenuPos = 2
+        }
+
+        binding.btnFilter.setOnClickListener {
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment())
+        }
+
         loadData()
     }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        if (!isInitial) return
+//        isInitial = false
+//        Timber.d("onViewCreated")
+//        binding.btnHome.setOnClickListener {
+//            activity?.onBackPressed()
+//        }
+//
+//        binding.btnHomeMenu1.setOnClickListener {
+//            selectedMenuPos = 0
+//        }
+//        binding.btnHomeMenu1.setOnClickListener {
+//            selectedMenuPos = 1
+//        }
+//        binding.btnHomeMenu1.setOnClickListener {
+//            selectedMenuPos = 2
+//        }
+//
+//        binding.btnFilter.setOnClickListener {
+//
+//        }
+//
+//        loadData()
+//    }
 
     private fun loadData() {
         viewModel.getTagList().observe(viewLifecycleOwner) {
@@ -71,6 +129,7 @@ class MainFragment : Fragment() {
 
         viewModel.getTemporaryToken().observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
+                binding.llContentList.removeAllViews()
                 loadRecommend(r.access_token!!)
             }
         }
@@ -79,26 +138,50 @@ class MainFragment : Fragment() {
     private fun loadRecommend(token: String) {
         viewModel.getDailyRecommendAlbums(token, 1).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
-                bindRecommend(r.albums ?: emptyList())
+                loadGuessLike()
+                addContentItemView("每日推荐", r.albums ?: emptyList())
             }
         }
     }
 
-    private fun bindRecommend(albums: List<Album>) {
-        binding.llContentList.removeAllViews()
+    private fun loadGuessLike() {
+        viewModel.getGuessLikeAlbums(4).observe(viewLifecycleOwner) {
+            handleResponse(it) { r ->
+                addContentItemView("猜你喜欢", r, resources.getDimension(R.dimen._30dp).toInt())
+            }
+        }
+    }
 
+    private fun addContentItemView(title: String, albums: List<Album>, marginBottom: Int = 0) {
         val layout = layoutInflater.inflate(R.layout.item_home_content, null)
-        layout.findViewById<TextView>(R.id.tv_album_container_title).text = "每日推荐"
-        val rcAlbumList = layout.findViewById<RecyclerView>(R.id.rc_album_list)
-        rcAlbumList.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        rcAlbumList.adapter = RecommendAlbumAdapter(albums) { item ->
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
-                albumId = item.id,
-                totalCount = item.include_track_count.toInt(),
-                albumTitle = item.album_title.orEmpty(),
-            ))
+        layout.findViewById<TextView>(R.id.tv_album_container_title).text = title
+        val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
+        rcAlbumList.removeAllViews()
+        albums.forEach { item ->
+            val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
+            rcAlbumList.addView(v)
+            val lp = v.layoutParams as FlexboxLayout.LayoutParams
+            lp.width = resources.getDimension(R.dimen._216dp).toInt()
+            lp.height = resources.getDimension(R.dimen._292dp).toInt()
+
+            v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
+            v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro
+            Glide.with(v.context)
+                .load(item.cover_url_large)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
+                .into(v.findViewById(R.id.iv_album_icon))
+
+            v.setOnClickListener {
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
+                    albumId = item.id,
+                    totalCount = item.include_track_count.toInt(),
+                    albumTitle = item.album_title.orEmpty(),
+                ))
+            }
         }
         binding.llContentList.addView(layout)
+        val layoutLp = layout.layoutParams as LinearLayout.LayoutParams
+        layoutLp.bottomMargin = marginBottom
     }
 
     private fun bindTagList(tags: List<String?>) {

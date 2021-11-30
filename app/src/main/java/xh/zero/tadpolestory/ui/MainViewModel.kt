@@ -32,6 +32,7 @@ class MainViewModel @Inject constructor(
     fun getCategoriesList() = repo.getCategoriesList()
     fun getTemporaryToken() = repo.getTemporaryToken()
     fun getDailyRecommendAlbums(token: String, page: Int) = repo.getDailyRecommendAlbums(token, page)
+    fun getGuessLikeAlbums(count: Int) = repo.getGuessLikeAlbums(count)
 
 
 }

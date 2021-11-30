@@ -82,6 +82,16 @@ interface ApiService {
     ) : LiveData<ApiResponse<AlbumResponse>>
 
     /**
+     * 猜你喜欢
+     */
+    @GET("$PREFIX/v2/albums/guess_like")
+    fun getGuessLikeAlbums(
+        // 返回几条结果数据，默认为 3，取值区间为[1,50]
+        @Query("like_count") count: Int,
+        @Query("device_type") deviceType: Int = 2
+    ) : LiveData<ApiResponse<List<Album>>>
+
+    /**
      * 获取临时token
      */
     @GET("$PREFIX/oauth2/secure_access_token")

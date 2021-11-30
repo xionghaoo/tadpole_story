@@ -16,15 +16,18 @@ import xh.zero.tadpolestory.ui.MainFragmentDirections
 
 class AlbumDetailFragment : Fragment() {
 
-    private lateinit var binding: FragmentAlbumDetailBinding
+    private var _binding: FragmentAlbumDetailBinding? = null
+    private val binding: FragmentAlbumDetailBinding get() = _binding!!
 
-    val args: AlbumDetailFragmentArgs by navArgs()
+    private val args: AlbumDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAlbumDetailBinding.inflate(layoutInflater, container, false)
+        if (_binding == null) {
+            _binding = FragmentAlbumDetailBinding.inflate(layoutInflater, container, false)
+        }
         return binding.root
     }
 
@@ -38,19 +41,4 @@ class AlbumDetailFragment : Fragment() {
         replaceFragment(TrackListFragment.newInstance(args.albumId.toString(), args.totalCount, args.albumTitle), R.id.fragment_container)
     }
 
-//    companion object {
-//
-//        const val ARG_ALBUM_ID = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_ID"
-//        const val ARG_TOTAL = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_TOTAL"
-//        const val ARG_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.AlbumDetailActivity.ARG_ALBUM_TITLE"
-//
-//        fun newInstance(albumId: Int, total: Int, albumTitle: String) =
-//            AlbumDetailFragment().apply {
-//                arguments = Bundle().apply {
-//                    putInt(ARG_ALBUM_ID, albumId)
-//                    putInt(ARG_TOTAL, total)
-//                    putString(ARG_ALBUM_TITLE, albumTitle)
-//                }
-//            }
-//    }
 }

@@ -27,6 +27,11 @@
                 app:argType="string"
                 android:defaultValue="" />
         </action>
+        <action
+            android:id="@+id/action_mainFragment_to_filterFragment"
+            app:destination="@id/filterFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
     </fragment>
     <fragment
         android:id="@+id/albumDetailFragment"
@@ -45,4 +50,9 @@
             app:argType="string"
             android:defaultValue="" />
     </fragment>
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="xh.zero.tadpolestory.ui.FilterFragment"
+        android:label="fragment_filter"
+        tools:layout="@layout/fragment_filter" />
 </navigation>
