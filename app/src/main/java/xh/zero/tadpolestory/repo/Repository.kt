@@ -42,6 +42,10 @@ class Repository @Inject constructor(
         apiService.getTagList()
     }
 
+    fun getMetadataList() = remoteRequestStrategy {
+        apiService.getMetadataList()
+    }
+
 //    fun getVoiceListFormAlbum(albumId: Int, page: Int) = remoteRequestStrategy {
 //        apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
 //    }

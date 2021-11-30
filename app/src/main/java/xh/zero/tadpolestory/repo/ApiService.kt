@@ -72,6 +72,11 @@ interface ApiService {
         @Query("count") count: Int = Configs.PAGE_SIZE,
     ) : LiveData<ApiResponse<AlbumResponse>>
 
+    @GET("$PREFIX/metadata/list")
+    fun getMetadataList(
+        @Query("category_id") category_id: Int = Configs.CATEGORY_ID
+    ) : LiveData<ApiResponse<PlainData>>
+
     /**
      * 标签列表
      */

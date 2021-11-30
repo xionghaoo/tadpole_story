@@ -1,4 +1,4 @@
-package xh.zero.tadpolestory.ui
+package xh.zero.tadpolestory.ui.serach
 
 import android.os.Bundle
 import android.util.TypedValue
@@ -10,16 +10,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentFilterBinding
 import xh.zero.tadpolestory.handleResponse
+import xh.zero.tadpolestory.ui.BaseFragment
 
 @AndroidEntryPoint
 class FilterFragment : BaseFragment<FragmentFilterBinding>() {
 
-    private val viewModel: FilterViewModel by viewModels()
+    private val viewModel: SearchViewModel by viewModels()
     private var selectedIndex = 0
+    private lateinit var adapter: FilterAlbumAdapter
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -37,6 +43,24 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
 
         loadData()
+
+        binding.rcAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 5) {
+                    binding.containerSearchTagsList.visibility = View.GONE
+                } else if (dy < -5) {
+                    binding.containerSearchTagsList.visibility = View.VISIBLE
+                }
+            }
+        })
+
+        binding.rcAlbumsList.layoutManager = GridLayoutManager(requireContext(), 2)
+        adapter = FilterAlbumAdapter()
+        binding.rcAlbumsList.adapter = adapter
     }
 
     private fun loadData() {
@@ -47,9 +71,15 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
         viewModel.searchAlbums(1, "3-6岁,睡前").observe(viewLifecycleOwner) {
             handleResponse(it) {r ->
-
+                adapter.updateData(r.albums ?: emptyList())
             }
         }
+
+//        viewModel.getMetadataList().observe(this, Observer {
+//            handleResponse(it) { r ->
+//
+//            }
+//        })
     }
 
     private fun bindTagList(tags: List<String?>) {
