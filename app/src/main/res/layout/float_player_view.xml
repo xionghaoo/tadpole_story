@@ -7,38 +7,79 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/v_float_root"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10dp"
         android:layout_marginEnd="@dimen/_60dp"
         android:layout_marginStart="@dimen/_10dp"
         android:layout_marginBottom="@dimen/_10dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:cardCornerRadius="@dimen/_40dp"
+        app:cardCornerRadius="@dimen/_34dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardElevation="@dimen/_4dp">
-        <androidx.cardview.widget.CardView
-            android:id="@+id/float_player_view"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/float_player_view_expand"
+            android:background="@drawable/shape_float_view"
+            android:layout_width="@dimen/_396dp"
             android:layout_height="@dimen/_68dp"
-            app:cardCornerRadius="@dimen/_40dp"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/_34dp"
+            android:paddingEnd="@dimen/_34dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_18sp"
+                android:textColor="@color/color_0A1A2A"
+                android:text="丢了的糖葫芦"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_7E7D7E"
+                android:text="猴子警长探案-第三季-第1集"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.cardview.widget.CardView
+            android:layout_width="@dimen/_68dp"
+            android:layout_height="@dimen/_68dp"
+            android:layout_gravity="end"
+            app:cardCornerRadius="@dimen/_34dp"
             app:cardBackgroundColor="@color/white"
             app:cardElevation="0dp">
-            <FrameLayout
-                android:id="@+id/v_test"
-                android:layout_width="@dimen/_328dp"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingStart="@dimen/_34dp"
-                android:paddingEnd="@dimen/_34dp">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/color_0A1A2A"/>
-            </FrameLayout>
+                android:src="@mipmap/ic_media_play"/>
         </androidx.cardview.widget.CardView>
     </androidx.cardview.widget.CardView>
 
     <!-- 下一阶段悬浮UI -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/float_player_view_collapse"
+        android:layout_width="@dimen/_146dp"
+        android:layout_height="@dimen/_68dp"
+        android:layout_gravity="center_vertical|end"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/_34dp"
+        app:cardElevation="0dp"
+        android:visibility="invisible">
+        <TextView
+            android:id="@+id/collapse_extra_space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_marginStart="@dimen/_34dp"
+            android:background="@android:color/holo_blue_bright"/>
+        <androidx.cardview.widget.CardView
+            android:layout_width="@dimen/_68dp"
+            android:layout_height="@dimen/_68dp"
+            app:cardCornerRadius="@dimen/_34dp"
+            app:cardBackgroundColor="@color/white"
 
+            app:cardElevation="0dp">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_media_play"/>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.cardview.widget.CardView>
 </FrameLayout>
