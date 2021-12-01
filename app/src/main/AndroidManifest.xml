@@ -41,6 +41,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="userLandscape">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />

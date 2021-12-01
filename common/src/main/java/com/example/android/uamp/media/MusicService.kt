@@ -163,6 +163,11 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
                 PendingIntent.getActivity(this, 0, sessionIntent, 0)
             }
+//        val sessionActivityPendingIntent = PendingIntent.getActivity(
+//            this,
+//            0,
+//            Intent(this, Nowplaying),
+//            Intent.FLAG_ACTIVITY_NEW_TASK)
 
         // Create a new MediaSession.
         mediaSession = MediaSessionCompat(this, "MusicService")

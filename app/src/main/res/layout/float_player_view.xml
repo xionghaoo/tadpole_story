@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -26,16 +27,26 @@
             android:paddingEnd="@dimen/_34dp"
             android:gravity="center_vertical">
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/expand_tv_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/_18sp"
+                android:layout_marginEnd="@dimen/_78dp"
                 android:textColor="@color/color_0A1A2A"
-                android:text="丢了的糖葫芦"/>
+                android:maxLines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                tools:text="丢了的糖葫芦"/>
             <TextView
+                android:id="@+id/expand_tv_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_78dp"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textColor="@color/color_7E7D7E"
-                android:text="猴子警长探案-第三季-第1集"/>
+                tools:text="猴子警长探案-第三季-第1集"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
         <androidx.cardview.widget.CardView
             android:layout_width="@dimen/_68dp"
@@ -45,8 +56,18 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="0dp">
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_float_cover_step_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/white_20"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/expand_btn_player"
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_media_play"/>
         </androidx.cardview.widget.CardView>
     </androidx.cardview.widget.CardView>
@@ -75,8 +96,18 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="0dp">
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_float_cover_step_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/white_20"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/collapse_btn_player"
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
+                android:layout_gravity="center"
                 android:src="@mipmap/ic_media_play"/>
         </androidx.cardview.widget.CardView>
 
