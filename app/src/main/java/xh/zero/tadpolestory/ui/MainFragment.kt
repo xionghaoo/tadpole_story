@@ -1,5 +1,7 @@
 package xh.zero.tadpolestory.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -26,6 +28,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMainBinding
 import xh.zero.tadpolestory.handleResponse
@@ -44,25 +47,21 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     private var selectedIndex = 0
 //    private var isInitial = false
     private var selectedMenuPos = 0
-//    private var contentTitles = arrayOf("每日推荐", "猜你喜欢")
+    private var listener: OnFragmentActionListener? = null
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        Timber.d("onCreate")
-//
-//    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentActionListener) {
+            listener = context
+        } else {
+            throw IllegalArgumentException("Activity must implement OnFragmentActionListener")
+        }
+    }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        Timber.d("onCreateView")
-//        if (_binding == null) {
-//            isInitial = true
-//            _binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-//        }
-//        return binding.root
-//    }
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
+    }
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -92,6 +91,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
 
         loadData()
+
+        binding.scrollViewContent.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            Timber.d("setOnScrollChangeListener: $scrollY, $oldScrollY")
+            if (scrollY - oldScrollY > 10) {
+                listener?.hideFloatWindow()
+            }
+        }
     }
 
 //    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -139,15 +145,20 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         viewModel.getDailyRecommendAlbums(token, 1).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
                 loadGuessLike()
-                addContentItemView("每日推荐", r.albums ?: emptyList())
+                // TODO 数据筛选
+                val items = r.albums?.filter { album -> album.category_id == 6 || album.category_id == 92 }?.filterIndexed { index, _ -> index < 4 }
+                addContentItemView("每日推荐", items ?: emptyList())
             }
         }
     }
 
     private fun loadGuessLike() {
-        viewModel.getGuessLikeAlbums(4).observe(viewLifecycleOwner) {
+        viewModel.getGuessLikeAlbums().observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
-                addContentItemView("猜你喜欢", r, resources.getDimension(R.dimen._30dp).toInt())
+                // TODO 数据筛选
+//                val items = r.filter { album -> album.category_id == 6 || album.category_id == 92 }.filterIndexed { index, _ -> index < 4 }
+                val items = r.filterIndexed { index, _ -> index < 4 }
+                addContentItemView("猜你喜欢", items, resources.getDimension(R.dimen._30dp).toInt())
             }
         }
     }
@@ -231,6 +242,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 setTextColor(resources.getColor(R.color.color_42444B))
             }
         }
+    }
+
+    interface OnFragmentActionListener {
+        fun hideFloatWindow()
     }
 
     companion object {

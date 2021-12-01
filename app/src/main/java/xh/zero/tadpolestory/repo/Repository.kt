@@ -55,8 +55,8 @@ class Repository @Inject constructor(
     }
 
 
-    fun getGuessLikeAlbums(count: Int) = remoteRequestStrategy {
-        apiService.getGuessLikeAlbums(count)
+    fun getGuessLikeAlbums() = remoteRequestStrategy {
+        apiService.getGuessLikeAlbums()
     }
 
     fun getTemporaryToken() = remoteRequestStrategy {

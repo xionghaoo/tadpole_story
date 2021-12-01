@@ -104,7 +104,7 @@ interface ApiService {
     fun getDailyRecommendAlbums(
         @Query("access_token") access_token: String,
         @Query("page") page: Int,
-        @Query("count") count: Int = 4
+        @Query("count") count: Int = 200
     ) : LiveData<ApiResponse<AlbumResponse>>
 
     /**
@@ -113,7 +113,7 @@ interface ApiService {
     @GET("$PREFIX/v2/albums/guess_like")
     fun getGuessLikeAlbums(
         // 返回几条结果数据，默认为 3，取值区间为[1,50]
-        @Query("like_count") count: Int,
+        @Query("like_count") count: Int = 50,
         @Query("device_type") deviceType: Int = 2
     ) : LiveData<ApiResponse<List<Album>>>
 

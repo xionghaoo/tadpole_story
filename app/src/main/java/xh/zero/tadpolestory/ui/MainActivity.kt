@@ -17,18 +17,34 @@ import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
+
+    companion object {
+//        const val ACTION_HIDE_FLOAT_WINDOW = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_HIDE_FLOAT_WINDOW"
+    }
 
     private lateinit var binding: ActivityMainBinding
-
-    private var isShow: Boolean = true
     private var startX: Float = 0f
-    private var isDragFinish = false
+    private var expandStartX: Float = 0f
+//    private var isDragFinish = false
+//    private var isFloatWindowExpand = true
+    private var lastExpandState: Boolean? = null
+
+//    private val receiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context?, intent: Intent?) {
+//            if (intent?.action == ACTION_HIDE_FLOAT_WINDOW) {
+//                Timber.d("scroll hide:")
+//
+//            }
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        registerReceiver(receiver, IntentFilter(ACTION_HIDE_FLOAT_WINDOW))
 
         EasyFloat.with(this)
             .setDragEnable(false)
@@ -37,6 +53,7 @@ class MainActivity : BaseActivity() {
                 0,
                 offsetY = -resources.getDimension(R.dimen._34dp).toInt()
             )
+            .setTag("float_window")
             .setLayout(R.layout.float_player_view)
             .registerCallback {
                 createResult { b, s, view ->
@@ -51,50 +68,65 @@ class MainActivity : BaseActivity() {
                         viewBackground?.outlineSpotShadowColor =
                             ContextCompat.getColor(this@MainActivity, R.color.colorAccent)
                     }
-                    viewExpand?.setOnClickListener {
-                        ToastUtil.show(this@MainActivity, "点击测试")
-                        isShow = isShow.not()
-                        isDragFinish = true
-                        showFloatPlayer(false, view)
-                    }
+//                    viewExpand?.setOnClickListener {
+////                        ToastUtil.show(this@MainActivity, "点击测试")
+////                        isShow = isShow.not()
+//                        isDragFinish = true
+//                        showFloatPlayer(false, view)
+//                    }
 
                     viewCollapse?.setOnTouchListener { v, e ->
-                        if (!isDragFinish) {
-                            val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
-                            if (!viewCollapse.isVisible) return@setOnTouchListener true
-                            val collapseExpandSpace = view.findViewById<View>(R.id.collapse_extra_space)
+                        val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
+                        if (!viewCollapse.isVisible) return@setOnTouchListener true
+                        val collapseExpandSpace = view.findViewById<View>(R.id.collapse_extra_space)
 //                        collapseExpandSpace.pivotX = collapseExpandSpace.right.toFloat()
-                            Timber.d("${e.x}, ${e.y}")
-                            when (e.action) {
-                                MotionEvent.ACTION_DOWN -> {
-                                    viewCollapse.elevation = 0f
-                                    startX = e.x
-                                }
-                                MotionEvent.ACTION_MOVE -> {
-                                    val diff = startX - e.x
-                                    if (diff > 10) {
-                                        collapseExpandSpace.visibility = View.INVISIBLE
-                                        viewCollapse.translationX = if (diff > 0) - diff else 0f
-                                        if (viewCollapse.translationX <= -resources.getDimension(R.dimen._42dp)) {
-                                            viewCollapse.translationX = -resources.getDimension(R.dimen._42dp)
-                                        }
-                                    }
-                                }
-                                MotionEvent.ACTION_UP -> {
-                                    Timber.d("translationX: ${viewCollapse.translationX}")
+                        Timber.d("${e.x}, ${e.y}")
+                        when (e.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                viewCollapse.elevation = 0f
+                                startX = e.x
+                            }
+                            MotionEvent.ACTION_MOVE -> {
+                                val diff = startX - e.x
+                                if (diff > 10) {
+                                    collapseExpandSpace.visibility = View.INVISIBLE
+                                    viewCollapse.translationX = if (diff > 0) - diff else 0f
                                     if (viewCollapse.translationX <= -resources.getDimension(R.dimen._42dp)) {
-                                        ToastUtil.show(this@MainActivity, "拖拽完成")
-                                        isDragFinish = true
-                                        showFloatPlayer(true, view)
-                                    } else {
-                                        viewCollapse.animate()
-                                            .translationX(0f)
-                                            .withEndAction {
-                                                collapseExpandSpace.visibility = View.VISIBLE
-                                                viewCollapse?.elevation = resources.getDimension(R.dimen._4dp)
-                                            }
-                                            .start()
+                                        viewCollapse.translationX = -resources.getDimension(R.dimen._42dp)
                                     }
+                                }
+                            }
+                            MotionEvent.ACTION_UP -> {
+                                Timber.d("translationX: ${viewCollapse.translationX}")
+                                if (viewCollapse.translationX <= -resources.getDimension(R.dimen._42dp)) {
+                                    ToastUtil.show(this@MainActivity, "拖拽完成")
+//                                    isDragFinish = true
+                                    showFloatPlayer(true, view)
+                                } else {
+                                    viewCollapse.animate()
+                                        .translationX(0f)
+                                        .withEndAction {
+                                            collapseExpandSpace.visibility = View.VISIBLE
+                                            viewCollapse?.elevation = resources.getDimension(R.dimen._4dp)
+                                        }
+                                        .start()
+                                }
+                            }
+                        }
+                        return@setOnTouchListener true
+                    }
+
+                    viewExpand?.setOnTouchListener { v, e ->
+                        val viewExpand = view?.findViewById<View>(R.id.float_player_view_expand)
+                        if (!viewExpand.isVisible) return@setOnTouchListener true
+                        when (e.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                expandStartX = e.x
+                            }
+                            MotionEvent.ACTION_MOVE -> {
+                                val diff = e.x - expandStartX
+                                if (diff > 10) {
+                                    hideFloatWindow()
                                 }
                             }
                         }
@@ -107,13 +139,27 @@ class MainActivity : BaseActivity() {
             .show()
     }
 
-    private fun showFloatPlayer(isExpand: Boolean, view: View) {
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun hideFloatWindow() {
+        showFloatPlayer(false, EasyFloat.getFloatView("float_window"))
+    }
+
+    private fun showFloatPlayer(isExpand: Boolean, view: View?) {
+
+        if (view == null) return
         val viewExpand = view.findViewById<View>(R.id.float_player_view_expand)
         val viewCollapse = view.findViewById<View>(R.id.float_player_view_collapse)
         val viewBackground = view.findViewById<CardView>(R.id.v_float_root)
         val collapseExpandSpace = view.findViewById<View>(R.id.collapse_extra_space)
-//        view.isEnabled = false
+//        Timber.d("showFloatPlayer: ${lastExpandState}, $isExpand")
+
+        if (lastExpandState == isExpand) return
+        lastExpandState = isExpand
         if (isExpand) {
+            Timber.d("showFloatPlayer: 展开")
             // 展开
             viewBackground.visibility = View.VISIBLE
             viewCollapse?.visibility = View.INVISIBLE
@@ -124,13 +170,13 @@ class MainActivity : BaseActivity() {
                     viewBackground.animate()
                         .translationZ(resources.getDimension(R.dimen._4dp))
                         .withEndAction {
-                            isDragFinish = false
-//                            view.isEnabled = true
+//                            isDragFinish = false
                         }
                         .start()
                 }
                 .start()
         } else {
+            Timber.d("showFloatPlayer: 收起")
             // 收起
             viewBackground.animate()
                 .translationZ(0f)
@@ -148,14 +194,18 @@ class MainActivity : BaseActivity() {
                                     viewCollapse?.translationX = 0f
                                     viewCollapse?.visibility = View.VISIBLE
                                     collapseExpandSpace?.visibility = View.VISIBLE
-                                    viewCollapse.animate()
-                                        .translationZ(resources.getDimension(R.dimen._4dp))
-                                        .withEndAction {
-                                            viewCollapse.translationZ = 0f
-                                            viewCollapse.elevation = resources.getDimension(R.dimen._4dp)
-                                            isDragFinish = false
-                                        }
-                                        .start()
+
+                                    viewCollapse.elevation = resources.getDimension(R.dimen._4dp)
+
+                                    // 动画存在bug
+//                                    viewCollapse.animate()
+//                                        .translationZ(resources.getDimension(R.dimen._4dp))
+//                                        .withEndAction {
+//                                            viewCollapse.translationZ = 0f
+//                                            viewCollapse.elevation = resources.getDimension(R.dimen._4dp)
+////                                            isDragFinish = false
+//                                        }
+//                                        .start()
                                 }
                                 .start()
                         }
@@ -164,6 +214,7 @@ class MainActivity : BaseActivity() {
                 }
                 .start()
         }
+
     }
 
 }

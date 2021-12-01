@@ -67,13 +67,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginStart="@dimen/_34dp"
-            android:background="@android:color/holo_blue_bright"/>
+            android:background="@color/white"/>
         <androidx.cardview.widget.CardView
             android:layout_width="@dimen/_68dp"
             android:layout_height="@dimen/_68dp"
             app:cardCornerRadius="@dimen/_34dp"
             app:cardBackgroundColor="@color/white"
-
             app:cardElevation="0dp">
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="match_parent"
