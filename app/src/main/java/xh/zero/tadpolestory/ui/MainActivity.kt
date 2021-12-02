@@ -15,9 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.MediatorLiveData
 import com.lzf.easyfloat.EasyFloat
+import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import xh.zero.core.startPlainActivity
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
@@ -28,6 +30,7 @@ import xh.zero.tadpolestory.ui.album.NowPlayingViewModel
 class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
 
     companion object {
+        const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -35,13 +38,15 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
     private var expandStartX: Float = 0f
     private val viewModel: NowPlayingViewModel by viewModels()
 
+    private var isCollapse: Boolean? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        Timber.d("onCreate: ${intent?.action}, ${intent?.data}")
-
+        if (intent?.action == ACTION_NOTIFICATION_PLAYER) {
+            startPlainActivity(NowPlayingActivity::class.java)
+        }
 
         EasyFloat.with(this)
             .setDragEnable(false)
@@ -69,6 +74,7 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
 
     private fun initialFloatWindow(view: View?) {
         if (view == null) return
+        val floatRoot = view.findViewById<View>(R.id.float_root)
         val viewExpand = view.findViewById<View>(R.id.float_player_view_expand)
         val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
 
@@ -78,8 +84,11 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
         val collapseBtnPlayer = view.findViewById<ImageView>(R.id.collapse_btn_player)
         val expandTitle = view.findViewById<TextView>(R.id.expand_tv_title)
         val expandDesc = view.findViewById<TextView>(R.id.expand_tv_desc)
+        val expandProgressBar = view.findViewById<CircularProgressBar>(R.id.expand_progress_bar)
+        val collapseProgressBar = view.findViewById<CircularProgressBar>(R.id.collapse_progress_bar)
 
         viewModel.mediaMetadata.observe(this) { mediaItem ->
+            floatRoot.visibility = View.VISIBLE
             expandTitle.text = mediaItem.title
             expandDesc.text = mediaItem.subtitle
 
@@ -92,10 +101,6 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
                 .load(mediaItem.albumArtUri)
                 .circleCrop()
                 .into(ivCoverStep2)
-
-//            viewExpand.setOnClickListener {
-//                NowPlayingActivity.start(this, "")
-//            }
         }
 
         // 播放按钮
@@ -123,6 +128,9 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
 //                lastDegree = degree
 //            }
 //            Timber.d("degree tick: $progress")
+            collapseProgressBar.progress = progress.toFloat()
+            expandProgressBar.progress = progress.toFloat()
+
             ivCoverStep1.animate()
                 .rotationBy(2f)
                 .start()
@@ -133,7 +141,7 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
 
         val lp = viewCollapse?.layoutParams as FrameLayout.LayoutParams
         lp.marginEnd = -resources.getDimension(R.dimen._60dp).toInt()
-        val viewBackground = view.findViewById<CardView>(R.id.v_float_root)
+        val viewBackground = view.findViewById<CardView>(R.id.expand_root)
         if (Build.VERSION.SDK_INT >= 28) {
             viewBackground?.outlineAmbientShadowColor =
                 ContextCompat.getColor(this@MainActivity, R.color.colorAccent)
@@ -211,12 +219,11 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
         if (view == null) return
         val viewExpand = view.findViewById<View>(R.id.float_player_view_expand)
         val viewCollapse = view.findViewById<View>(R.id.float_player_view_collapse)
-        val viewBackground = view.findViewById<CardView>(R.id.v_float_root)
+        val viewBackground = view.findViewById<CardView>(R.id.expand_root)
         val collapseExpandSpace = view.findViewById<View>(R.id.collapse_extra_space)
 
-//        if (lastExpandState == isExpand) return
-//        lastExpandState = isExpand
         if (isExpand) {
+            isCollapse = false
             Timber.d("showFloatPlayer: 展开")
             // 展开
             viewBackground.visibility = View.VISIBLE
@@ -233,6 +240,10 @@ class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
                 }
                 .start()
         } else {
+            if (isCollapse == true) {
+                return
+            }
+            isCollapse = true
             Timber.d("showFloatPlayer: 收起")
             // 收起
             viewBackground.animate()

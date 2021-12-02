@@ -159,10 +159,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         Log.d(TAG, "onCreate")
 
         // Build a PendingIntent that can be used to launch the UI.
-        val sessionActivityPendingIntent =
-            packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                PendingIntent.getActivity(this, 0, sessionIntent, 0)
-            }
+
 //        val sessionActivityPendingIntent = PendingIntent.getActivity(
 //            this,
 //            0,
@@ -172,7 +169,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         // Create a new MediaSession.
         mediaSession = MediaSessionCompat(this, "MusicService")
             .apply {
-                setSessionActivity(sessionActivityPendingIntent)
+                setSessionActivity(createPendingIntent())
                 isActive = true
             }
 
@@ -378,6 +375,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             result.detach()
         }
     }
+
+    abstract fun createPendingIntent() : PendingIntent?
 
     abstract fun createMusicSource() : MusicSource
 

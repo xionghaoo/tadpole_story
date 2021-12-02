@@ -120,4 +120,7 @@ dependencies {
 
     implementation dpes.navigation.fragment_ktx
     implementation dpes.navigation.ui_ktx
+
+    implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
+
 }

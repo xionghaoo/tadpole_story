@@ -1,6 +1,8 @@
 package xh.zero.tadpolestory.repo
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
 import com.example.android.uamp.media.MusicService
@@ -9,6 +11,8 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.Configs
+import xh.zero.tadpolestory.ui.MainActivity
+import xh.zero.tadpolestory.ui.album.NowPlayingActivity
 import javax.inject.Inject
 
 const val SEEK_TO_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.SEEK_TO_POSITION"
@@ -32,6 +36,15 @@ class TadpoleMusicService : MusicService() {
 
     override fun createMusicSource(): MusicSource {
         return TadpoleMusicSource(repo)
+    }
+
+    override fun createPendingIntent(): PendingIntent? {
+        val sessionActivityPendingIntent =
+            packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
+                sessionIntent.action = MainActivity.ACTION_NOTIFICATION_PLAYER
+                PendingIntent.getActivity(this, 2, sessionIntent, 0)
+            }
+        return sessionActivityPendingIntent
     }
 
     private inner class TadpoleCommandReceiver : MediaSessionConnector.CommandReceiver {
