@@ -15,6 +15,7 @@ import com.example.android.uamp.media.extensions.id
 import com.example.android.uamp.media.extensions.isPlayEnabled
 import com.example.android.uamp.media.extensions.isPlaying
 import com.example.android.uamp.media.extensions.isPrepared
+import dagger.assisted.Assisted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import xh.zero.tadpolestory.R
@@ -31,6 +32,5 @@ class MainViewModel @Inject constructor(
     fun getTemporaryToken() = repo.getTemporaryToken()
     fun getDailyRecommendAlbums(token: String, page: Int) = repo.getDailyRecommendAlbums(token, page)
     fun getGuessLikeAlbums() = repo.getGuessLikeAlbums()
-
 
 }

@@ -69,7 +69,6 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         loadData()
 
         binding.scrollViewContent.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            Timber.d("setOnScrollChangeListener: $scrollY, $oldScrollY")
             if (scrollY - oldScrollY > 10) {
                 listener?.hideFloatWindow()
             }

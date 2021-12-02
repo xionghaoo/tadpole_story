@@ -10,6 +10,7 @@ import com.example.android.uamp.media.library.MusicSource
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.ui.MainActivity
 import xh.zero.tadpolestory.ui.album.NowPlayingActivity
@@ -32,6 +33,12 @@ class TadpoleMusicService : MusicService() {
     override fun onCreate() {
         super.onCreate()
         mediaSessionConnector.registerCustomCommandReceiver(TadpoleCommandReceiver())
+    }
+
+    override fun onDestroy() {
+        repo.prefs.nowPlayingAlbumId = null
+        repo.prefs.nowPlayingAlbumTitle = null
+        super.onDestroy()
     }
 
     override fun createMusicSource(): MusicSource {

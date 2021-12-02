@@ -19,7 +19,7 @@ class NowPlayingActivity : BaseActivity() {
 
         const val EXTRA_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.NowPlayingActivity.EXTRA_ALBUM_TITLE"
 
-        fun start(context: Context?, albumTitle: String) {
+        fun start(context: Context?, albumTitle: String?) {
             context?.startActivity(Intent(context, NowPlayingActivity::class.java).apply {
                 putExtra(EXTRA_ALBUM_TITLE, albumTitle)
             })
@@ -38,6 +38,7 @@ class NowPlayingActivity : BaseActivity() {
         binding.btnBack.setOnClickListener {
             onBackPressed()
         }
+
         replaceFragment(NowPlayingFragment.newInstance(albumTitle), R.id.fragment_container)
     }
 

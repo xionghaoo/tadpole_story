@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MediatorLiveData
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
@@ -23,9 +24,13 @@ import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
+import xh.zero.tadpolestory.repo.Repository
+import xh.zero.tadpolestory.repo.TadpoleMusicService
+import xh.zero.tadpolestory.ui.album.AlbumViewModel
 import xh.zero.tadpolestory.ui.album.NowPlayingActivity
 import xh.zero.tadpolestory.ui.album.NowPlayingViewModel
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener {
@@ -37,6 +42,7 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
     private lateinit var binding: ActivityMainBinding
     private var startX: Float = 0f
     private var expandStartX: Float = 0f
+
     private val viewModel: NowPlayingViewModel by viewModels()
 
     private var isCollapse: Boolean? = null
@@ -45,9 +51,7 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        if (intent?.action == ACTION_NOTIFICATION_PLAYER) {
-            startPlainActivity(NowPlayingActivity::class.java)
-        }
+        startNowPlayingPage(intent)
 
         EasyFloat.with(this)
             .setDragEnable(false)
@@ -70,7 +74,19 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        startNowPlayingPage(intent)
         Timber.d("onNewIntent: ${intent?.action}, ${intent?.data}")
+    }
+
+    override fun onDestroy() {
+        EasyFloat.dismiss("float_window")
+        super.onDestroy()
+    }
+
+    private fun startNowPlayingPage(intent: Intent?) {
+        if (intent?.action == ACTION_NOTIFICATION_PLAYER) {
+            NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
+        }
     }
 
     private fun initialFloatWindow(view: View?) {
@@ -88,8 +104,13 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
         val expandProgressBar = view.findViewById<CircularProgressBar>(R.id.expand_progress_bar)
         val collapseProgressBar = view.findViewById<CircularProgressBar>(R.id.collapse_progress_bar)
 
+        Timber.d("initialFloatWindow: ${viewModel.repo.prefs.nowPlayingAlbumId}")
+//        floatRoot.post {
+//            floatRoot.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
+//        }
+        EasyFloat.getFloatView("float_window")?.visibility = View.GONE
         viewModel.mediaMetadata.observe(this) { mediaItem ->
-            floatRoot.visibility = View.VISIBLE
+            EasyFloat.getFloatView("float_window")?.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
             expandTitle.text = mediaItem.title
             expandDesc.text = mediaItem.subtitle
 
@@ -123,12 +144,7 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
 
         // 播放位置
         viewModel.mediaProgress.observe(this) { progress ->
-//            val degree = (progress / 500f * 360f).toInt()
-//            if (lastDegree != degree) {
-//                playTick.postValue(degree)
-//                lastDegree = degree
-//            }
-//            Timber.d("degree tick: $progress")
+//            if (!floatRoot.isVisible) floatRoot.visibility = View.VISIBLE
             collapseProgressBar.progress = progress.toFloat()
             expandProgressBar.progress = progress.toFloat()
 
@@ -204,7 +220,7 @@ class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener
                 }
                 MotionEvent.ACTION_UP -> {
                     if (e.x - expandStartX < 20) {
-                        NowPlayingActivity.start(this, "")
+                        NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
                     }
                 }
             }

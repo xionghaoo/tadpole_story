@@ -16,6 +16,8 @@ interface PreferenceStorage {
     var refreshToken: String?
     var accessToken: String?
     var serialNumber: String?
+    var nowPlayingAlbumId: String?
+    var nowPlayingAlbumTitle: String?
 
     fun clearCache()
 }
@@ -32,6 +34,8 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
     override var refreshToken by StringPreference(prefs, PREF_REFRESH_TOKEN, null)
     override var accessToken by StringPreference(prefs, PREF_ACCESS_TOKEN, null)
     override var serialNumber: String? by StringPreference(prefs, PREF_SERIAL_NUMBER, null)
+    override var nowPlayingAlbumId: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_ID, null)
+    override var nowPlayingAlbumTitle: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
 
     init {
 //        deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -48,6 +52,8 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
         const val PREF_REFRESH_TOKEN = "pref_refresh_token"
         const val PREF_ACCESS_TOKEN = "pref_access_token"
         const val PREF_SERIAL_NUMBER = "pref_serial_number"
+        const val PREF_NOW_PLAYING_ALBUM_ID = "pref_now_playing_album_id"
+        const val PREF_NOW_PLAYING_ALBUM_TITLE = "pref_now_playing_album_title"
     }
 }
 

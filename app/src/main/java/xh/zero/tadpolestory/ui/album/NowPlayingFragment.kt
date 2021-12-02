@@ -74,6 +74,7 @@ class NowPlayingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
             updateUI(mediaItem)

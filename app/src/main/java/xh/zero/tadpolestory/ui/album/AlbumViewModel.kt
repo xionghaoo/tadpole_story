@@ -21,7 +21,7 @@ import xh.zero.tadpolestory.ui.MediaItemData
 import javax.inject.Inject
 
 class AlbumViewModel @AssistedInject constructor(
-    private val repo: Repository,
+    val repo: Repository,
     private val _musicServiceConnection: MusicServiceConnection,
     @Assisted private val mediaId: String
 ) : ViewModel() {

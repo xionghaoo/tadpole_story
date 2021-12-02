@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class NowPlayingViewModel @Inject constructor(
-    private val repo: Repository,
+    val repo: Repository,
     musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
@@ -67,6 +67,8 @@ class NowPlayingViewModel @Inject constructor(
     val switchState = MutableLiveData<Pair<Boolean, Boolean>>().apply {
         postValue(Pair(first = false, second = true))
     }
+
+    var isPlaying: Boolean = false
 
     fun getRelativeAlbum(trackId: Int) = repo.getRelativeAlbum(trackId)
 
@@ -220,6 +222,7 @@ class NowPlayingViewModel @Inject constructor(
                 else -> R.mipmap.ic_media_play
             }
         )
+        isPlaying = playbackState.isPlaying
     }
 }
 

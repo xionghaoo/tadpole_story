@@ -49,6 +49,7 @@ class TrackListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.repo.prefs.nowPlayingAlbumId = albumId
 
         binding.tvTotalAlbum.text = "共${total}集"
         binding.rcTrackList.layoutManager = GridLayoutManager(requireContext(), 2)
