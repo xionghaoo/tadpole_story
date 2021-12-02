@@ -25,9 +25,10 @@ import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
 import xh.zero.tadpolestory.ui.album.NowPlayingActivity
 import xh.zero.tadpolestory.ui.album.NowPlayingViewModel
+import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), MainFragment.OnFragmentActionListener {
+class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener {
 
     companion object {
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"

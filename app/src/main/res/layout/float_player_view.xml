@@ -12,10 +12,10 @@
         android:id="@+id/expand_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10dp"
+        android:layout_marginTop="@dimen/_30dp"
         android:layout_marginEnd="@dimen/_60dp"
         android:layout_marginStart="@dimen/_10dp"
-        android:layout_marginBottom="@dimen/_10dp"
+        android:layout_marginBottom="@dimen/_30dp"
         app:cardCornerRadius="@dimen/_34dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardElevation="@dimen/_4dp">
