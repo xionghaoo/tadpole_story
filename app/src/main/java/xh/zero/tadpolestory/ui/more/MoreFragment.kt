@@ -28,6 +28,10 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
         adapter = MoreAdapter()
         binding.vpMore.adapter = adapter
         binding.tlMore.setViewPager(binding.vpMore)
+//        binding.vpMore.clearOnPageChangeListeners()
+//        binding.tlMore.setOnTabClickListener { pos ->
+//            binding.vpMore.setCurrentItem(pos, false)
+//        }
         binding.vpMore.setOnTouchListener { v, event -> true }
 
 
