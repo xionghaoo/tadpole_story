@@ -1,3 +1,3 @@
-kd／1通用／功能按钮／儿童故事-默认.png;ic_home_menu_1.png
-kd／1通用／功能按钮／少儿素养-选中.png;ic_home_menu_2_selected.png
-kd／1通用／功能按钮／跟多-默认.png;ic_home_menu_3_selected.png
+儿童故事-选中.png;ic_home_menu_1_selected.png
+少儿素养-选中.png;ic_home_menu_2_selected.png
+跟多-选中.png;ic_home_menu_3_selected.png
