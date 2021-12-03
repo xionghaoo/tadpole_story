@@ -13,6 +13,7 @@ import xh.zero.tadpolestory.databinding.FragmentMainBinding
 import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.ui.home.ChildLiteracyFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
+import xh.zero.tadpolestory.ui.more.MoreFragment
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding>() {
@@ -69,6 +70,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             return when (position) {
                 0 -> ChildStoryFragment.newInstance()
                 1 -> ChildLiteracyFragment.newInstance()
+                2 -> MoreFragment.newInstance()
                 else -> ChildLiteracyFragment.newInstance()
             }
         }
