@@ -2,17 +2,19 @@ package xh.zero.tadpolestory.ui.serach
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import xh.zero.core.paging.PagingViewModel
 import xh.zero.tadpolestory.repo.Repository
+import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.repo.data.AlbumResponse
+import xh.zero.tadpolestory.repo.paging.AlbumRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repo: Repository
-) : ViewModel() {
-    fun getTagList() = repo.getTagList()
-    fun getCategoriesList() = repo.getCategoriesList()
-    fun searchAlbums(page: Int, tags: String) = repo.searchAlbums(page = page, tags = tags)
+    private val repo: Repository,
+    private val albumRepo: AlbumRepository
+) : PagingViewModel<AlbumResponse, Album>(albumRepo) {
+
     fun getMetadataList() = repo.getMetadataList()
-    fun getMetadataAlbums(attrs: String?, calcDimen: Int, page: Int) = repo.getMetadataAlbums(attrs, calcDimen, page)
 
 }

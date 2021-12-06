@@ -98,7 +98,7 @@ interface ApiService {
         @Query("only_paid") only_paid: Boolean = false,
         @Query("page") page: Int,
         @Query("count") count: Int = Configs.PAGE_SIZE,
-    ) : LiveData<ApiResponse<AlbumResponse>>
+    ) : Call<AlbumResponse>
 
     /**
      * 标签列表

@@ -22,6 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import xh.zero.core.network.LiveDataCallAdapterFactory
+import xh.zero.core.utils.AppExecutors
 import xh.zero.core.utils.CryptoUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.BuildConfig
@@ -195,5 +196,9 @@ object AppModule {
         context,
         ComponentName(context, TadpoleMusicService::class.java)
     )
+
+    @Provides
+    @Singleton
+    fun provideAppExecutors() = AppExecutors()
 
 }

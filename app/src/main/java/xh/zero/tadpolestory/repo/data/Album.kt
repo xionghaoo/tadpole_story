@@ -1,5 +1,7 @@
 package xh.zero.tadpolestory.repo.data
 
+import androidx.recyclerview.widget.DiffUtil
+
 class Album {
 
     /**
@@ -99,5 +101,25 @@ class Album {
         var created_at: Long = 0
     }
 
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 
+    override fun equals(other: Any?): Boolean {
+        if (other is Album) {
+            return other.id == id
+        } else {
+            return false
+        }
+    }
+
+    companion object {
+        val DIFF = object : DiffUtil.ItemCallback<Album>() {
+            override fun areContentsTheSame(oldItem: Album, newItem: Album): Boolean =
+                oldItem == newItem
+
+            override fun areItemsTheSame(oldItem: Album, newItem: Album): Boolean =
+                oldItem.id == newItem.id
+        }
+    }
 }

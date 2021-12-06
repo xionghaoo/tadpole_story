@@ -46,18 +46,6 @@ class Repository @Inject constructor(
         apiService.getMetadataList()
     }
 
-    fun getMetadataAlbums(attrs: String?, calcDimen: Int, page: Int) = remoteRequestStrategy {
-        apiService.getMetadataAlbums(
-            metadata_attributes = attrs,
-            calc_dimension = calcDimen,
-            page = page
-        )
-    }
-
-//    fun getVoiceListFormAlbum(albumId: Int, page: Int) = remoteRequestStrategy {
-//        apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
-//    }
-
     fun getDailyRecommendAlbums(token: String, page: Int) = remoteRequestStrategy {
         apiService.getDailyRecommendAlbums(access_token = token, page = page)
     }

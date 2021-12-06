@@ -10,13 +10,13 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentFilterBinding
 import xh.zero.tadpolestory.handleResponse
@@ -49,9 +49,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
         binding.tvPageTitle.text = "儿童故事"
 
-        loadData()
-
-        binding.rcAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rcAlbumList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 
             }
@@ -63,20 +61,51 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
             }
         })
 
-        binding.rcAlbumsList.layoutManager = GridLayoutManager(requireContext(), 2)
-        adapter = FilterAlbumAdapter { album ->
-            findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
-                albumId = album.id,
-                albumTitle = album.album_title.orEmpty(),
-                totalCount = album.include_track_count
-            ))
+        binding.rcAlbumList.layoutManager = GridLayoutManager(requireContext(), 2)
+        adapter = FilterAlbumAdapter(
+            onItemClick = { album ->
+                findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
+                    albumId = album.id,
+                    albumTitle = album.album_title.orEmpty(),
+                    totalCount = album.include_track_count
+                ))
+            },
+            retry = {
+
+            }
+        )
+        binding.rcAlbumList.adapter = adapter
+
+        viewModel.itemList.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
-        binding.rcAlbumsList.adapter = adapter
+
+        viewModel.networkState.observe(viewLifecycleOwner) {
+            adapter.setNetworkState(it)
+//            when (it.status) {
+//                Status.LOADING -> {
+//
+//                }
+//                Status.SUCCESS -> {
+//
+//                }
+//                Status.ERROR -> {
+//
+//                }
+//            }
+        }
+        viewModel.refreshState.observe(viewLifecycleOwner) {
+
+        }
 
         binding.btnFilterExpand.findViewById<TextView>(R.id.tv_filter_expand_title).text = "收起"
         binding.btnFilterExpand.setOnClickListener {
             showFilterPanel(!panelIsShow)
         }
+
+        loadMeta()
+        loadMetaAlbums()
+
     }
 
     private fun showFilterPanel(isShow: Boolean) {
@@ -91,8 +120,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
     }
 
-    private fun loadData() {
-        loadMetaAlbums()
+    private fun loadMeta() {
         viewModel.getMetadataList().observe(this, Observer {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
@@ -141,15 +169,17 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 attrsQuery.append("${item.attr_key}:${item.attr_value}").append(";")
             }
         }
-        viewModel.getMetadataAlbums(
-            attrs = attrsQuery.toString(),
-            calcDimen = calcDimen,
-            page = 1
-        ).observe(viewLifecycleOwner) {
-            handleResponse(it) { r ->
-                adapter.updateData(r.albums ?: emptyList())
-            }
-        }
+//        viewModel.getMetadataAlbums(
+//            attrs = attrsQuery.toString(),
+//            calcDimen = calcDimen,
+//            page = 1
+//        ).observe(viewLifecycleOwner) {
+//            handleResponse(it) { r ->
+//                adapter.updateData(r.albums ?: emptyList())
+//            }
+//        }
+
+        viewModel.showList(listOf(attrsQuery.toString(), calcDimen.toString()))
     }
 
     private fun filterLoad(filterIndex: Int, attrs: AlbumMetaData.Attributes) {
