@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/drawable/shape_float_view.xml" value="0.2601851851851852" />
         <entry key="app/src/main/res/drawable/shape_home_album.xml" value="0.31574074074074077" />
         <entry key="app/src/main/res/drawable/shape_search.xml" value="0.2625" />
+        <entry key="app/src/main/res/drawable/shape_tab_bg.xml" value="0.24537037037037038" />
         <entry key="app/src/main/res/layout/activity_album_detail.xml" value="0.25833333333333336" />
         <entry key="app/src/main/res/layout/activity_daily_recommend.xml" value="0.27239583333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4389690662893091" />
@@ -27,6 +28,7 @@
         <entry key="app/src/main/res/layout/item_home_content.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_home_album.xml" value="0.30480072463768115" />
         <entry key="app/src/main/res/layout/list_item_track.xml" value="0.5291245722222317" />
+        <entry key="app/src/main/res/layout/tab_item_view.xml" value="0.2765625" />
       </map>
     </option>
   </component>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/_17dp"
+    android:paddingEnd="@dimen/_17dp"
+    android:paddingTop="@dimen/_8dp"
+    android:paddingBottom="@dimen/_5dp"
+    xmlns:tools="http://schemas.android.com/tools">
+    <TextView
+        android:id="@+id/tv_tab_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_161723"
+        android:textSize="@dimen/_28sp"
+        tools:text="订阅"/>
+    <View
+        android:id="@+id/v_tab_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_6dp"
+        android:layout_marginTop="@dimen/_5dp"
+        android:visibility="invisible"
+        android:background="@drawable/shape_tab_indicator"/>
+</LinearLayout>

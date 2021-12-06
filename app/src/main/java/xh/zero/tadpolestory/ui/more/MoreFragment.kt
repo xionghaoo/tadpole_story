@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import xh.zero.tadpolestory.databinding.FragmentMoreBinding
 import xh.zero.tadpolestory.ui.BaseFragment
 
@@ -27,7 +28,7 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = MoreAdapter()
         binding.vpMore.adapter = adapter
-        binding.tlMore.setViewPager(binding.vpMore)
+        binding.tlMore.setViewPager(binding.vpMore, titles)
 //        binding.vpMore.clearOnPageChangeListeners()
 //        binding.tlMore.setOnTabClickListener { pos ->
 //            binding.vpMore.setCurrentItem(pos, false)
@@ -37,11 +38,28 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
 
     }
 
-    private inner class MoreAdapter : FragmentPagerAdapter(childFragmentManager,  BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+//    private inner class MoreAdapter : FragmentPagerAdapter(childFragmentManager,  BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+//
+//        override fun getCount(): Int = titles.size
+//
+//        override fun getItem(position: Int): Fragment {
+//            return when(position) {
+//                0 -> MoreSubscribeFragment.newInstance(position)
+//                1 -> MoreHistoryFragment.newInstance()
+//                else -> MoreHistoryFragment.newInstance()
+//            }
+//        }
+//
+//        override fun getPageTitle(position: Int): CharSequence? {
+//            return titles[position]
+//        }
+//    }
 
-        override fun getCount(): Int = titles.size
+    private inner class MoreAdapter : FragmentStateAdapter(this) {
 
-        override fun getItem(position: Int): Fragment {
+        override fun getItemCount(): Int = titles.size
+
+        override fun createFragment(position: Int): Fragment {
             return when(position) {
                 0 -> MoreSubscribeFragment.newInstance(position)
                 1 -> MoreHistoryFragment.newInstance()
@@ -49,9 +67,6 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
             }
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
-            return titles[position]
-        }
     }
 
     companion object {
