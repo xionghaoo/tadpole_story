@@ -72,10 +72,33 @@ interface ApiService {
         @Query("count") count: Int = Configs.PAGE_SIZE,
     ) : LiveData<ApiResponse<AlbumResponse>>
 
+    /**
+     * 获取专辑元数据
+     */
     @GET("$PREFIX/metadata/list")
     fun getMetadataList(
         @Query("category_id") category_id: Int = Configs.CATEGORY_ID
-    ) : LiveData<ApiResponse<PlainData>>
+    ) : LiveData<ApiResponse<List<AlbumMetaData>>>
+
+    /**
+     * 根据专辑元数据获取专辑
+     */
+    @GET("$PREFIX/metadata/albums")
+    fun getMetadataAlbums(
+        // 分类 ID。分类数据可以通过 /categories/list 获取
+        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        // 元数据属性列表:在/metadata/list 接口得到的结果中，取不同元 数据属性的 attrkey 和 atrrvalue 组成任意个数的 key-value 键值， 格式
+        // 如: attr_key1:attr_value1;attr_key2:attr_value2;attr_key3 :attr_value3。注意: 此字段可为空，为空表示获取此分类下全部
+        @Query("metadata_attributes") metadata_attributes: String? = null,
+        // 返回结果排序维度:1-最火，2-最新，3-最多播放
+        @Query("calc_dimension") calc_dimension: Int,
+        // 是否包含付费内容，true 或者 false，默认:false
+        @Query("contains_paid") contains_paid: Boolean = false,
+        // 是否只输出付费内容，true 或者 false，默认:false
+        @Query("only_paid") only_paid: Boolean = false,
+        @Query("page") page: Int,
+        @Query("count") count: Int = Configs.PAGE_SIZE,
+    ) : LiveData<ApiResponse<AlbumResponse>>
 
     /**
      * 标签列表

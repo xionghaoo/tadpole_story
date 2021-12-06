@@ -59,12 +59,13 @@
         android:id="@+id/rc_albums_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_82dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView9" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/textView9"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -78,24 +79,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" >
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_42dp"
-                android:textColor="@color/color_9B9B9B"
-                android:textSize="@dimen/_20sp"
-                android:gravity="center"
-                android:text="综合排序"/>
-        </LinearLayout>
+            android:id="@+id/container_filter_calc"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_42dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/btn_filter_expand"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
         <LinearLayout
-            android:id="@+id/container_search_tags_list"
+            android:id="@+id/container_filter_other"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_200dp"
+            android:layout_height="@dimen/_256dp"
             android:orientation="vertical"
-            android:background="@color/color_0A1A2A"/>
-    </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_filter_calc"/>
+
+        <LinearLayout
+            android:id="@+id/btn_filter_expand"
+            android:layout_width="@dimen/_98dp"
+            android:layout_height="@dimen/_38dp"
+            app:layout_constraintBottom_toTopOf="@+id/container_filter_other"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/shape_filter_expand"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+            <ImageView
+                android:layout_width="@dimen/_32dp"
+                android:layout_height="@dimen/_32dp"
+                android:src="@mipmap/ic_filter_button"/>
+            <TextView
+                android:id="@+id/tv_filter_expand_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_20sp"
+                android:textColor="@color/color_9B9B9B"
+                android:text="展开"
+                android:layout_marginStart="@dimen/_4dp"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView16"

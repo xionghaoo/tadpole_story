@@ -13,5 +13,6 @@ class SearchViewModel @Inject constructor(
     fun getCategoriesList() = repo.getCategoriesList()
     fun searchAlbums(page: Int, tags: String) = repo.searchAlbums(page = page, tags = tags)
     fun getMetadataList() = repo.getMetadataList()
+    fun getMetadataAlbums(attrs: String?, calcDimen: Int, page: Int) = repo.getMetadataAlbums(attrs, calcDimen, page)
 
 }

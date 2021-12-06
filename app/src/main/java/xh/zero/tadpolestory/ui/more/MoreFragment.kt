@@ -33,9 +33,7 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
 //        binding.tlMore.setOnTabClickListener { pos ->
 //            binding.vpMore.setCurrentItem(pos, false)
 //        }
-        binding.vpMore.setOnTouchListener { v, event -> true }
-
-
+        binding.vpMore.isSaveEnabled = false
     }
 
 //    private inner class MoreAdapter : FragmentPagerAdapter(childFragmentManager,  BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
