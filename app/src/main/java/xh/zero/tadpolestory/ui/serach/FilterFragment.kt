@@ -13,6 +13,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,10 +28,10 @@ import java.lang.StringBuilder
 class FilterFragment : BaseFragment<FragmentFilterBinding>() {
 
     private val viewModel: SearchViewModel by viewModels()
-//    private var selectedIndex = 0
     private lateinit var adapter: FilterAlbumAdapter
     private var selectedTagIndexMap = HashMap<Int, FilterItem>()
     private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()
+    private var panelIsShow = true
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -46,6 +47,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
+        binding.tvPageTitle.text = "儿童故事"
 
         loadData()
 
@@ -55,25 +57,37 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 10) {
-                    binding.containerFilterOther.visibility = View.GONE
+                if (dy > 10 && panelIsShow) {
+                    showFilterPanel(false)
                 }
             }
         })
 
         binding.rcAlbumsList.layoutManager = GridLayoutManager(requireContext(), 2)
-        adapter = FilterAlbumAdapter()
+        adapter = FilterAlbumAdapter { album ->
+            findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
+                albumId = album.id,
+                albumTitle = album.album_title.orEmpty(),
+                totalCount = album.include_track_count
+            ))
+        }
         binding.rcAlbumsList.adapter = adapter
 
+        binding.btnFilterExpand.findViewById<TextView>(R.id.tv_filter_expand_title).text = "收起"
         binding.btnFilterExpand.setOnClickListener {
-            val tvTitle = binding.btnFilterExpand.findViewById<TextView>(R.id.tv_filter_expand_title)
-            binding.containerFilterOther.visibility = if (binding.containerFilterOther.isVisible) {
-                tvTitle.text = "展开"
-                View.GONE
-            } else {
-                tvTitle.text = "收起"
-                View.VISIBLE
-            }
+            showFilterPanel(!panelIsShow)
+        }
+    }
+
+    private fun showFilterPanel(isShow: Boolean) {
+        panelIsShow = isShow
+        val tvTitle = binding.btnFilterExpand.findViewById<TextView>(R.id.tv_filter_expand_title)
+        binding.containerFilterOther.visibility = if (!isShow) {
+            tvTitle.text = "展开"
+            View.GONE
+        } else {
+            tvTitle.text = "收起"
+            View.VISIBLE
         }
     }
 

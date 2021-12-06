@@ -28,8 +28,8 @@ class TrackListFragment : Fragment() {
         arguments?.getString(ARG_ALBUM_ID) ?: ""
     }
 
-    private val total: Int by lazy {
-        arguments?.getInt(ARG_TOTAL, 0) ?: 0
+    private val total: Long by lazy {
+        arguments?.getLong(ARG_TOTAL, 0) ?: 0
     }
 
     private val albumTitle: String by lazy {
@@ -78,10 +78,10 @@ class TrackListFragment : Fragment() {
         private const val ARG_TOTAL = "ARG_TOTAL"
         private const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
 
-        fun newInstance(albumId: String, total: Int, albumTitle: String) = TrackListFragment().apply {
+        fun newInstance(albumId: String, total: Long, albumTitle: String) = TrackListFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ALBUM_ID, albumId)
-                putInt(ARG_TOTAL, total)
+                putLong(ARG_TOTAL, total)
                 putString(ARG_ALBUM_TITLE, albumTitle)
             }
         }

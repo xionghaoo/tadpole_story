@@ -1,3 +1,1 @@
-儿童故事-选中.png;ic_home_menu_1_selected.png
-少儿素养-选中.png;ic_home_menu_2_selected.png
-跟多-选中.png;ic_home_menu_3_selected.png
+kd／1通用／iocn-筛选-小.png;ic_filter_collapse.png

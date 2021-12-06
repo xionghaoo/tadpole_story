@@ -38,8 +38,8 @@ class AlbumDetailActivity : BaseActivity() {
         intent.getIntExtra(EXTRA_ALBUM_ID, -1)
     }
 
-    private val total: Int by lazy {
-        intent.getIntExtra(EXTRA_TOTAL, -1)
+    private val total: Long by lazy {
+        intent.getLongExtra(EXTRA_TOTAL, 0)
     }
 
     private val albumTitle: String by lazy {

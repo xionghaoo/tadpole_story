@@ -13,20 +13,7 @@
             android:id="@+id/action_mainFragment_to_albumDetailFragment"
             app:destination="@id/albumDetailFragment"
             app:enterAnim="@anim/page_enter"
-            app:popExitAnim="@anim/page_exit">
-            <argument
-                android:name="albumId"
-                app:argType="integer"
-                android:defaultValue="0" />
-            <argument
-                android:name="totalCount"
-                app:argType="integer"
-                android:defaultValue="0" />
-            <argument
-                android:name="albumTitle"
-                app:argType="string"
-                android:defaultValue="" />
-        </action>
+            app:popExitAnim="@anim/page_exit"/>
         <action
             android:id="@+id/action_mainFragment_to_filterFragment"
             app:destination="@id/filterFragment"
@@ -43,8 +30,7 @@
             android:defaultValue="0" />
         <argument
             android:name="totalCount"
-            app:argType="integer"
-            android:defaultValue="0" />
+            app:argType="long" />
         <argument
             android:name="albumTitle"
             app:argType="string"
@@ -54,5 +40,9 @@
         android:id="@+id/filterFragment"
         android:name="xh.zero.tadpolestory.ui.serach.FilterFragment"
         android:label="fragment_filter"
-        tools:layout="@layout/fragment_filter" />
+        tools:layout="@layout/fragment_filter" >
+        <action
+            android:id="@+id/action_filterFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment" />
+    </fragment>
 </navigation>

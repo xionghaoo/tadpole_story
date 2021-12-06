@@ -12,7 +12,8 @@ import xh.zero.tadpolestory.repo.data.Album
 import kotlin.math.roundToInt
 
 class FilterAlbumAdapter(
-    private val items: List<Album> = emptyList()
+    private val items: List<Album> = emptyList(),
+    private val onItemClick: (Album) -> Unit
 ) : PlainListAdapter<Album>(items) {
     override fun bindView(v: View, item: Album, position: Int) {
         v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
@@ -25,6 +26,7 @@ class FilterAlbumAdapter(
             .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
             .into(v.findViewById<ImageView>(R.id.iv_album_cover))
 
+        v.setOnClickListener { onItemClick(item) }
     }
 
     override fun itemLayoutId(): Int = R.layout.list_item_filter

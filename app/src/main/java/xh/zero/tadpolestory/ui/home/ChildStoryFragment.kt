@@ -135,7 +135,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             v.setOnClickListener {
                 findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
                     albumId = item.id,
-                    totalCount = item.include_track_count.toInt(),
+                    totalCount = item.include_track_count,
                     albumTitle = item.album_title.orEmpty(),
                 ))
             }

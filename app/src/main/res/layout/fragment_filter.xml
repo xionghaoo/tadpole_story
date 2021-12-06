@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tv_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="儿童故事"
@@ -60,6 +60,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_82dp"
+        android:paddingStart="@dimen/_136dp"
+        android:paddingEnd="@dimen/_136dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,16 +109,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" >
             <ImageView
+                android:id="@+id/iv_filter_expand"
                 android:layout_width="@dimen/_32dp"
                 android:layout_height="@dimen/_32dp"
-                android:src="@mipmap/ic_filter_button"/>
+                android:src="@mipmap/ic_filter_collapse"/>
             <TextView
                 android:id="@+id/tv_filter_expand_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/_20sp"
                 android:textColor="@color/color_9B9B9B"
-                android:text="展开"
+                tools:text="展开"
                 android:layout_marginStart="@dimen/_4dp"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
