@@ -86,6 +86,12 @@ class Album {
 
     var extraAlbum: Album? = null
 
+    /**
+     * 分页参数
+     */
+    var current_page: Int = 0
+    var total_page: Int = 0
+
     class Announcer {
         var anchor_grade = 0
         var avatar_url: String? = null
