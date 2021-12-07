@@ -8,12 +8,16 @@
         <entry key="..\:/Projects/android/tadpole_story/app/src/main/res/layout/activity_main.xml" value="0.25769927536231885" />
         <entry key="..\:/Projects/android/tadpole_story/app/src/main/res/layout/float_player_view.xml" value="0.20516304347826086" />
         <entry key="..\:/Projects/android/tadpole_story/app/src/main/res/layout/shape_float_view.xml" value="0.18854166666666666" />
+        <entry key="app/src/main/res/drawable/shape_album_detail_tag.xml" value="0.2490740740740741" />
         <entry key="app/src/main/res/drawable/shape_album_tag.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/shape_album_tag_selected.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/shape_filter_expand.xml" value="0.2740740740740741" />
         <entry key="app/src/main/res/drawable/shape_filter_tag_selected.xml" value="0.24351851851851852" />
         <entry key="app/src/main/res/drawable/shape_float_view.xml" value="0.2601851851851852" />
         <entry key="app/src/main/res/drawable/shape_home_album.xml" value="0.31574074074074077" />
+        <entry key="app/src/main/res/drawable/shape_scroll_elevation.xml" value="0.2638888888888889" />
+        <entry key="app/src/main/res/drawable/shape_scroll_elevation_cover.xml" value="0.2638888888888889" />
+        <entry key="app/src/main/res/drawable/shape_scroll_elevation_cover_end.xml" value="0.2638888888888889" />
         <entry key="app/src/main/res/drawable/shape_search.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/shape_tab_bg.xml" value="0.24537037037037038" />
         <entry key="app/src/main/res/layout/activity_album_detail.xml" value="0.25833333333333336" />
@@ -30,7 +34,7 @@
         <entry key="app/src/main/res/layout/fragment_more.xml" value="0.27291666666666664" />
         <entry key="app/src/main/res/layout/fragment_more_content.xml" value="0.26458333333333334" />
         <entry key="app/src/main/res/layout/fragment_now_playing.xml" value="0.26132246376811596" />
-        <entry key="app/src/main/res/layout/fragment_track_list.xml" value="0.5946424577512911" />
+        <entry key="app/src/main/res/layout/fragment_track_list.xml" value="0.6516569717693932" />
         <entry key="app/src/main/res/layout/item_home_content.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_filter.xml" value="0.38722826086956524" />
         <entry key="app/src/main/res/layout/list_item_filter_album.xml" value="0.37817028985507245" />

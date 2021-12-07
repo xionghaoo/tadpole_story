@@ -5,19 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/_100dp"
-    android:paddingEnd="@dimen/_100dp"
+    android:background="@color/color_main_background"
     tools:context=".ui.album.TrackListFragment">
 
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/btn_album_tracks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginStart="@dimen/_29dp"
+        android:layout_marginStart="@dimen/_135dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -47,10 +46,73 @@
         android:id="@+id/rc_track_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_135dp"
+        android:layout_marginEnd="@dimen/_135dp"
         android:layout_marginTop="@dimen/_10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_album_tracks" />
+
+    <FrameLayout
+        android:id="@+id/v_scroll_cover"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_24dp"
+        android:visibility="invisible"
+        android:layout_marginStart="@dimen/_66dp"
+        android:layout_marginEnd="@dimen/_66dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rc_track_list" >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_scroll_elevation"/>
+        <View
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@drawable/shape_scroll_elevation_cover_start" />
+        <View
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@drawable/shape_scroll_elevation_cover_end" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/v_track_select_panel_cover"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@color/color_overlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rc_track_list" />
+
+    <ScrollView
+        android:id="@+id/container_album_track_list"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_142dp"
+        android:background="@color/color_main_background"
+        android:paddingStart="@dimen/_135dp"
+        android:paddingEnd="@dimen/_135dp"
+        android:visibility="gone"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rc_track_list">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/fl_album_track_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap" />
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

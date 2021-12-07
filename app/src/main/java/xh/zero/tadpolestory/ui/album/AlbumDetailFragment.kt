@@ -63,7 +63,7 @@ class AlbumDetailFragment : Fragment() {
             tv.gravity = Gravity.CENTER
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._16sp))
             tv.setTextColor(resources.getColor(R.color.color_5E5F62))
-            tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.shape_album_tag)
+            tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.shape_album_detail_tag)
             binding.tvAlbumTags.addView(tv)
             val lp = tv.layoutParams as LinearLayout.LayoutParams
             lp.height = LinearLayout.LayoutParams.MATCH_PARENT

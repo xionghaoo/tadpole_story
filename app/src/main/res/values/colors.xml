@@ -9,7 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="white_62">#9EFFFFFF</color>
     <color name="white_20">#33FFFFFF</color>
+    <color name="color_overlay">#33000000</color>
     <color name="color_main_background">#FFFBF2</color>
+    <color name="color_F6F2E4">#F6F2E4</color>
 
     <color name="color_divider">#DADADA</color>
 
