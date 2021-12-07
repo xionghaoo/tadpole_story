@@ -77,15 +77,23 @@ class TrackListFragment : Fragment() {
                 binding.vScrollCover.visibility = if (totalScrollY > 0) View.VISIBLE else View.INVISIBLE
             }
         })
+        binding.rcTrackList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+//                if (binding.rcTrackList.layoutManager.la())
+            }
+        })
 
         binding.btnAlbumTracks.setOnClickListener {
             toggleTrackSelectPanel()
         }
 
         loadData()
+
     }
 
     private fun loadData() {
+        viewModel.loadSongs(1, false)
         viewModel.mediaItems.observe(viewLifecycleOwner) { items ->
             Timber.d("加载的音频数量：${items.size}")
             if (items.isNotEmpty()) {
@@ -121,6 +129,7 @@ class TrackListFragment : Fragment() {
 
             tv.setOnClickListener { v ->
                 selectedIndex = v.tag as Int
+                loadTracks()
                 binding.flAlbumTrackList.children.forEach { child ->
                     selectTag(child as TextView)
                 }
@@ -142,6 +151,13 @@ class TrackListFragment : Fragment() {
     private fun toggleTrackSelectPanel() {
         isShowTrackSelectPanel = isShowTrackSelectPanel.not()
         binding.containerAlbumTrackList.visibility = if (isShowTrackSelectPanel) View.VISIBLE else View.GONE
+        binding.ivTrackPanelStatus.setImageResource(
+            if (isShowTrackSelectPanel) {
+                R.mipmap.ic_up_16
+            } else {
+                R.mipmap.ic_drop_16
+            }
+        )
         if (isShowTrackSelectPanel) {
             binding.vTrackSelectPanelCover.visibility = View.VISIBLE
             binding.vTrackSelectPanelCover.setOnClickListener {
@@ -158,6 +174,10 @@ class TrackListFragment : Fragment() {
                 }
                 .start()
         }
+    }
+
+    private fun loadTracks() {
+        viewModel.loadSongs(2, false)
     }
 
     companion object {

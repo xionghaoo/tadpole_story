@@ -1,5 +1,6 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -13,12 +14,11 @@ import com.example.android.uamp.media.extensions.isPlaying
 import com.example.android.uamp.media.extensions.isPrepared
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
 import xh.zero.tadpolestory.R
+import xh.zero.tadpolestory.repo.LOAD_SONG_FOR_PAGE
 import xh.zero.tadpolestory.repo.Repository
 import xh.zero.tadpolestory.ui.MediaItemData
-import javax.inject.Inject
 
 class AlbumViewModel @AssistedInject constructor(
     val repo: Repository,
@@ -28,9 +28,6 @@ class AlbumViewModel @AssistedInject constructor(
 
     private val _mediaItems = MutableLiveData<List<MediaItemData>>()
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
-
-    // TODO 测试
-//    private val mediaId = "__RECOMMENDED__"
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
@@ -141,6 +138,16 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
+    fun loadSongs(page: Int, isRefresh: Boolean) {
+        musicServiceConnection.sendCommand(LOAD_SONG_FOR_PAGE, Bundle().apply {
+            putString("mediaId", mediaId)
+            putInt("page", page)
+            putBoolean("isRefresh", isRefresh)
+        }) { code, bundle ->
+
+        }
+    }
+
     /**
      * Since we use [LiveData.observeForever] above (in [musicServiceConnection]), we want
      * to call [LiveData.removeObserver] here to prevent leaking resources when the [ViewModel]
@@ -150,8 +157,6 @@ class AlbumViewModel @AssistedInject constructor(
      */
     override fun onCleared() {
         super.onCleared()
-
-        Timber.d("view model onCleared: mediaId: ${mediaId}")
 
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)

@@ -34,13 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.example.android.uamp.media.extensions.*
-import com.example.android.uamp.media.library.AbstractMusicSource
-import com.example.android.uamp.media.library.BrowseTree
-import com.example.android.uamp.media.library.MEDIA_SEARCH_SUPPORTED
-import com.example.android.uamp.media.library.MusicSource
-import com.example.android.uamp.media.library.UAMP_BROWSABLE_ROOT
-import com.example.android.uamp.media.library.UAMP_EMPTY_ROOT
-import com.example.android.uamp.media.library.UAMP_RECENT_ROOT
+import com.example.android.uamp.media.library.*
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
@@ -198,6 +192,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
+        mediaSource = createMusicSource()
 
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession)
@@ -319,10 +314,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             /**
              * mediaSource的创建和加载必须要在一起，不然内部state会缺少一个STATE_CREATED状态
              */
-            mediaSource = createMusicSource()
-            serviceScope.launch {
-                mediaSource.load(parentMediaId)
-            }
+//            mediaSource = createMusicSource()
+//            serviceScope.launch {
+//                mediaSource.load(parentMediaId, null)
+//            }
             // If the media source is ready, the results will be set synchronously here.
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
@@ -473,6 +468,14 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         } else return false
     }
 
+    fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean) {
+        mediaSource.reset()
+        serviceScope.launch {
+            mediaSource.load(mediaId, page, isRefresh)
+            notifyChildrenChanged(mediaId)
+        }
+    }
+
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
 
         /**
@@ -575,14 +578,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) = Unit
-
-//        override fun onCommand(
-//            player: Player,
-//            controlDispatcher: ControlDispatcher,
-//            command: String,
-//            extras: Bundle?,
-//            cb: ResultReceiver?
-//        ) = false
 
         override fun onCommand(
             player: Player,

@@ -29,7 +29,6 @@ class AlbumRepository @Inject constructor(
         params: List<String>
     ): PagingDataFactory<AlbumResponse, Album> = object : PagingDataFactory<AlbumResponse, Album>(appExecutors) {
         override fun convertToListData(r: AlbumResponse?): List<Album> {
-//            val result = ArrayList<Album>()
             var tmp: Album? = null
             r?.albums?.forEachIndexed { index, album ->
                 if (index % 2 == 0) {

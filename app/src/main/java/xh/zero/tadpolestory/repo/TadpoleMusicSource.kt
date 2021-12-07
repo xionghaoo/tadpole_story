@@ -24,39 +24,36 @@ class TadpoleMusicSource(
     private val repo: Repository
 ) : AbstractMusicSource() {
 
-    private var catalog: List<MediaMetadataCompat> = emptyList()
-
-//    init {
-//        state = STATE_INITIALIZING
-//    }
+    private var catalog: MutableList<MediaMetadataCompat> = mutableListOf()
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
-    override suspend fun load(mediaId: String) {
+    override suspend fun load(mediaId: String, page: Int, isRefresh: Boolean) {
+        if (isRefresh) {
+            catalog.clear()
+        }
         state = STATE_INITIALIZING
         Timber.d("mediaId: $mediaId")
         // 根据albumId来查询音频
         // Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
-        updateCatalog(mediaId)?.let { updatedCatalog ->
-            catalog = updatedCatalog
+        updateCatalog(mediaId, page)?.let { updatedCatalog ->
+            catalog.addAll(updatedCatalog)
             state = STATE_INITIALIZED
         } ?: run {
-            catalog = emptyList()
+            catalog = mutableListOf()
             state = STATE_ERROR
         }
-
-//        repo.getVoiceList("")
     }
 
     /**
      * Function to connect to a remote URI and download/process the JSON file that corresponds to
      * [MediaMetadataCompat] objects.
      */
-    private suspend fun updateCatalog(albumId: String): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(albumId: String, page: Int): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             val musicCat = try {
 //                downloadJson(catalogUri)
-                getAlbumVoices(albumId)
+                getAlbumVoices(albumId, page)
             } catch (ioException: IOException) {
                 return@withContext null
             }
@@ -65,17 +62,6 @@ class TadpoleMusicSource(
 //            val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
 
             val mediaMetadataCompats = musicCat?.tracks?.map { song ->
-                // The JSON may have paths that are relative to the source of the JSON
-                // itself. We need to fix them up here to turn them into absolute paths.
-//                catalogUri.scheme?.let { scheme ->
-//                    if (!song.source.startsWith(scheme)) {
-//                        song.source = baseUri + song.source
-//                    }
-//                    if (!song.image.startsWith(scheme)) {
-//                        song.image = baseUri + song.image
-//                    }
-//                }
-//                song.play_url_32 =
                 val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle))
 
                 MediaMetadataCompat.Builder()
@@ -94,15 +80,8 @@ class TadpoleMusicSource(
     }
 
     @Throws(IOException::class)
-    private fun downloadJson(catalogUri: Uri): JsonCatalog {
-        val catalogConn = URL(catalogUri.toString())
-        val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
-        return Gson().fromJson(reader, JsonCatalog::class.java)
-    }
-
-    @Throws(IOException::class)
-    private fun getAlbumVoices(albumId: String) : Album? {
-        val response = repo.getVoiceListFormAlbum(albumId, page = 1).execute()
+    private fun getAlbumVoices(albumId: String, page: Int) : Album? {
+        val response = repo.getVoiceListFormAlbum(albumId, page = page).execute()
         if (response.isSuccessful) {
             return response.body()
         } else {
@@ -146,13 +125,6 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: Track, total: Long): MediaMetada
 
     // Allow it to be used in the typical builder style.
     return this
-}
-
-/**
- * Wrapper object for our JSON in order to be processed easily by GSON.
- */
-class JsonCatalog {
-    var music: List<JsonMusic> = ArrayList()
 }
 
 /**

@@ -41,7 +41,7 @@ interface MusicSource : Iterable<MediaMetadataCompat> {
     /**
      * Begins loading the data for this music source.
      */
-    suspend fun load(mediaId: String)
+    suspend fun load(mediaId: String, page: Int, isRefresh: Boolean)
 
     /**
      * Method which will perform a given action after this [MusicSource] is ready to be used.
@@ -53,6 +53,8 @@ interface MusicSource : Iterable<MediaMetadataCompat> {
     fun whenReady(performAction: (Boolean) -> Unit): Boolean
 
     fun search(query: String, extras: Bundle): List<MediaMetadataCompat>
+
+    fun reset()
 }
 
 @IntDef(
@@ -122,6 +124,11 @@ abstract class AbstractMusicSource : MusicSource {
                 true
             }
         }
+
+    override fun reset() {
+        state = STATE_CREATED
+        onReadyListeners.clear()
+    }
 
     /**
      * Handles searching a [MusicSource] from a focused voice search, often coming

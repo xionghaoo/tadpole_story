@@ -151,7 +151,6 @@ class MusicSourceTest {
 class TestMusicSource(
     private val music: List<MediaMetadataCompat>
 ) : AbstractMusicSource(), Iterable<MediaMetadataCompat> by music {
-    override suspend fun load() = Unit
 
     fun prepare() {
         state = STATE_INITIALIZED
@@ -159,5 +158,9 @@ class TestMusicSource(
 
     fun error() {
         state = STATE_ERROR
+    }
+
+    override suspend fun load(mediaId: String, page: Int, isRefresh: Boolean) {
+        TODO("Not yet implemented")
     }
 }

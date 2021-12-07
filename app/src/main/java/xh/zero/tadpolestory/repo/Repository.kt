@@ -2,6 +2,7 @@ package xh.zero.tadpolestory.repo
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.remoteRequestStrategy
 import xh.zero.tadpolestory.repo.data.Album
 import java.io.IOException
@@ -63,5 +64,6 @@ class Repository @Inject constructor(
         apiService.getRelativeAlbum(trackId)
     }
 
-    fun getVoiceListFormAlbum(albumId: String, page: Int) = apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
+    fun getVoiceListFormAlbum(albumId: String, page: Int, pageSize: Int? = null) =
+        apiService.getVoiceListFormAlbum(album_id = albumId, page = page, count = pageSize)
 }

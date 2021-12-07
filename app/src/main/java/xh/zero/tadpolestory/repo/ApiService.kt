@@ -117,7 +117,7 @@ interface ApiService {
         @Query("album_id") album_id: String,
         @Query("sort") sort: String = "asc",
         @Query("page") page: Int,
-        @Query("count") count: Int = Configs.PAGE_SIZE
+        @Query("count") count: Int? = Configs.PAGE_SIZE
     ) : Call<Album>
 
     /**

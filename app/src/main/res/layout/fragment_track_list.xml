@@ -36,6 +36,7 @@
             android:textSize="@dimen/_20sp" />
 
         <ImageView
+            android:id="@+id/iv_track_panel_status"
             android:layout_width="@dimen/_16dp"
             android:layout_height="@dimen/_16dp"
             android:layout_marginStart="@dimen/_16dp"

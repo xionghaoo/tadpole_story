@@ -2,7 +2,6 @@ package xh.zero.tadpolestory.repo
 
 import android.app.Activity
 import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
 import com.example.android.uamp.media.MusicService
@@ -10,10 +9,8 @@ import com.example.android.uamp.media.library.MusicSource
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.ui.MainActivity
-import xh.zero.tadpolestory.ui.album.NowPlayingActivity
 import javax.inject.Inject
 
 const val SEEK_TO_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.SEEK_TO_POSITION"
@@ -22,6 +19,9 @@ const val HAS_NEXT = "${Configs.PACKAGE_NAME}.COMMAND.HAS_NEXT"
 const val PLAY_PREV = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_PREV"
 const val HAS_PREV = "${Configs.PACKAGE_NAME}.COMMAND.HAS_PREV"
 const val EXTRA_MEDIA_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.EXTRA_MEDIA_POSITION"
+
+const val LOAD_SONG_FOR_PAGE = "${Configs.PACKAGE_NAME}.COMMAND.LOAD_SONG_FOR_PAGE"
+
 typealias CommandHandler = (parameters: Bundle, callback: ResultReceiver?) -> Boolean
 
 @AndroidEntryPoint
@@ -64,6 +64,7 @@ class TadpoleMusicService : MusicService() {
             SEEK_TO_POSITION -> seekToPositionCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_PREV -> playPrevCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_NEXT -> playNextCommand(extras ?: Bundle.EMPTY, cb)
+            LOAD_SONG_FOR_PAGE -> loadSongForPageCommand(extras ?: Bundle.EMPTY, cb)
             else -> false
         }
     }
@@ -87,6 +88,16 @@ class TadpoleMusicService : MusicService() {
         callback?.send(Activity.RESULT_OK, Bundle().apply {
             putBoolean(HAS_NEXT, hasNext)
         })
+        true
+    }
+
+    private val loadSongForPageCommand: CommandHandler = { extras, callback ->
+        val mediaId = extras.getString("mediaId")
+        val page = extras.getInt("page", 1)
+        val isRefresh = extras.getBoolean("isRefresh", false)
+        if (mediaId != null) {
+            loadMedia(mediaId, page, isRefresh)
+        }
         true
     }
 }

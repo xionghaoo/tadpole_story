@@ -18,8 +18,7 @@ import kotlin.math.roundToInt
 
 class FilterAlbumAdapter(
     private val onItemClick: (Album) -> Unit,
-    private val retry: () -> Unit,
-
+    private val retry: () -> Unit
 ) : PagingAdapter<Album>(Album.DIFF, retry) {
 
     override fun bindItemView(v: View, item: Album?, position: Int) {
