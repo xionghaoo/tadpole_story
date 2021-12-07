@@ -89,8 +89,8 @@ class Album {
     /**
      * 分页参数
      */
-    var current_page: Int = 0
-    var total_page: Int = 0
+    val current_page: Int = 0
+    val total_page: Int = 0
 
     class Announcer {
         var anchor_grade = 0
