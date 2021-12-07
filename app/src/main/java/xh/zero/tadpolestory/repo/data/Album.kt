@@ -84,6 +84,8 @@ class Album {
     var can_download = false
     var album_title: String? = null
 
+    var extraAlbum: Album? = null
+
     class Announcer {
         var anchor_grade = 0
         var avatar_url: String? = null

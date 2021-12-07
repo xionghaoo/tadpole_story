@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.core.vo.Status
@@ -30,7 +31,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var adapter: FilterAlbumAdapter
     private var selectedTagIndexMap = HashMap<Int, FilterItem>()
-    private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()
+//    private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()
     private var panelIsShow = true
 
     override fun onCreateBindLayout(
@@ -61,7 +62,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
             }
         })
 
-        binding.rcAlbumList.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
         adapter = FilterAlbumAdapter(
             onItemClick = { album ->
                 findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
@@ -162,11 +163,11 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private fun loadMetaAlbums() {
         val attrsQuery = StringBuilder()
         var calcDimen = 1
-        filterMap.values.forEach { item ->
-            if (item.attr_key == 0) {
-                calcDimen = item.attr_value?.toInt() ?: 1
-            } else if (item.attr_key > 0) {
-                attrsQuery.append("${item.attr_key}:${item.attr_value}").append(";")
+        selectedTagIndexMap.values.forEach { item ->
+            if (item.attrs.attr_key == 0) {
+                calcDimen = item.attrs.attr_value?.toInt() ?: 1
+            } else if (item.attrs.attr_key > 0) {
+                attrsQuery.append("${item.attrs.attr_key}:${item.attrs.attr_value}").append(";")
             }
         }
 //        viewModel.getMetadataAlbums(
@@ -182,10 +183,10 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         viewModel.showList(listOf(attrsQuery.toString(), calcDimen.toString()))
     }
 
-    private fun filterLoad(filterIndex: Int, attrs: AlbumMetaData.Attributes) {
-        filterMap[filterIndex] = attrs
-        loadMetaAlbums()
-    }
+//    private fun filterLoad(filterIndex: Int, attrs: AlbumMetaData.Attributes) {
+////        filterMap[filterIndex] = attrs
+//        loadMetaAlbums()
+//    }
 
     private fun bindTopTagList(filterIndex: Int, tags: List<AlbumMetaData.Attributes?>) {
         binding.llTagList.removeAllViews()
@@ -218,7 +219,8 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     val item = v.tag as FilterItem
                     selectedTagIndexMap[filterIndex] = item
 //                    loadMetaAlbums()
-                    filterLoad(filterIndex, item.attrs)
+//                    filterLoad(filterIndex, item.attrs)
+                    loadMetaAlbums()
                     binding.llTagList.children.forEachIndexed { index, child ->
                         selectTopTagView(filterIndex, child as TextView, index)
                     }
@@ -269,7 +271,8 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 tv.setOnClickListener { v ->
                     val item = v.tag as FilterItem
                     selectedTagIndexMap[filterIndex] = item
-                    filterLoad(filterIndex, item.attrs)
+//                    filterLoad(filterIndex, item.attrs)
+                    loadMetaAlbums()
                     container.children.forEachIndexed { index, child ->
                         selectFilterTagView(filterIndex, child as TextView, index)
                     }

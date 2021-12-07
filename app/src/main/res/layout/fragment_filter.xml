@@ -60,8 +60,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_82dp"
-        android:paddingStart="@dimen/_136dp"
-        android:paddingEnd="@dimen/_136dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

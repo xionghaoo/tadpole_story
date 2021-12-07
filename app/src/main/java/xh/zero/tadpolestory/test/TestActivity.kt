@@ -47,7 +47,6 @@ class TestActivity : AppCompatActivity() {
 //        lp.width = 300
 //        lp.height = 300
         popupWindow.windowLayoutType = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-        popupWindow
         popupWindow.showAtLocation(window.decorView, Gravity.LEFT, 0, 0)
     }
 
