@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentFilterBinding
@@ -170,15 +171,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 attrsQuery.append("${item.attrs.attr_key}:${item.attrs.attr_value}").append(";")
             }
         }
-//        viewModel.getMetadataAlbums(
-//            attrs = attrsQuery.toString(),
-//            calcDimen = calcDimen,
-//            page = 1
-//        ).observe(viewLifecycleOwner) {
-//            handleResponse(it) { r ->
-//                adapter.updateData(r.albums ?: emptyList())
-//            }
-//        }
+        Timber.d("loadMetaAlbums: ${attrsQuery}, ${calcDimen}")
 
         viewModel.showList(listOf(attrsQuery.toString(), calcDimen.toString()))
     }
