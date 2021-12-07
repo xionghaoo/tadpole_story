@@ -137,6 +137,11 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                     albumId = item.id,
                     totalCount = item.include_track_count,
                     albumTitle = item.album_title.orEmpty(),
+                    albumCover = item.cover_url_large.orEmpty(),
+                    albumDesc = item.meta.orEmpty(),
+                    albumSubscribeCount = item.subscribe_count,
+                    albumTags = item.album_tags.orEmpty(),
+                    albumIntro = item.album_intro.orEmpty()
                 ))
             }
         }

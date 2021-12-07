@@ -69,7 +69,12 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
                     albumId = album.id,
                     albumTitle = album.album_title.orEmpty(),
-                    totalCount = album.include_track_count
+                    totalCount = album.include_track_count,
+                    albumCover = album.cover_url_large.orEmpty(),
+                    albumDesc = album.meta.orEmpty(),
+                    albumSubscribeCount = album.subscribe_count,
+                    albumTags = album.album_tags.orEmpty(),
+                    albumIntro = album.album_intro.orEmpty()
                 ))
             },
             retry = {

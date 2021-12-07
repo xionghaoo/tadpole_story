@@ -35,6 +35,19 @@
             android:name="albumTitle"
             app:argType="string"
             android:defaultValue="" />
+        <argument
+            android:name="albumCover"
+            app:argType="string" />
+        <argument android:name="albumDesc"
+            app:argType="string" />
+        <argument
+            android:name="albumSubscribeCount"
+            app:argType="long" />
+        <argument
+            android:name="albumTags"
+            app:argType="string" />
+        <argument android:name="albumIntro"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/filterFragment"

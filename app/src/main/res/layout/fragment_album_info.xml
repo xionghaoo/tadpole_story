@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/_104dp"
+    android:paddingTop="@dimen/_49dp"
+    android:paddingEnd="@dimen/_104dp"
+    android:paddingBottom="@dimen/_19dp"
+    android:orientation="vertical"
+    tools:context=".ui.album.AlbumInfoFragment">
+
+    <TextView
+        android:id="@+id/tv_album_intro"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_album_intro_all"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50dp"
+        android:layout_marginTop="@dimen/_4dp"
+        android:gravity="center"
+        android:background="@drawable/shape_album_tag"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查看完整简介"
+            android:textColor="@color/color_5E5F62"
+            android:textSize="@dimen/_18sp"/>
+        <ImageView
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:layout_marginStart="@dimen/_16dp"
+            android:src="@mipmap/ic_album_intro_all"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

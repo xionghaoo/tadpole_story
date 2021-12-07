@@ -68,7 +68,7 @@ class Album {
     var meta: String? = null
     var album_tags: String? = null
     var selling_point: String? = null
-    var subscribe_count = 0
+    var subscribe_count: Long = 0
     var tracks_natural_ordered = false
     var short_rich_intro: String? = null
     var tracks: List<Track>? = null
