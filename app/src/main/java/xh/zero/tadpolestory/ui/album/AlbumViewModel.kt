@@ -15,6 +15,7 @@ import com.example.android.uamp.media.extensions.isPrepared
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
+import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.repo.LOAD_SONG_FOR_PAGE
 import xh.zero.tadpolestory.repo.Repository
@@ -27,10 +28,14 @@ class AlbumViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     private val _mediaItems = MutableLiveData<List<MediaItemData>>()
+    val loadMediaItems = MutableLiveData<List<MediaItemData>>()
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
+    val networkState = MutableLiveData<NetworkState>()
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
+            networkState.postValue(NetworkState.LOADED)
+
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong("duration")
@@ -44,9 +49,19 @@ class AlbumViewModel @AssistedInject constructor(
                     duration ?: 0
                 )
             }
-            _mediaItems.postValue(itemsList)
+            val result = itemsList
+                .filterIndexed { index, _ -> index % 2 == 0 }
+                .mapIndexed { index, item ->
+                    item.extraItem = if (index + 1 < itemsList.size) itemsList[index + 1] else null
+                    item
+                }
+
+            _mediaItems.postValue(result)
+            loadMediaItems.postValue(result)
         }
     }
+
+
 
     /**
      * When the session's [PlaybackStateCompat] changes, the [mediaItems] need to be updated
@@ -75,11 +90,16 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
+    private val networkFailureObserver = Observer<Boolean> { failure ->
+        if (!failure) networkState.postValue(NetworkState.error("声音列表加载失败"))
+    }
+
     private val musicServiceConnection = _musicServiceConnection.also {
         it.subscribe(mediaId, subscriptionCallback)
 
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
+        it.networkFailure.observeForever(networkFailureObserver)
     }
 
     private fun updateState(
@@ -139,6 +159,7 @@ class AlbumViewModel @AssistedInject constructor(
     }
 
     fun loadSongs(page: Int, isRefresh: Boolean) {
+        networkState.postValue(NetworkState.LOADING)
         musicServiceConnection.sendCommand(LOAD_SONG_FOR_PAGE, Bundle().apply {
             putString("mediaId", mediaId)
             putInt("page", page)
@@ -161,6 +182,7 @@ class AlbumViewModel @AssistedInject constructor(
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
+        musicServiceConnection.networkFailure.removeObserver(networkFailureObserver)
 
         // And then, finally, unsubscribe the media ID that was being watched.
         musicServiceConnection.unsubscribe(mediaId, subscriptionCallback)

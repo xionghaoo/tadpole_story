@@ -1,36 +1,35 @@
 package xh.zero.tadpolestory.repo
 
 import android.net.Uri
-import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import com.example.android.uamp.media.extensions.*
 import com.example.android.uamp.media.library.*
-import com.google.gson.Gson
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.Track
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.URL
 import java.util.concurrent.TimeUnit
+import kotlin.Exception
 
 class TadpoleMusicSource(
     private val repo: Repository
 ) : AbstractMusicSource() {
 
     private var catalog: MutableList<MediaMetadataCompat> = mutableListOf()
+    private var nextPage: Int = 1
+    private var totalPage: Int = 1
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
     override suspend fun load(mediaId: String, page: Int, isRefresh: Boolean) {
         if (isRefresh) {
             catalog.clear()
+            nextPage = 1
+            totalPage = 1
         }
         state = STATE_INITIALIZING
         Timber.d("mediaId: $mediaId")
@@ -51,12 +50,20 @@ class TadpoleMusicSource(
      */
     private suspend fun updateCatalog(albumId: String, page: Int): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
+            if (nextPage > totalPage) {
+                return@withContext emptyList()
+            }
             val musicCat = try {
-//                downloadJson(catalogUri)
-                getAlbumVoices(albumId, page)
-            } catch (ioException: IOException) {
+                getAlbumVoices(albumId, nextPage)
+            } catch (e: IOException) {
                 return@withContext null
             }
+            musicCat?.also { it ->
+                nextPage = it.current_page + 1
+                totalPage = it.total_page
+                Timber.d("getAlbumVoices complete nextPage = $nextPage")
+            }
+//            musicCat?.total_page
 
             // Get the base URI to fix up relative references later.
 //            val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
@@ -81,7 +88,9 @@ class TadpoleMusicSource(
 
     @Throws(IOException::class)
     private fun getAlbumVoices(albumId: String, page: Int) : Album? {
+        Timber.d("getAlbumVoices page = $page")
         val response = repo.getVoiceListFormAlbum(albumId, page = page).execute()
+        Timber.d("getAlbumVoices response = ${response.code()}")
         if (response.isSuccessful) {
             return response.body()
         } else {

@@ -29,17 +29,23 @@ class AlbumRepository @Inject constructor(
         params: List<String>
     ): PagingDataFactory<AlbumResponse, Album> = object : PagingDataFactory<AlbumResponse, Album>(appExecutors) {
         override fun convertToListData(r: AlbumResponse?): List<Album> {
-            var tmp: Album? = null
-            r?.albums?.forEachIndexed { index, album ->
-                if (index % 2 == 0) {
-                    // 偶数位，记录数据
-                    tmp = album
-                } else {
-                    // 奇数位，附加数据
-                    album.extraAlbum = tmp
-                }
-            }
-            return r?.albums?.filterIndexed { index, _ -> index % 2 != 0 } ?: emptyList()
+//            var tmp: Album? = null
+//            r?.albums?.forEachIndexed { index, album ->
+//                if (index % 2 == 0) {
+//                    // 偶数位，记录数据
+//                    tmp = album
+//                } else {
+//                    // 奇数位，附加数据
+//                    album.extraAlbum = tmp
+//                }
+//            }
+//            return r?.albums?.filterIndexed { index, _ -> index % 2 != 0 } ?: emptyList()
+
+            return r?.albums?.filterIndexed { index, _ -> index % 2 == 0 }
+                ?.mapIndexed { index, item ->
+                    item.extraAlbum = if (index + 1 < r.albums.size) r.albums[index + 1] else null
+                    item
+                } ?: emptyList()
         }
 
         override fun createAfterCall(pageNo: String): Call<AlbumResponse> {

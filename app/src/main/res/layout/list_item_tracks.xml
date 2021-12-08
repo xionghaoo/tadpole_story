@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/_106dp"
+    android:paddingEnd="@dimen/_90dp">
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/v_first"
+        android:layout_width="@dimen/_534dp"
+        android:layout_height="@dimen/_88dp">
+        <TextView
+            android:id="@+id/tv_track_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_32sp"
+            android:layout_marginStart="@dimen/_40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <LinearLayout
+            android:id="@+id/textView19"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16sp"
+            android:orientation="vertical"
+            android:layout_marginEnd="@dimen/_80dp"
+            android:gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_track_index"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_track_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_0A1A2A"
+                android:textSize="@dimen/_20sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="猴子警长探案及-第三季|侦探推理|宝宝巴" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/textView17"
+                    android:layout_width="@dimen/_18dp"
+                    android:layout_height="@dimen/_18dp"
+                    android:src="@mipmap/ic_clock_18"
+                    app:layout_constraintStart_toStartOf="@+id/tv_track_title"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_track_title" />
+
+                <TextView
+                    android:id="@+id/tv_track_time_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_98999A"
+                    android:textSize="@dimen/_16sp"
+                    android:layout_marginStart="@dimen/_4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
+                    app:layout_constraintStart_toEndOf="@+id/textView17"
+                    app:layout_constraintTop_toTopOf="@+id/textView17"
+                    tools:text="18:00" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/_534dp"
+        android:layout_height="@dimen/_88dp"
+        android:id="@+id/v_second"
+        android:layout_gravity="end">
+        <TextView
+            android:id="@+id/tv_track_index_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_32sp"
+            android:layout_marginStart="@dimen/_40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <LinearLayout
+            android:id="@+id/textView19_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16sp"
+            android:orientation="vertical"
+            android:layout_marginEnd="@dimen/_80dp"
+            android:gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_track_index_2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_track_title_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_0A1A2A"
+                android:textSize="@dimen/_20sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="猴子警长探案及-第三季|侦探推理|宝宝巴" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/textView17_2"
+                    android:layout_width="@dimen/_18dp"
+                    android:layout_height="@dimen/_18dp"
+                    android:src="@mipmap/ic_clock_18"
+                    app:layout_constraintStart_toStartOf="@+id/tv_track_title"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_track_title" />
+
+                <TextView
+                    android:id="@+id/tv_track_time_count_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_98999A"
+                    android:textSize="@dimen/_16sp"
+                    android:layout_marginStart="@dimen/_4dp"
+                    tools:text="18:00" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

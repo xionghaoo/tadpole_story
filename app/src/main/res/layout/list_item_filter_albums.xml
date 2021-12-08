@@ -10,6 +10,7 @@
     android:paddingEnd="@dimen/_136dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/v_first"
         android:layout_width="@dimen/_466dp"
         android:layout_height="wrap_content">
         <androidx.appcompat.widget.AppCompatImageView
@@ -92,6 +93,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/v_second"
         android:layout_width="@dimen/_466dp"
         android:layout_height="wrap_content"
         android:layout_gravity="end">

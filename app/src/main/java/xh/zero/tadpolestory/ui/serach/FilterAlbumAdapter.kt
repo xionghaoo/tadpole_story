@@ -23,7 +23,7 @@ class FilterAlbumAdapter(
 
     override fun bindItemView(v: View, item: Album?, position: Int) {
         if (item == null) return
-        item.extraAlbum?.apply {
+        item.apply {
             // 偶数位item
             v.findViewById<TextView>(R.id.tv_album_title).text = album_title
             v.findViewById<TextView>(R.id.tv_album_desc).text = album_tags
@@ -35,10 +35,10 @@ class FilterAlbumAdapter(
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
                 .into(v.findViewById<ImageView>(R.id.iv_album_cover))
 
-            v.setOnClickListener { onItemClick(this) }
+            v.findViewById<View>(R.id.v_first).setOnClickListener { onItemClick(this) }
         }
         // 奇数位item
-        bindItem2View(v, item)
+        bindItem2View(v, item.extraAlbum)
     }
 
     private fun bindItem2View(v: View, item: Album?) {
@@ -53,7 +53,7 @@ class FilterAlbumAdapter(
             .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
             .into(v.findViewById<ImageView>(R.id.iv_album_cover_2))
 
-        v.setOnClickListener { onItemClick(item) }
+        v.findViewById<View>(R.id.v_second).setOnClickListener { onItemClick(item) }
     }
 
     override fun itemLayout(): Int = R.layout.list_item_filter_albums

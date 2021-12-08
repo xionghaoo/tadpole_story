@@ -13,18 +13,26 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import xh.zero.core.startPlainActivity
+import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentTrackListBinding
+import xh.zero.tadpolestory.ui.BaseFragment
+import xh.zero.tadpolestory.ui.MediaItemData
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TrackListFragment : Fragment() {
+class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 
     @Inject
     lateinit var albumViewModelFactory: AlbumViewModel.AssistedFactory
@@ -48,24 +56,30 @@ class TrackListFragment : Fragment() {
     private var isShowTrackSelectPanel = false
     private var selectedIndex = 0
 
-    private lateinit var binding: FragmentTrackListBinding
+//    private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
+//    private var currentPage = 1
+//    private var networkState = MediatorLiveData<NetworkState>()
+    private var isInit = true
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateBindLayout(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentTrackListBinding.inflate(layoutInflater, container, false)
-        return binding.root
+    ): FragmentTrackListBinding {
+        return FragmentTrackListBinding.inflate(layoutInflater, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun rootView(): View = binding.root
+
+    override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("onFirstViewCreated")
+        isInit = true
         viewModel.repo.prefs.nowPlayingAlbumId = albumId
 
         binding.tvTotalAlbum.text = "共${total}集"
-        binding.rcTrackList.layoutManager = GridLayoutManager(requireContext(), 2)
-        adapter = TrackAdapter(emptyList()) { item ->
+        binding.rcTrackList.layoutManager = LinearLayoutManager(context)
+        adapter = TrackAdapter(total.toInt()) { item ->
             viewModel.playMedia(item, pauseAllowed = false)
             // 显示正在播放页面
             NowPlayingActivity.start(context, albumTitle)
@@ -75,34 +89,43 @@ class TrackListFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 totalScrollY += dy
                 binding.vScrollCover.visibility = if (totalScrollY > 0) View.VISIBLE else View.INVISIBLE
-            }
-        })
-        binding.rcTrackList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-//                if (binding.rcTrackList.layoutManager.la())
-                // 如果最后一项可见，加载更多
-            }
-        })
 
+                if (!binding.rcTrackList.canScrollVertically(RecyclerView.VERTICAL) && viewModel.networkState.value != NetworkState.LOADING) {
+                    if (!isInit) {
+                        loadTracksForPage(false)
+                    }
+                }
+            }
+        })
         binding.btnAlbumTracks.setOnClickListener {
             toggleTrackSelectPanel()
         }
 
-        loadData()
-
-    }
-
-    private fun loadData() {
-        viewModel.loadSongs(1, false)
-        viewModel.mediaItems.observe(viewLifecycleOwner) { items ->
+        viewModel.loadMediaItems.observe(viewLifecycleOwner) { items ->
             Timber.d("加载的音频数量：${items.size}")
+            // 加载结束
             if (items.isNotEmpty()) {
-                adapter.updateData(items)
+                adapter.submitList(items)
+
+                if (isInit) {
+                    isInit = false
+                    binding.rcTrackList.scrollToPosition(0)
+                }
 
                 createTrackSelectView(listOf("1-20", "21-30"))
             }
         }
+
+        viewModel.networkState.observe(viewLifecycleOwner) {
+            adapter.setNetworkState(it)
+        }
+
+        loadTracksForPage(true)
+    }
+
+    private fun loadTracksForPage(isRefresh: Boolean = false) {
+        // 加载开始
+        viewModel.loadSongs(0, isRefresh)
     }
 
     private fun createTrackSelectView(scopes: List<String>) {
@@ -130,7 +153,7 @@ class TrackListFragment : Fragment() {
 
             tv.setOnClickListener { v ->
                 selectedIndex = v.tag as Int
-                loadTracks()
+                loadTracksForPage(true)
                 binding.flAlbumTrackList.children.forEach { child ->
                     selectTag(child as TextView)
                 }
@@ -175,10 +198,6 @@ class TrackListFragment : Fragment() {
                 }
                 .start()
         }
-    }
-
-    private fun loadTracks() {
-        viewModel.loadSongs(2, false)
     }
 
     companion object {
