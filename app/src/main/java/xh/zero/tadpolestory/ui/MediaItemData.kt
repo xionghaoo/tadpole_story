@@ -38,7 +38,8 @@ data class MediaItemData(
     val albumArtUri: Uri? = null,
     val browsable: Boolean = false,
     var playbackRes: Int? = null,
-    val duration: Long = 0
+    val duration: Long = 0,
+    val trackNumber: Long = 0
 ) {
 
     var extraItem: MediaItemData? = null

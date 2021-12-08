@@ -323,6 +323,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
                 if (successfullyInitialized) {
                     val children = mediaSource.map { item ->
                         item.description.extras?.putLong("duration", item.duration)
+                        item.description.extras?.putLong("trackNumber", item.trackNumber)
                         // MediaMetaData -> MediaItem
                         MediaItem(item.description, item.flag)
                     }
@@ -468,10 +469,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         } else return false
     }
 
-    fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean) {
+    fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean, isPaging: Boolean) {
         mediaSource.reset()
         serviceScope.launch {
-            mediaSource.load(mediaId, page, isRefresh)
+            mediaSource.load(mediaId, page, isRefresh, isPaging)
             notifyChildrenChanged(mediaId)
         }
     }

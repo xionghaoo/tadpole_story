@@ -1,34 +1,27 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import xh.zero.core.startPlainActivity
 import xh.zero.core.vo.NetworkState
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentTrackListBinding
 import xh.zero.tadpolestory.ui.BaseFragment
-import xh.zero.tadpolestory.ui.MediaItemData
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,13 +47,28 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 
     private var totalScrollY = 0
     private var isShowTrackSelectPanel = false
-    private var selectedIndex = 0
+    private var selectedIndex: Int? = null
 
 //    private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
 //    private var currentPage = 1
 //    private var networkState = MediatorLiveData<NetworkState>()
     private var isInit = true
+    private var listener: OnFragmentActionListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentActionListener) {
+            listener = context
+        } else {
+            throw IllegalArgumentException("Activity must implement OnFragmentActionListener")
+        }
+    }
+
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
+    }
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -75,6 +83,8 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         Timber.d("onFirstViewCreated")
         isInit = true
+        selectedIndex = null
+
         viewModel.repo.prefs.nowPlayingAlbumId = albumId
 
         binding.tvTotalAlbum.text = "共${total}集"
@@ -90,10 +100,16 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
                 totalScrollY += dy
                 binding.vScrollCover.visibility = if (totalScrollY > 0) View.VISIBLE else View.INVISIBLE
 
-                if (!binding.rcTrackList.canScrollVertically(RecyclerView.VERTICAL) && viewModel.networkState.value != NetworkState.LOADING) {
+                if (!binding.rcTrackList.canScrollVertically(RecyclerView.VERTICAL)
+                    && selectedIndex == null
+                    && viewModel.networkState.value != NetworkState.LOADING) {
                     if (!isInit) {
-                        loadTracksForPage(false)
+                        loadTracksForPage(isRefresh = false, isPaging = true)
                     }
+                }
+
+                if (dy > 10) {
+                    listener?.hideFloatWindow()
                 }
             }
         })
@@ -109,10 +125,21 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 
                 if (isInit) {
                     isInit = false
-                    binding.rcTrackList.scrollToPosition(0)
+                    binding.rcTrackList.post {
+                        binding.rcTrackList.scrollToPosition(0)
+                    }
                 }
 
-                createTrackSelectView(listOf("1-20", "21-30"))
+                // 音轨分段
+                val pageNum = if (total.toInt() % Configs.PAGE_SIZE == 0) total.toInt() / Configs.PAGE_SIZE else total.toInt() / Configs.PAGE_SIZE + 1
+                val tags = ArrayList<TrackTag>()
+                for (i in 1..pageNum) {
+                    val start = 1 + Configs.PAGE_SIZE * (i - 1)
+                    var end = i * Configs.PAGE_SIZE
+                    if (end > total) end = total.toInt()
+                    tags.add(TrackTag(tagName = "$start-$end", page = i))
+                }
+                createTrackSelectView(tags)
             }
         }
 
@@ -120,19 +147,24 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             adapter.setNetworkState(it)
         }
 
-        loadTracksForPage(true)
+        loadTracksForPage(isRefresh = true, isPaging = true)
     }
 
-    private fun loadTracksForPage(isRefresh: Boolean = false) {
+    private fun loadTracksForPage(page: Int = 1, isRefresh: Boolean = false, isPaging: Boolean) {
+        if (isRefresh) {
+            isInit = true
+            totalScrollY = 0
+            binding.vScrollCover.visibility = View.INVISIBLE
+        }
         // 加载开始
-        viewModel.loadSongs(0, isRefresh)
+        viewModel.loadSongs(page, isRefresh, isPaging)
     }
 
-    private fun createTrackSelectView(scopes: List<String>) {
+    private fun createTrackSelectView(trackTag: List<TrackTag>) {
         binding.flAlbumTrackList.removeAllViews()
-        scopes.forEachIndexed { index, scope ->
+        trackTag.forEachIndexed { index, tag ->
             val tv = TextView(context)
-            tv.text = scope
+            tv.text = tag.tagName
             tv.tag = index
             binding.flAlbumTrackList.addView(tv)
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._20dp))
@@ -149,13 +181,25 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             lp.width = FlexboxLayout.LayoutParams.WRAP_CONTENT
             lp.height = resources.getDimension(R.dimen._42dp).toInt()
             lp.rightMargin = resources.getDimension(R.dimen._16dp).toInt()
+            lp.topMargin = resources.getDimension(R.dimen._16dp).toInt()
             lp.minWidth = resources.getDimension(R.dimen._118dp).toInt()
 
+            selectTag(tv)
+
             tv.setOnClickListener { v ->
-                selectedIndex = v.tag as Int
-                loadTracksForPage(true)
-                binding.flAlbumTrackList.children.forEach { child ->
-                    selectTag(child as TextView)
+                val viewIndex = v.tag as Int
+                if (viewIndex == selectedIndex) {
+                    v as TextView
+                    v.setTextColor(resources.getColor(R.color.color_9B9B9B))
+                    v.background = ContextCompat.getDrawable(requireContext(), R.drawable.shape_album_detail_tag)
+                    loadTracksForPage(isRefresh = true, isPaging = true)
+                    selectedIndex = null
+                } else {
+                    selectedIndex = viewIndex
+                    loadTracksForPage(page = tag.page, isRefresh = true, isPaging = false)
+                    binding.flAlbumTrackList.children.forEach { child ->
+                        selectTag(child as TextView)
+                    }
                 }
             }
         }
@@ -175,6 +219,17 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
     private fun toggleTrackSelectPanel() {
         isShowTrackSelectPanel = isShowTrackSelectPanel.not()
         binding.containerAlbumTrackList.visibility = if (isShowTrackSelectPanel) View.VISIBLE else View.GONE
+//        binding.containerAlbumTrackList.apply {
+//            if (isShowTrackSelectPanel) {
+//                visibility = View.VISIBLE
+//                isFocusable = true
+//                isClickable = true
+//            } else {
+//                visibility = View.GONE
+//                isFocusable = false
+//                isClickable = false
+//            }
+//        }
         binding.ivTrackPanelStatus.setImageResource(
             if (isShowTrackSelectPanel) {
                 R.mipmap.ic_up_16
@@ -189,15 +244,27 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             }
             binding.vTrackSelectPanelCover.animate()
                 .alpha(1f)
+//                .withEndAction {
+//                    binding.vTrackSelectPanelCover.isFocusable = true
+//                    binding.vTrackSelectPanelCover.isClickable = true
+//                }
                 .start()
         } else {
+//            binding.vTrackSelectPanelCover.visibility = View.GONE
+
             binding.vTrackSelectPanelCover.animate()
                 .alpha(0f)
                 .withEndAction {
                     binding.vTrackSelectPanelCover.visibility = View.GONE
+//                    binding.vTrackSelectPanelCover.isFocusable = false
+//                    binding.vTrackSelectPanelCover.isClickable = false
                 }
                 .start()
         }
+    }
+
+    interface OnFragmentActionListener {
+        fun hideFloatWindow()
     }
 
     companion object {
@@ -215,3 +282,8 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         }
     }
 }
+
+data class TrackTag(
+    val tagName: String,
+    val page: Int
+)

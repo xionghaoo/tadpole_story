@@ -96,7 +96,7 @@ class TrackAdapter(
 
     private fun bindView(v: View, item: MediaItemData, position: Int) {
         item.also { data ->
-            v.findViewById<TextView>(R.id.tv_track_index).text = "${(position * 2) + 1}"
+            v.findViewById<TextView>(R.id.tv_track_index).text = "${data.trackNumber + 1}"
             v.findViewById<TextView>(R.id.tv_track_title).text = data.title
             v.findViewById<TextView>(R.id.tv_track_time_count).text = TimeUtil.secondsFormat(data.duration)
             v.findViewById<View>(R.id.v_first).setOnClickListener {
@@ -105,7 +105,7 @@ class TrackAdapter(
         }
 
         item.extraItem?.also { data ->
-            v.findViewById<TextView>(R.id.tv_track_index_2).text = "${(position * 2) + 2}"
+            v.findViewById<TextView>(R.id.tv_track_index_2).text = "${data.trackNumber + 1}"
             v.findViewById<TextView>(R.id.tv_track_title_2).text = data.title
             v.findViewById<TextView>(R.id.tv_track_time_count_2).text = TimeUtil.secondsFormat(data.duration)
             v.findViewById<View>(R.id.v_second).setOnClickListener {

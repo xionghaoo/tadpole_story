@@ -29,11 +29,15 @@ import xh.zero.tadpolestory.repo.TadpoleMusicService
 import xh.zero.tadpolestory.ui.album.AlbumViewModel
 import xh.zero.tadpolestory.ui.album.NowPlayingActivity
 import xh.zero.tadpolestory.ui.album.NowPlayingViewModel
+import xh.zero.tadpolestory.ui.album.TrackListFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), ChildStoryFragment.OnFragmentActionListener {
+class MainActivity : BaseActivity(),
+    ChildStoryFragment.OnFragmentActionListener,
+    TrackListFragment.OnFragmentActionListener
+{
 
     companion object {
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"

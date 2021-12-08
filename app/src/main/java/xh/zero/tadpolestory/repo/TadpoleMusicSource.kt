@@ -25,7 +25,7 @@ class TadpoleMusicSource(
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
-    override suspend fun load(mediaId: String, page: Int, isRefresh: Boolean) {
+    override suspend fun load(mediaId: String, page: Int, isRefresh: Boolean, isPaging: Boolean) {
         if (isRefresh) {
             catalog.clear()
             nextPage = 1
@@ -35,7 +35,7 @@ class TadpoleMusicSource(
         Timber.d("mediaId: $mediaId")
         // 根据albumId来查询音频
         // Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
-        updateCatalog(mediaId, page)?.let { updatedCatalog ->
+        updateCatalog(mediaId, page, isPaging = isPaging)?.let { updatedCatalog ->
             catalog.addAll(updatedCatalog)
             state = STATE_INITIALIZED
         } ?: run {
@@ -48,18 +48,20 @@ class TadpoleMusicSource(
      * Function to connect to a remote URI and download/process the JSON file that corresponds to
      * [MediaMetadataCompat] objects.
      */
-    private suspend fun updateCatalog(albumId: String, page: Int): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(albumId: String, page: Int, isPaging: Boolean = true): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             if (nextPage > totalPage) {
                 return@withContext emptyList()
             }
             val musicCat = try {
-                getAlbumVoices(albumId, nextPage)
+                getAlbumVoices(albumId, if (isPaging) nextPage else page)
             } catch (e: IOException) {
                 return@withContext null
             }
             musicCat?.also { it ->
-                nextPage = it.current_page + 1
+                if (isPaging) {
+                    nextPage = it.current_page + 1
+                }
                 totalPage = it.total_page
                 Timber.d("getAlbumVoices complete nextPage = $nextPage")
             }

@@ -95,8 +95,9 @@ class TadpoleMusicService : MusicService() {
         val mediaId = extras.getString("mediaId")
         val page = extras.getInt("page", 1)
         val isRefresh = extras.getBoolean("isRefresh", false)
+        val isPaging = extras.getBoolean("isPaging", true)
         if (mediaId != null) {
-            loadMedia(mediaId, page, isRefresh)
+            loadMedia(mediaId, page, isRefresh, isPaging)
         }
         true
     }

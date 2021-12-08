@@ -39,22 +39,26 @@ class AlbumViewModel @AssistedInject constructor(
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong("duration")
+                val trackNumber = child.description.extras?.getLong("trackNumber")
                 MediaItemData(
-                    child.mediaId!!,
-                    child.description.title.toString(),
-                    subtitle.toString(),
-                    child.description.iconUri!!,
-                    child.isBrowsable,
-                    getResourceForMediaId(child.mediaId!!),
-                    duration ?: 0
+                    mediaId = child.mediaId!!,
+                    title = child.description.title.toString(),
+                    subtitle = subtitle.toString(),
+                    albumArtUri = child.description.iconUri!!,
+                    browsable = child.isBrowsable,
+                    playbackRes = getResourceForMediaId(child.mediaId!!),
+                    duration = duration ?: 0,
+                    trackNumber = trackNumber ?: 0L
                 )
             }
             val result = itemsList
-                .filterIndexed { index, _ -> index % 2 == 0 }
                 .mapIndexed { index, item ->
-                    item.extraItem = if (index + 1 < itemsList.size) itemsList[index + 1] else null
+                    if (index % 2 == 0) {
+                        item.extraItem = if (index + 1 < itemsList.size) itemsList[index + 1] else null
+                    }
                     item
                 }
+                .filterIndexed { index, _ -> index % 2 == 0 }
 
             _mediaItems.postValue(result)
             loadMediaItems.postValue(result)
@@ -158,12 +162,13 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
-    fun loadSongs(page: Int, isRefresh: Boolean) {
+    fun loadSongs(page: Int, isRefresh: Boolean, isPaging: Boolean) {
         networkState.postValue(NetworkState.LOADING)
         musicServiceConnection.sendCommand(LOAD_SONG_FOR_PAGE, Bundle().apply {
             putString("mediaId", mediaId)
             putInt("page", page)
             putBoolean("isRefresh", isRefresh)
+            putBoolean("isPaging", isPaging)
         }) { code, bundle ->
 
         }
