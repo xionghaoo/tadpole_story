@@ -42,6 +42,8 @@ class FilterAlbumAdapter(
     }
 
     private fun bindItem2View(v: View, item: Album?) {
+        val extraContainer = v.findViewById<View>(R.id.v_second)
+        extraContainer.visibility = if (item == null) View.GONE else View.VISIBLE
         if (item == null) return
         v.findViewById<TextView>(R.id.tv_album_title_2).text = item.album_title
         v.findViewById<TextView>(R.id.tv_album_desc_2).text = item.album_tags

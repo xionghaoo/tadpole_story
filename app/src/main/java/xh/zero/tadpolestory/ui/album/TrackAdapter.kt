@@ -104,11 +104,13 @@ class TrackAdapter(
             }
         }
 
+        val extraContainer = v.findViewById<View>(R.id.v_second)
+        extraContainer.visibility = if (item.extraItem == null) View.GONE else View.VISIBLE
         item.extraItem?.also { data ->
             v.findViewById<TextView>(R.id.tv_track_index_2).text = "${data.trackNumber + 1}"
             v.findViewById<TextView>(R.id.tv_track_title_2).text = data.title
             v.findViewById<TextView>(R.id.tv_track_time_count_2).text = TimeUtil.secondsFormat(data.duration)
-            v.findViewById<View>(R.id.v_second).setOnClickListener {
+            extraContainer.setOnClickListener {
                 onItemClick(data)
             }
         }

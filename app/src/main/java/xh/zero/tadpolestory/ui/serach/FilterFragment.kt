@@ -13,12 +13,11 @@ import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentFilterBinding
 import xh.zero.tadpolestory.handleResponse
@@ -34,6 +33,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private var selectedTagIndexMap = HashMap<Int, FilterItem>()
 //    private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()
     private var panelIsShow = true
+    private val args: FilterFragmentArgs by navArgs()
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -111,7 +111,9 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
 
         loadMeta()
-        loadMetaAlbums()
+        if (args.tagName == TAG_NAME_ALL) {
+            loadMetaAlbums()
+        }
 
     }
 
@@ -134,7 +136,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     val topTags = ArrayList<AlbumMetaData.Attributes>()
                     topTags.add(AlbumMetaData.Attributes().apply {
                         attr_key = -1
-                        display_name = "全部"
+                        display_name = TAG_NAME_ALL
                     })
                     topTags.addAll(r.first().attributes ?: emptyList())
                     bindTopTagList(0, topTags)
@@ -203,14 +205,23 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 lp.height = LinearLayout.LayoutParams.MATCH_PARENT
                 lp.marginEnd = resources.getDimension(R.dimen._16dp).toInt()
 
-                if (index == 0) {
-                    selectedTagIndexMap[filterIndex] = FilterItem(0, tag)
+                if (args.tagName == TAG_NAME_ALL) {
+                    if (index == 0) {
+                        selectedTagIndexMap[filterIndex] = FilterItem(0, tag)
 
-                    tv.setBackgroundResource(R.drawable.shape_album_tag_selected)
-                    tv.setTextColor(resources.getColor(R.color.white))
+                        tv.setBackgroundResource(R.drawable.shape_album_tag_selected)
+                        tv.setTextColor(resources.getColor(R.color.white))
+                    } else {
+                        tv.setBackgroundResource(R.drawable.shape_album_tag)
+                        tv.setTextColor(resources.getColor(R.color.color_42444B))
+                    }
                 } else {
-                    tv.setBackgroundResource(R.drawable.shape_album_tag)
-                    tv.setTextColor(resources.getColor(R.color.color_42444B))
+                    // 选中tag，并加载数据
+                    if (tag.display_name == args.tagName) {
+                        selectedTagIndexMap[filterIndex] = FilterItem(index, tag)
+                        selectTopTagView(filterIndex, tv, index)
+                        loadMetaAlbums()
+                    }
                 }
 
                 tv.setOnClickListener { v ->
@@ -323,6 +334,10 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 setTextColor(resources.getColor(R.color.color_9B9B9B))
             }
         }
+    }
+
+    companion object {
+        const val TAG_NAME_ALL = "全部"
     }
 }
 

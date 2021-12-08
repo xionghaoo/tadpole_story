@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -17,14 +16,15 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildStoryBinding
 import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.repo.data.AlbumMetaData
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainFragmentDirections
 import xh.zero.tadpolestory.ui.MainViewModel
+import xh.zero.tadpolestory.ui.serach.FilterFragment.Companion.TAG_NAME_ALL
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -63,7 +63,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.btnFilter.setOnClickListener {
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment())
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(TAG_NAME_ALL))
         }
 
         loadData()
@@ -79,7 +79,14 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     private fun loadData() {
         viewModel.getTagList().observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
-                bindTagList(r.map { tag -> tag.tag_name })
+                if (r.isNotEmpty()) {
+                    val tags = r.first().attributes?.toMutableList()
+                    tags?.add(0, AlbumMetaData.Attributes().apply {
+                        attr_key = -1
+                        display_name = "排行榜"
+                    })
+                    bindTagList(tags)
+                }
             }
         }
 
@@ -150,11 +157,12 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         layoutLp.bottomMargin = marginBottom
     }
 
-    private fun bindTagList(tags: List<String?>) {
+    private fun bindTagList(tags: List<AlbumMetaData.Attributes?>?) {
+        if (tags == null) return
         binding.llTagList.removeAllViews()
         tags.forEachIndexed { index, tag ->
             val tv = TextView(requireContext())
-            tv.text = tag
+            tv.text = tag?.display_name
             tv.tag = index
             val padding = resources.getDimension(R.dimen._28dp).toInt()
             tv.gravity = Gravity.CENTER
@@ -177,11 +185,16 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             selectTagView(tv)
 
             tv.setOnClickListener { v ->
-                selectedIndex = v.tag as Int
-
-                binding.llTagList.children.forEach { child ->
-                    selectTagView(child as TextView)
+                val viewIndex = v.tag as Int
+                if (viewIndex == 0) {
+                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment())
+                } else {
+                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(tag?.display_name ?: TAG_NAME_ALL))
                 }
+
+//                binding.llTagList.children.forEach { child ->
+//                    selectTagView(child as TextView)
+//                }
             }
         }
     }

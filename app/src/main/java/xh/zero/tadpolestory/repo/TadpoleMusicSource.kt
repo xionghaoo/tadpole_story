@@ -71,8 +71,7 @@ class TadpoleMusicSource(
 //            val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
 
             val mediaMetadataCompats = musicCat?.tracks?.map { song ->
-                val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle))
-
+                val imageUri = if (song.cover_url_middle != null) AlbumArtContentProvider.mapUri(Uri.parse(song.cover_url_middle)) else ""
                 MediaMetadataCompat.Builder()
                     .from(song, musicCat.tracks?.size?.toLong() ?: 0)
                     .apply {

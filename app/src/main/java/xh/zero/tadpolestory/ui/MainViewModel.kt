@@ -28,9 +28,11 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     fun getLoginUrl() = repo.getLoginUrl()
 
-    fun getTagList() = repo.getTagList()
+    fun getTagList() = repo.getMetadataList()
     fun getTemporaryToken() = repo.getTemporaryToken()
     fun getDailyRecommendAlbums(token: String, page: Int) = repo.getDailyRecommendAlbums(token, page)
     fun getGuessLikeAlbums() = repo.getGuessLikeAlbums()
+
+//    fun getMetadataList() = repo.getMetadataList()
 
 }
