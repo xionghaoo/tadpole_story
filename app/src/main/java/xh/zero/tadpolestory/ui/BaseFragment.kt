@@ -50,11 +50,12 @@ abstract class BaseFragment<VIEW> : Fragment() {
     abstract fun onFirstViewCreated(view: View, savedInstanceState: Bundle?)
 
     fun back() {
-        hideKeyboard(requireActivity())
+        hideKeyboard()
         activity?.onBackPressed()
     }
 
-    private fun hideKeyboard(context: Context) {
+    protected fun hideKeyboard() {
+        val context = requireActivity()
         try {
             (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             if ((context as Activity).currentFocus != null && (context as Activity).currentFocus!!

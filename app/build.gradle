@@ -91,6 +91,13 @@ dependencies {
     implementation dpes.retrofit.gson_converter
     implementation dpes.retrofit.main
 
+    // room框架
+    implementation dpes.room.runtime
+    kapt dpes.room.compiler
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation dpes.room.ktx
+    implementation dpes.coroutines
+
     implementation "androidx.fragment:fragment-ktx:1.4.0"
 
     implementation "com.jakewharton.timber:timber:$versions.timber"

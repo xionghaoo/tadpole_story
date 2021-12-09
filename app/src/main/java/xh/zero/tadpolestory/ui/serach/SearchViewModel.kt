@@ -20,4 +20,9 @@ class SearchViewModel @Inject constructor(
     fun getHotKeyword() = repo.getHotKeyword(20)
 
     fun getSearchWords(q: String) = repo.getSearchWords(q)
+
+    fun saveSearchRecord(txt: String) = repo.saveSearchHistory(txt)
+
+    fun loadSearchRecords() = repo.loadAllSearchHistory()
+    fun clearSearchHistory() = repo.clearSearchHistory()
 }

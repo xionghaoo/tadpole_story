@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentSearchBinding
 import xh.zero.tadpolestory.handleResponse
@@ -29,7 +30,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private lateinit var adapter: FilterAlbumAdapter
     private lateinit var searchWordAdapter: SearchWordAdapter
 
-    private var currentQuery: String = ""
+//    private var currentQuery: String = ""
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -52,7 +53,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 if (q.isEmpty()) {
                     binding.containerSearchRecommend.visibility = View.VISIBLE
                     binding.rcSearchWords.visibility = View.GONE
-                    binding.ivClear.visibility = View.GONE
+                    binding.ivClear.visibility = View.INVISIBLE
                     binding.rcAlbumList.visibility = View.GONE
                 } else {
                     binding.containerSearchRecommend.visibility = View.GONE
@@ -74,6 +75,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
         binding.btnSearch.setOnClickListener {
             searchAlbums()
+        }
+
+        binding.ivClearSearchHistory.setOnClickListener {
+            viewModel.clearSearchHistory()
         }
 
         binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
@@ -110,36 +115,55 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         binding.rcSearchWords.layoutManager = LinearLayoutManager(context)
         searchWordAdapter = SearchWordAdapter { txt ->
-            currentQuery = txt ?: ""
+//            currentQuery = txt ?: ""
             searchAlbums()
         }
         binding.rcSearchWords.adapter = searchWordAdapter
+
+        viewModel.loadSearchRecords().observe(viewLifecycleOwner) {
+            val records = it.map { record -> record.keyword }
+            if (records.isNotEmpty()) {
+                binding.containerHistoryRecords.visibility = View.VISIBLE
+                bindTagsView(binding.llHistoryRecords, records) { tag ->
+                    binding.edtSearch.setText(tag)
+                    searchAlbums()
+                }
+            } else {
+                binding.containerHistoryRecords.visibility = View.GONE
+            }
+        }
     }
 
     private fun searchAlbums() {
+        hideKeyboard()
         binding.containerSearchRecommend.visibility = View.GONE
         binding.rcSearchWords.visibility = View.GONE
         binding.rcAlbumList.visibility = View.VISIBLE
 
-        if (currentQuery.isNotEmpty()) {
-            viewModel.showList(listOf(currentQuery))
+        val query = binding.edtSearch.text.toString()
+        if (query.isNotEmpty()) {
+            viewModel.saveSearchRecord(query)
+            viewModel.showList(listOf(query))
         }
     }
 
     private fun getHotKeyword() {
         viewModel.getHotKeyword().observe(viewLifecycleOwner) {
             handleResponse(it) { tags ->
-                bindHotTags(tags)
+                bindTagsView(binding.llHotTags, tags.map { word -> word.search_word ?: "" }) { tag ->
+                    binding.edtSearch.setText(tag)
+                    searchAlbums()
+                }
             }
         }
     }
 
-    private fun bindHotTags(tags: List<HotKeyword>) {
-        binding.llHotTags.removeAllViews()
+    private fun bindTagsView(container: ViewGroup, tags: List<String>, onClick: (String) -> Unit) {
+        container.removeAllViews()
         tags.forEach { tag ->
             val tv = TextView(context)
-            binding.llHotTags.addView(tv)
-            tv.text = tag.search_word
+            container.addView(tv)
+            tv.text = tag
             tv.gravity = Gravity.CENTER
             tv.setTextColor(resources.getColor(R.color.color_9B9B9B))
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._20dp))
@@ -154,11 +178,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
             lp.rightMargin = resources.getDimension(R.dimen._8dp).toInt()
+
+            tv.setOnClickListener {
+                onClick(tag)
+            }
         }
     }
 
     private fun getSearchWords(q: String) {
-        currentQuery = q
+//        currentQuery = q
         viewModel.getSearchWords(q).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
                 searchWordAdapter.updateData(r.keywords ?: emptyList())
