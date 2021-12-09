@@ -14,12 +14,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import timber.log.Timber
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentSearchBinding
 import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.repo.data.HotKeyword
 import xh.zero.tadpolestory.ui.BaseFragment
+import xh.zero.tadpolestory.utils.PromptDialog
 
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
@@ -29,8 +31,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private lateinit var adapter: FilterAlbumAdapter
     private lateinit var searchWordAdapter: SearchWordAdapter
-
-//    private var currentQuery: String = ""
+    private var lastQueryWord: String? = null
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -50,6 +51,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         binding.edtSearch.addTextChangedListener(
             onTextChanged = { text, _, _, _ ->
                 val q = text?.toString() ?: ""
+                if (lastQueryWord == q) return@addTextChangedListener
+                lastQueryWord = q
                 if (q.isEmpty()) {
                     binding.containerSearchRecommend.visibility = View.VISIBLE
                     binding.rcSearchWords.visibility = View.GONE
@@ -78,13 +81,20 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
 
         binding.ivClearSearchHistory.setOnClickListener {
-            viewModel.clearSearchHistory()
+            PromptDialog.showCommon(
+                context = requireContext(),
+                title = "删除",
+                message = "确定要删除所有搜索历史吗？",
+                onConfirm = {
+                    viewModel.clearSearchHistory()
+                }
+            )
         }
 
         binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
         adapter = FilterAlbumAdapter(
             onItemClick = { album ->
-                findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
+                findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToAlbumDetailFragment(
                     albumId = album.id,
                     albumTitle = album.album_title.orEmpty(),
                     totalCount = album.include_track_count,
@@ -115,7 +125,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         binding.rcSearchWords.layoutManager = LinearLayoutManager(context)
         searchWordAdapter = SearchWordAdapter { txt ->
-//            currentQuery = txt ?: ""
             searchAlbums()
         }
         binding.rcSearchWords.adapter = searchWordAdapter
@@ -132,6 +141,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
                 binding.containerHistoryRecords.visibility = View.GONE
             }
         }
+
+        binding.rcAlbumList.isSaveEnabled = true
+        binding.rcSearchWords.isSaveEnabled = true
     }
 
     private fun searchAlbums() {
