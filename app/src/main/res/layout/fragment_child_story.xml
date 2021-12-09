@@ -21,12 +21,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="@dimen/_40dp"
             android:layout_height="@dimen/_40dp"
+            android:padding="@dimen/_3dp"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="@dimen/_12dp"
-            android:src="@android:color/holo_blue_bright" />
+            android:src="@mipmap/ic_search_34" />
     </FrameLayout>
 
     <ImageView

@@ -1,5 +1,6 @@
 package xh.zero.tadpolestory.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MediatorLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,12 +28,10 @@ import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
+import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.Repository
 import xh.zero.tadpolestory.repo.TadpoleMusicService
-import xh.zero.tadpolestory.ui.album.AlbumViewModel
-import xh.zero.tadpolestory.ui.album.NowPlayingActivity
-import xh.zero.tadpolestory.ui.album.NowPlayingViewModel
-import xh.zero.tadpolestory.ui.album.TrackListFragment
+import xh.zero.tadpolestory.ui.album.*
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
 
@@ -40,6 +43,13 @@ class MainActivity : BaseActivity(),
 
     companion object {
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"
+        const val ACTION_ALBUM_DETAIL = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_ALBUM_DETAIL"
+
+        fun startToAlbumDetail(context: Context?) {
+            context?.startActivity(Intent(context, MainActivity::class.java).apply {
+                action = ACTION_ALBUM_DETAIL
+            })
+        }
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -80,7 +90,16 @@ class MainActivity : BaseActivity(),
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         startNowPlayingPage(intent)
-//        Timber.d("onNewIntent: ${intent?.action}, ${intent?.data}")
+
+        if (intent?.action == ACTION_ALBUM_DETAIL) {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+            navController.navigate(R.id.albumDetailFragment, Bundle().apply {
+                putString("albumTitle", "")
+                putLong("totalCount", 0L)
+            })
+        }
     }
 
     override fun onDestroy() {
@@ -226,6 +245,24 @@ class MainActivity : BaseActivity(),
                 MotionEvent.ACTION_UP -> {
                     if (e.x - expandStartX < 20) {
                         NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
+
+//                        val pendingIntent = NavDeepLinkBuilder(this)
+//                            .setGraph(R.navigation.nav_graph)
+//                            .setDestination(R.id.nowPlayingFragment)
+////                            .setArguments(Bundle().apply {
+////                                putString("albumTitle", viewModel.repo.prefs.nowPlayingAlbumTitle)
+////                            })
+//                            .createPendingIntent()
+//                        startActivity()
+
+//                        val navHostFragment =
+//                            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//                        val navController = navHostFragment.navController
+//                        navController.navigate(R.id.nowPlayingFragment, Bundle().apply {
+//                            putString(NowPlayingFragment.ARG_ALBUM_TITLE, viewModel.repo.prefs.nowPlayingAlbumTitle)
+//                        })
+
+
                     }
                 }
             }

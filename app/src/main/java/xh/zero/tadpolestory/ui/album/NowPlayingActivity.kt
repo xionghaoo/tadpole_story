@@ -35,9 +35,9 @@ class NowPlayingActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNowPlayingBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnBack.setOnClickListener {
-            onBackPressed()
-        }
+//        binding.btnBack.setOnClickListener {
+//            onBackPressed()
+//        }
 
         replaceFragment(NowPlayingFragment.newInstance(albumTitle), R.id.fragment_container)
     }

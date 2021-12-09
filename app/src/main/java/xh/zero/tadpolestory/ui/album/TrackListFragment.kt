@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
@@ -93,6 +94,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             viewModel.playMedia(item, pauseAllowed = false)
             // 显示正在播放页面
             NowPlayingActivity.start(context, albumTitle)
+//            findNavController().navigate(AlbumDetailFragmentDirections.actionAlbumDetailFragmentToNowPlayingFragment(albumTitle))
         }
         binding.rcTrackList.adapter = adapter
         binding.rcTrackList.addOnScrollListener(object : RecyclerView.OnScrollListener() {

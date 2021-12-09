@@ -28,13 +28,15 @@ import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.ui.BaseFragment
+import xh.zero.tadpolestory.ui.MainActivity
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 @AndroidEntryPoint
-class NowPlayingFragment : Fragment() {
+class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
-    private lateinit var binding: FragmentNowPlayingBinding
+//    private lateinit var binding: FragmentNowPlayingBinding
     private val viewModel: NowPlayingViewModel by viewModels()
     private var isTouchingSeekBar = false
 
@@ -64,16 +66,29 @@ class NowPlayingFragment : Fragment() {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+//    override fun onCreateView(
+//        inflater: LayoutInflater, container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        binding =  FragmentNowPlayingBinding.inflate(inflater, container, false)
+//        return binding.root
+//    }
+
+    override fun onCreateBindLayout(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding =  FragmentNowPlayingBinding.inflate(inflater, container, false)
-        return binding.root
+    ): FragmentNowPlayingBinding {
+        return FragmentNowPlayingBinding.inflate(inflater, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun rootView(): View = binding.root
+
+    override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.vBack.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
         viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
@@ -165,7 +180,7 @@ class NowPlayingFragment : Fragment() {
         binding.scrollView.setOnTouchListener { v, event ->
             if (event?.action == MotionEvent.ACTION_UP
                 || event?.action == MotionEvent.ACTION_CANCEL) {
-                Timber.d("current scroll y = $currentScrollY, $progressBarScrollDiff, $relativeAlbumExtra1ScrollDiff")
+//                Timber.d("current scroll y = $currentScrollY, $progressBarScrollDiff, $relativeAlbumExtra1ScrollDiff")
                 CoroutineScope(Dispatchers.Default).launch {
                     delay(100)
                     withContext(Dispatchers.Main) {
@@ -210,6 +225,9 @@ class NowPlayingFragment : Fragment() {
         loadRelativeAlbum(mediaItem.id.toInt())
     }
 
+    /**
+     * 加载相关专辑
+     */
     private fun loadRelativeAlbum(trackId: Int) {
         viewModel.getRelativeAlbum(trackId).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
@@ -237,15 +255,21 @@ class NowPlayingFragment : Fragment() {
                     lp.topMargin = resources.getDimension(R.dimen._12dp).toInt()
                     lp.bottomMargin = resources.getDimension(R.dimen._12dp).toInt()
                     lp.marginStart = if (index % 6 == 0) 0 else resources.getDimension(R.dimen._16dp).toInt()
+
+                    v.setOnClickListener {
+                        // 相关专辑
+                        MainActivity.startToAlbumDetail(context)
+                    }
                 }
 
                 if (r.isNotEmpty()) {
                     // 填充不够滚动的空间
                     val display = SystemUtil.displayInfo(requireContext())
-                    val requireRelativeHeight = display.heightPixels - binding.topBackground2.y.toInt() - binding.topBackground2.height
+                    val requireRelativeHeight: Int = display.heightPixels - binding.topBackground.height
                     val n = r.size / 6
-                    val num = if (r.size % 6 == 0) n else n + 1
-                    val actualRelativeHeight = resources.getDimension(R.dimen._248dp).toInt() * num
+                    val num = if (r.size > 0 && r.size % 6 == 0) n else n + 1
+                    val actualRelativeHeight = resources.getDimension(R.dimen._224dp).toInt() * num
+                    Timber.d("填充不够滚动的空间: $actualRelativeHeight, $requireRelativeHeight")
                     if (actualRelativeHeight < requireRelativeHeight) {
                         container.setPadding(
                             0, 0, 0, requireRelativeHeight - actualRelativeHeight
@@ -337,7 +361,7 @@ class NowPlayingFragment : Fragment() {
             var percent: Float = 1f - scrollY.toFloat() / coverImgY
             if (percent > 1f) percent = 1f
             if (percent < 0f) percent = 0f
-            Timber.d("handleTransform:: percent: $percent, ${relativeAlbumExtra1ScrollDiff}, $scrollY")
+//            Timber.d("handleTransform:: percent: $percent, ${relativeAlbumExtra1ScrollDiff}, $scrollY")
 
             transformCoverImage(percent)
             transformAlbumTitle(percent)
@@ -485,7 +509,7 @@ class NowPlayingFragment : Fragment() {
     }
 
     companion object {
-        private const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
+        const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
         private const val SCROLL_THRESHOLD = 0
 
         fun newInstance(albumTitle: String) = NowPlayingFragment().apply {
