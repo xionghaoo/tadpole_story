@@ -27,6 +27,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private var job: Job? = null
 
     private lateinit var adapter: FilterAlbumAdapter
+    private lateinit var searchWordAdapter: SearchWordAdapter
+
+    private var currentQuery: String = ""
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -44,22 +47,34 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
 
         binding.edtSearch.addTextChangedListener(
-            onTextChanged = { text, start, before, count ->
+            onTextChanged = { text, _, _, _ ->
                 val q = text?.toString() ?: ""
                 if (q.isEmpty()) {
                     binding.containerSearchRecommend.visibility = View.VISIBLE
+                    binding.rcSearchWords.visibility = View.GONE
+                    binding.ivClear.visibility = View.GONE
+                    binding.rcAlbumList.visibility = View.GONE
                 } else {
                     binding.containerSearchRecommend.visibility = View.GONE
+                    binding.rcSearchWords.visibility = View.VISIBLE
+                    binding.ivClear.visibility = View.VISIBLE
+                    binding.rcAlbumList.visibility = View.GONE
                     job?.cancel()
                     job = CoroutineScope(Dispatchers.Default).launch {
                         delay(50)
                         withContext(Dispatchers.Main) {
-                            searchAlbums(q)
+                            getSearchWords(q)
                         }
                     }
                 }
             }
         )
+        binding.ivClear.setOnClickListener {
+            binding.edtSearch.text.clear()
+        }
+        binding.btnSearch.setOnClickListener {
+            searchAlbums()
+        }
 
         binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
         adapter = FilterAlbumAdapter(
@@ -92,10 +107,23 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
 
         getHotKeyword()
+
+        binding.rcSearchWords.layoutManager = LinearLayoutManager(context)
+        searchWordAdapter = SearchWordAdapter { txt ->
+            currentQuery = txt ?: ""
+            searchAlbums()
+        }
+        binding.rcSearchWords.adapter = searchWordAdapter
     }
 
-    private fun searchAlbums(txt: String) {
-        viewModel.showList(listOf(txt))
+    private fun searchAlbums() {
+        binding.containerSearchRecommend.visibility = View.GONE
+        binding.rcSearchWords.visibility = View.GONE
+        binding.rcAlbumList.visibility = View.VISIBLE
+
+        if (currentQuery.isNotEmpty()) {
+            viewModel.showList(listOf(currentQuery))
+        }
     }
 
     private fun getHotKeyword() {
@@ -126,6 +154,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
             lp.rightMargin = resources.getDimension(R.dimen._8dp).toInt()
+        }
+    }
+
+    private fun getSearchWords(q: String) {
+        currentQuery = q
+        viewModel.getSearchWords(q).observe(viewLifecycleOwner) {
+            handleResponse(it) { r ->
+                searchWordAdapter.updateData(r.keywords ?: emptyList())
+            }
         }
     }
 }

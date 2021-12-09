@@ -18,4 +18,6 @@ class SearchViewModel @Inject constructor(
 
 //    fun searchAlbums(q: String) = repo.searchAlbums(q)
     fun getHotKeyword() = repo.getHotKeyword(20)
+
+    fun getSearchWords(q: String) = repo.getSearchWords(q)
 }

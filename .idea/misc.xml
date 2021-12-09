@@ -45,6 +45,7 @@
         <entry key="app/src/main/res/layout/list_item_filter_album.xml" value="0.37817028985507245" />
         <entry key="app/src/main/res/layout/list_item_filter_albums.xml" value="0.3916635188942714" />
         <entry key="app/src/main/res/layout/list_item_home_album.xml" value="0.30480072463768115" />
+        <entry key="app/src/main/res/layout/list_item_search_words.xml" value="0.3278985507246377" />
         <entry key="app/src/main/res/layout/list_item_track.xml" value="0.5291245722222317" />
         <entry key="app/src/main/res/layout/list_item_tracks.xml" value="0.5365746213142947" />
         <entry key="app/src/main/res/layout/network_state_item_tadpole.xml" value="0.25364583333333335" />

@@ -44,7 +44,11 @@ class Repository @Inject constructor(
 //    }
     fun getHotKeyword(top: Int) = remoteRequestStrategy {
         apiService.getHotKeyword(top = top)
-}
+    }
+
+    fun getSearchWords(q: String) = remoteRequestStrategy {
+        apiService.getSearchWords(q)
+    }
 
     fun getTagList() = remoteRequestStrategy {
         apiService.getTagList()

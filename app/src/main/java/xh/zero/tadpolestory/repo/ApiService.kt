@@ -85,11 +85,19 @@ interface ApiService {
         @Query("count") count: Int = Configs.PAGE_SIZE,
     ) : Call<AlbumResponse>
 
+    /**
+     * 热搜词
+     */
     @GET("$PREFIX/search/hot_words")
     fun getHotKeyword(
         @Query("top") top: Int,
         @Query("category_id") category_id: Int = Configs.CATEGORY_ID
     ) : LiveData<ApiResponse<List<HotKeyword>>>
+
+    @GET("$PREFIX/search/suggest_words")
+    fun getSearchWords(
+        @Query("q") q: String
+    ) : LiveData<ApiResponse<SearchWordResult>>
 
     /**
      * 获取专辑元数据
