@@ -7,15 +7,13 @@ import xh.zero.tadpolestory.repo.Repository
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.AlbumResponse
 import xh.zero.tadpolestory.repo.paging.AlbumRepository
-import xh.zero.tadpolestory.repo.paging.SearchRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(
+class FilterViewModel @Inject constructor(
     private val repo: Repository,
-    private val searchRepo: SearchRepository
-) : PagingViewModel<AlbumResponse, Album>(searchRepo) {
+    private val albumRepo: AlbumRepository
+) : PagingViewModel<AlbumResponse, Album>(albumRepo) {
 
-//    fun searchAlbums(q: String) = repo.searchAlbums(q)
-    fun getHotKeyword() = repo.getHotKeyword(20)
+    fun getMetadataList() = repo.getMetadataList()
 }

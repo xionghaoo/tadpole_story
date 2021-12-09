@@ -73,6 +73,25 @@ interface ApiService {
     ) : LiveData<ApiResponse<AlbumResponse>>
 
     /**
+     * 关键词搜索专辑
+     */
+    @GET("$PREFIX/search/albums")
+    fun searchAlbums(
+        @Query("q") q: String,
+        @Query("industry_id") industry_id: Int? = null,
+        @Query("category_id") category_id: Int? = null,
+        @Query("calc_dimension") calc_dimension: Int? = null,
+        @Query("page") page: Int,
+        @Query("count") count: Int = Configs.PAGE_SIZE,
+    ) : Call<AlbumResponse>
+
+    @GET("$PREFIX/search/hot_words")
+    fun getHotKeyword(
+        @Query("top") top: Int,
+        @Query("category_id") category_id: Int = Configs.CATEGORY_ID
+    ) : LiveData<ApiResponse<List<HotKeyword>>>
+
+    /**
      * 获取专辑元数据
      */
     @GET("$PREFIX/metadata/list")

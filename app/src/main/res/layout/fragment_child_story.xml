@@ -10,7 +10,7 @@
     android:gravity="center">
 
     <FrameLayout
-        android:id="@+id/textView3"
+        android:id="@+id/v_search"
         android:layout_width="0dp"
         android:layout_height="@dimen/_48dp"
         android:layout_marginStart="@dimen/_37dp"
@@ -35,9 +35,9 @@
         android:layout_height="@dimen/_58dp"
         android:layout_marginEnd="@dimen/_52dp"
         android:src="@mipmap/ic_filter_button"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintBottom_toBottomOf="@+id/v_search"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView3" />
+        app:layout_constraintTop_toTopOf="@+id/v_search" />
 
     <HorizontalScrollView
         android:id="@+id/ll_tag_list_container"
@@ -48,8 +48,8 @@
         android:layout_marginTop="@dimen/_33dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView3">
+        app:layout_constraintStart_toStartOf="@+id/v_search"
+        app:layout_constraintTop_toBottomOf="@+id/v_search">
 
         <LinearLayout
             android:id="@+id/ll_tag_list"

@@ -24,6 +24,11 @@
             app:destination="@id/rankFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
     </fragment>
     <fragment
         android:id="@+id/albumDetailFragment"
@@ -71,4 +76,13 @@
         android:name="xh.zero.tadpolestory.ui.RankFragment"
         android:label="fragment_rank"
         tools:layout="@layout/fragment_rank" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="xh.zero.tadpolestory.ui.serach.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment" />
+    </fragment>
 </navigation>

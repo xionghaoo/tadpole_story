@@ -28,7 +28,7 @@ import java.lang.StringBuilder
 @AndroidEntryPoint
 class FilterFragment : BaseFragment<FragmentFilterBinding>() {
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: FilterViewModel by viewModels()
     private lateinit var adapter: FilterAlbumAdapter
     private var selectedTagIndexMap = HashMap<Int, FilterItem>()
 //    private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()

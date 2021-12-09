@@ -3,9 +3,7 @@ package xh.zero.tadpolestory.ui
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MediatorLiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,12 +73,14 @@ class MainActivity : BaseActivity(),
                 }
             }
             .show()
+
+        attachKeyboardListeners()
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         startNowPlayingPage(intent)
-        Timber.d("onNewIntent: ${intent?.action}, ${intent?.data}")
+//        Timber.d("onNewIntent: ${intent?.action}, ${intent?.data}")
     }
 
     override fun onDestroy() {
@@ -108,7 +109,7 @@ class MainActivity : BaseActivity(),
         val expandProgressBar = view.findViewById<CircularProgressBar>(R.id.expand_progress_bar)
         val collapseProgressBar = view.findViewById<CircularProgressBar>(R.id.collapse_progress_bar)
 
-        Timber.d("initialFloatWindow: ${viewModel.repo.prefs.nowPlayingAlbumId}")
+//        Timber.d("initialFloatWindow: ${viewModel.repo.prefs.nowPlayingAlbumId}")
 //        floatRoot.post {
 //            floatRoot.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
 //        }

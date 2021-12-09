@@ -74,6 +74,10 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             }
         }
 
+        binding.vSearch.setOnClickListener {
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment())
+        }
+
     }
 
     private fun loadData() {

@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/drawable/shape_scroll_elevation_cover.xml" value="0.2638888888888889" />
         <entry key="app/src/main/res/drawable/shape_scroll_elevation_cover_end.xml" value="0.2638888888888889" />
         <entry key="app/src/main/res/drawable/shape_search.xml" value="0.2625" />
+        <entry key="app/src/main/res/drawable/shape_search_bg.xml" value="0.2490740740740741" />
         <entry key="app/src/main/res/drawable/shape_tab_bg.xml" value="0.24537037037037038" />
         <entry key="app/src/main/res/layout/activity_album_detail.xml" value="0.25833333333333336" />
         <entry key="app/src/main/res/layout/activity_daily_recommend.xml" value="0.27239583333333334" />
@@ -37,10 +38,12 @@
         <entry key="app/src/main/res/layout/fragment_more_content.xml" value="0.26458333333333334" />
         <entry key="app/src/main/res/layout/fragment_now_playing.xml" value="0.26132246376811596" />
         <entry key="app/src/main/res/layout/fragment_rank.xml" value="0.3020833333333333" />
+        <entry key="app/src/main/res/layout/fragment_search.xml" value="0.6967741935483871" />
         <entry key="app/src/main/res/layout/fragment_track_list.xml" value="0.6516569717693932" />
         <entry key="app/src/main/res/layout/item_home_content.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_filter.xml" value="0.38722826086956524" />
         <entry key="app/src/main/res/layout/list_item_filter_album.xml" value="0.37817028985507245" />
+        <entry key="app/src/main/res/layout/list_item_filter_albums.xml" value="0.3916635188942714" />
         <entry key="app/src/main/res/layout/list_item_home_album.xml" value="0.30480072463768115" />
         <entry key="app/src/main/res/layout/list_item_track.xml" value="0.5291245722222317" />
         <entry key="app/src/main/res/layout/list_item_tracks.xml" value="0.5365746213142947" />

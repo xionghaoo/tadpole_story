@@ -39,6 +39,13 @@ class Repository @Inject constructor(
         apiService.searchAlbums(page = page, tags = tags)
     }
 
+//    fun searchAlbums(q: String) = remoteRequestStrategy {
+//        apiService.searchAlbums(q = q, page = 1)
+//    }
+    fun getHotKeyword(top: Int) = remoteRequestStrategy {
+        apiService.getHotKeyword(top = top)
+}
+
     fun getTagList() = remoteRequestStrategy {
         apiService.getTagList()
     }

@@ -5,6 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import timber.log.Timber
+import android.app.Activity
+import android.content.Context
+
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import java.lang.Exception
+
 
 abstract class BaseFragment<VIEW> : Fragment() {
 
@@ -40,4 +48,24 @@ abstract class BaseFragment<VIEW> : Fragment() {
     abstract fun rootView() : View
 
     abstract fun onFirstViewCreated(view: View, savedInstanceState: Bundle?)
+
+    fun back() {
+        hideKeyboard(requireActivity())
+        activity?.onBackPressed()
+    }
+
+    private fun hideKeyboard(context: Context) {
+        try {
+            (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+            if ((context as Activity).currentFocus != null && (context as Activity).currentFocus!!
+                    .windowToken != null
+            ) {
+                (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+                    (context as Activity).currentFocus!!.windowToken, 0
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

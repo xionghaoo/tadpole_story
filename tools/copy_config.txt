@@ -1,1 +1,3 @@
-kd／1通用／二级按钮／iocn-下拉单.png;ic_up_16.png
+kd／1通用／功能按钮／搜索.png;ic_search_34.png
+kd／1通用／二级按钮／删除.png;ic_clear_34.png
+kd／1通用／功能按钮／删除记录.png;ic_clear_history_34.png

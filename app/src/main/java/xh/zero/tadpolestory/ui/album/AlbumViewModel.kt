@@ -44,7 +44,7 @@ class AlbumViewModel @AssistedInject constructor(
                     mediaId = child.mediaId!!,
                     title = child.description.title.toString(),
                     subtitle = subtitle.toString(),
-                    albumArtUri = child.description.iconUri!!,
+                    albumArtUri = child.description.iconUri,
                     browsable = child.isBrowsable,
                     playbackRes = getResourceForMediaId(child.mediaId!!),
                     duration = duration ?: 0,
