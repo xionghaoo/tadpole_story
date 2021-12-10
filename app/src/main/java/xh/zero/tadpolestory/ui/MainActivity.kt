@@ -19,6 +19,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +32,7 @@ import xh.zero.tadpolestory.databinding.ActivityMainBinding
 import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.Repository
 import xh.zero.tadpolestory.repo.TadpoleMusicService
+import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.album.*
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
@@ -45,9 +47,27 @@ class MainActivity : BaseActivity(),
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"
         const val ACTION_ALBUM_DETAIL = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_ALBUM_DETAIL"
 
-        fun startToAlbumDetail(context: Context?) {
+        fun startToAlbumDetail(context: Context?, item: Album) {
+            /**
+             *  albumId = item.id,
+            totalCount = item.include_track_count,
+            albumTitle = item.album_title.orEmpty(),
+            albumCover = item.cover_url_large.orEmpty(),
+            albumDesc = item.meta.orEmpty(),
+            albumSubscribeCount = item.subscribe_count,
+            albumTags = item.album_tags.orEmpty(),
+            albumIntro = item.album_intro.orEmpty()
+             */
             context?.startActivity(Intent(context, MainActivity::class.java).apply {
                 action = ACTION_ALBUM_DETAIL
+                putExtra("albumId", item.id)
+                putExtra("totalCount", item.include_track_count)
+                putExtra("albumTitle", item.album_title.orEmpty())
+                putExtra("albumCover", item.cover_url_large.orEmpty())
+                putExtra("albumDesc", item.meta.orEmpty())
+                putExtra("albumSubscribeCount", item.subscribe_count)
+                putExtra("albumTags", item.album_tags.orEmpty())
+                putExtra("albumIntro", item.album_intro.orEmpty())
             })
         }
     }
@@ -96,9 +116,19 @@ class MainActivity : BaseActivity(),
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
             val navController = navHostFragment.navController
             navController.navigate(R.id.albumDetailFragment, Bundle().apply {
-                putString("albumTitle", "")
-                putLong("totalCount", 0L)
-            })
+                putInt("albumId", intent.getIntExtra("albumId", 0))
+                putLong("totalCount", intent.getLongExtra("totalCount", 0))
+                putString("albumTitle", intent.getStringExtra("albumTitle"))
+                putString("albumCover", intent.getStringExtra("albumCover"))
+                putString("albumDesc", intent.getStringExtra("albumDesc"))
+                putLong("albumSubscribeCount", intent.getLongExtra("albumSubscribeCount", 0))
+                putString("albumTags", intent.getStringExtra("albumTags"))
+                putString("albumIntro", intent.getStringExtra("albumIntro"))
+
+            }, navOptions { anim {
+                enter = R.anim.page_enter
+                popExit = R.anim.page_exit
+            } })
         }
     }
 

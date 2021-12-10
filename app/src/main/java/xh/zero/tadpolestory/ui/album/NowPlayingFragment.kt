@@ -258,7 +258,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
                     v.setOnClickListener {
                         // 相关专辑
-                        MainActivity.startToAlbumDetail(context)
+                        MainActivity.startToAlbumDetail(context, item)
                     }
                 }
 
