@@ -66,14 +66,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
     }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        binding =  FragmentNowPlayingBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -299,22 +291,28 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     }
 
     private fun initialProgressBar() {
+        binding.pbMediaProgress.max = MAX_PROGRESS
+        binding.topPbMediaProgress.max = MAX_PROGRESS
+        binding.topPbMediaProgress2.max = MAX_PROGRESS
         isTouchingSeekBar = false
         viewModel.mediaProgress.observe(viewLifecycleOwner) { progress ->
             if (!isTouchingSeekBar) {
-                binding.pbMediaProgress.setProgress(progress, true)
-                binding.topPbMediaProgress.setProgress(progress, true)
-                binding.topPbMediaProgress2.setProgress(progress, true)
+                binding.pbMediaProgress.setProgress(progress, false)
+                binding.pbMediaProgress.secondaryProgress = viewModel.bufferProgress
+                binding.topPbMediaProgress.setProgress(progress, false)
+                binding.topPbMediaProgress.secondaryProgress = viewModel.bufferProgress
+                binding.topPbMediaProgress2.setProgress(progress, false)
+                binding.topPbMediaProgress2.secondaryProgress = viewModel.bufferProgress
             }
         }
         // TODO 增加缓存条以后，拖动进度条时滑块会闪一下
-        viewModel.mediaBufferProgress.observe(viewLifecycleOwner) { progress ->
-            if (!isTouchingSeekBar) {
-                binding.pbMediaProgress.secondaryProgress = progress
-                binding.topPbMediaProgress.secondaryProgress = progress
-                binding.topPbMediaProgress2.secondaryProgress = progress
-            }
-        }
+//        viewModel.mediaBufferProgress.observe(viewLifecycleOwner) { progress ->
+//            if (!isTouchingSeekBar) {
+//                binding.pbMediaProgress.secondaryProgress = progress
+//                binding.topPbMediaProgress.secondaryProgress = progress
+//                binding.topPbMediaProgress2.secondaryProgress = progress
+//            }
+//        }
 
         binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -377,7 +375,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
     private fun seekToPosition(seekBar: SeekBar?, complete: () -> Unit) {
         viewModel.mediaMetadata.value?.let {
-            val posMs = (it.duration * (seekBar?.progress ?: 0f).toFloat() / 500f).roundToLong()
+            val posMs = (it.duration * (seekBar?.progress ?: 0f).toFloat() / MAX_PROGRESS.toFloat()).roundToLong()
             viewModel.seekToPosition(
                 if (posMs < 0) 0 else if (posMs > it.duration) it.duration else posMs
             ) {
@@ -618,6 +616,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     companion object {
         const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
         private const val SCROLL_THRESHOLD = 0
+        const val MAX_PROGRESS = 1000
 
         fun newInstance(albumTitle: String) = NowPlayingFragment().apply {
             arguments = Bundle().apply {

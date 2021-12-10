@@ -51,6 +51,7 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     private var updatePosition = true
+    private var updateBufferPosition = true
     private val handler = Handler(Looper.getMainLooper())
 
     private var playbackState: PlaybackStateCompat = EMPTY_PLAYBACK_STATE
@@ -64,6 +65,8 @@ class NowPlayingViewModel @Inject constructor(
     val mediaBufferProgress = MutableLiveData<Int>().apply {
         postValue(0)
     }
+    var bufferProgress = 0
+
     val mediaButtonRes = MutableLiveData<Int>().apply {
         postValue(R.mipmap.ic_media_play)
     }
@@ -100,6 +103,7 @@ class NowPlayingViewModel @Inject constructor(
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
         checkPlaybackPosition()
+//        checkPlaybackBufferPosition()
     }
 
     /**
@@ -112,15 +116,32 @@ class NowPlayingViewModel @Inject constructor(
         val totalDuration = mediaMetadata.value?.duration ?: 0L
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
-            mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * 500).roundToInt())
-        }
-        if (totalDuration > 0) {
-            val bufferPosition = playbackState.bufferedPosition
-            mediaBufferProgress.postValue(((bufferPosition.toFloat() / totalDuration) * 500).roundToInt())
+            mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * NowPlayingFragment.MAX_PROGRESS).roundToInt())
+
+            if (totalDuration > 0) {
+                val bufferPosition = playbackState.bufferedPosition
+                bufferProgress = ((bufferPosition.toFloat() / totalDuration) * NowPlayingFragment.MAX_PROGRESS).roundToInt()
+            }
         }
 
         if (updatePosition) checkPlaybackPosition()
     }, POSITION_UPDATE_INTERVAL_MILLIS)
+
+//    private fun checkPlaybackBufferPosition(): Boolean = handler.postDelayed({
+////        val currPosition = playbackState.currentPlayBackPosition
+//        val totalDuration = mediaMetadata.value?.duration ?: 0L
+////        if (mediaPosition.value != currPosition) {
+////            mediaPosition.postValue(currPosition)
+////            mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * 500).roundToInt())
+////        }
+//        if (totalDuration > 0) {
+//            val bufferPosition = playbackState.bufferedPosition
+//            mediaBufferProgress.postValue(((bufferPosition.toFloat() / totalDuration) * 500).roundToInt())
+//            Timber.d("checkPlaybackBufferPosition: ${totalDuration}, ${bufferPosition}")
+//        }
+//
+//        if (updateBufferPosition) checkPlaybackBufferPosition()
+//    }, 300)
 
     fun playMediaId(mediaId: String) {
         val nowPlaying = musicServiceConnection.nowPlaying.value
@@ -219,6 +240,7 @@ class NowPlayingViewModel @Inject constructor(
 
         // Stop updating the position
         updatePosition = false
+        updateBufferPosition = false
     }
 
     private fun updateState(

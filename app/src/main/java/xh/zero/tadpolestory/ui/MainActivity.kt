@@ -84,6 +84,8 @@ class MainActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+//        overridePendingTransition(R.anim.page_enter, 0)
+
         startNowPlayingPage(intent)
 
         EasyFloat.with(this)

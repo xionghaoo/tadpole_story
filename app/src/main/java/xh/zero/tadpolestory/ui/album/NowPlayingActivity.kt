@@ -33,13 +33,21 @@ class NowPlayingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        overridePendingTransition(R.anim.page_enter, R.anim.page_exit)
+
         binding = ActivityNowPlayingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 //        binding.btnBack.setOnClickListener {
 //            onBackPressed()
 //        }
 
         replaceFragment(NowPlayingFragment.newInstance(albumTitle), R.id.fragment_container)
+    }
+
+    override fun finish() {
+        super.finish()
+//        overridePendingTransition(R.anim.page_enter, R.anim.page_exit)
     }
 
     override fun onNewIntent(intent: Intent?) {

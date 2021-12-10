@@ -220,7 +220,13 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     if (tag.display_name == args.tagName) {
                         selectedTagIndexMap[filterIndex] = FilterItem(index, tag)
                         selectTopTagView(filterIndex, tv, index)
+                        binding.containerLlTagList.post {
+                            binding.containerLlTagList.smoothScrollTo(binding.llTagList.getChildAt(index).x.toInt(), 0)
+                        }
                         loadMetaAlbums()
+                    } else {
+                        tv.setBackgroundResource(R.drawable.shape_album_tag)
+                        tv.setTextColor(resources.getColor(R.color.color_42444B))
                     }
                 }
 
