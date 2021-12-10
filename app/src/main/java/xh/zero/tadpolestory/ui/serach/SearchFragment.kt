@@ -11,7 +11,9 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -19,9 +21,11 @@ import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentSearchBinding
 import xh.zero.tadpolestory.handleResponse
+import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.HotKeyword
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.utils.PromptDialog
+import xh.zero.tadpolestory.utils.TadpoleUtil
 
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
@@ -30,6 +34,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private var job: Job? = null
 
     private lateinit var adapter: FilterAlbumAdapter
+//    private lateinit var hotAlbumsAdapter: HotAlbumAdapter
     private lateinit var searchWordAdapter: SearchWordAdapter
     private var lastQueryWord: String? = null
 
@@ -94,16 +99,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
         adapter = FilterAlbumAdapter(
             onItemClick = { album ->
-                findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToAlbumDetailFragment(
-                    albumId = album.id,
-                    albumTitle = album.album_title.orEmpty(),
-                    totalCount = album.include_track_count,
-                    albumCover = album.cover_url_large.orEmpty(),
-                    albumDesc = album.meta.orEmpty(),
-                    albumSubscribeCount = album.subscribe_count,
-                    albumTags = album.album_tags.orEmpty(),
-                    albumIntro = album.album_intro.orEmpty()
-                ))
+                toAlbumDetailPage(album)
             },
             retry = {
 
@@ -142,8 +138,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             }
         }
 
+//        hotAlbumsAdapter = HotAlbumAdapter()
+//        binding.rcHotAlbums.layoutManager = GridLayoutManager(context, 2)
+//        binding.rcHotAlbums.adapter = hotAlbumsAdapter
+        getHotAlbums()
+
         binding.rcAlbumList.isSaveEnabled = true
         binding.rcSearchWords.isSaveEnabled = true
+        binding.rcHotAlbums.isSaveEnabled = true
+
     }
 
     private fun searchAlbums() {
@@ -198,11 +201,56 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getSearchWords(q: String) {
-//        currentQuery = q
         viewModel.getSearchWords(q).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
                 searchWordAdapter.updateData(r.keywords ?: emptyList())
             }
         }
+    }
+
+    private fun getHotAlbums() {
+        viewModel.getHotAlbumsList().observe(viewLifecycleOwner) {
+            handleResponse(it) { r ->
+                bindHotAlbumsView(r.albums ?: emptyList())
+            }
+        }
+    }
+
+    private fun bindHotAlbumsView(items: List<Album>) {
+        binding.rcHotAlbums.removeAllViews()
+        items.forEach { item ->
+            val v = layoutInflater.inflate(R.layout.list_item_filter, null)
+            binding.rcHotAlbums.addView(v)
+            bindHotAlbumItem(v, item)
+            val lp = v.layoutParams as FlexboxLayout.LayoutParams
+            lp.width = resources.getDimension(R.dimen._466dp).toInt()
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            lp.bottomMargin = resources.getDimension(R.dimen._32dp).toInt()
+        }
+    }
+
+    private fun bindHotAlbumItem(v: View, item: Album) {
+        v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
+        v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_tags
+        v.findViewById<TextView>(R.id.tv_album_subscribe).text = "${item.subscribe_count}"
+        v.findViewById<TextView>(R.id.tv_album_total).text = "${item.include_track_count}集"
+        TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover), item.cover_url_large.orEmpty())
+
+        v.setOnClickListener {
+            toAlbumDetailPage(item)
+        }
+    }
+
+    private fun toAlbumDetailPage(album: Album) {
+        findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToAlbumDetailFragment(
+            albumId = album.id,
+            albumTitle = album.album_title.orEmpty(),
+            totalCount = album.include_track_count,
+            albumCover = album.cover_url_large.orEmpty(),
+            albumDesc = album.meta.orEmpty(),
+            albumSubscribeCount = album.subscribe_count,
+            albumTags = album.album_tags.orEmpty(),
+            albumIntro = album.album_intro.orEmpty()
+        ))
     }
 }

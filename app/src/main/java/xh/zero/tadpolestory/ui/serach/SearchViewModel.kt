@@ -23,6 +23,8 @@ class SearchViewModel @Inject constructor(
 
     fun saveSearchRecord(txt: String) = repo.saveSearchHistory(txt)
 
+    fun getHotAlbumsList() = repo.getAlbumsList(1, 10)
+
     fun loadSearchRecords() = repo.loadAllSearchHistory()
     fun clearSearchHistory() = repo.clearSearchHistory()
 }

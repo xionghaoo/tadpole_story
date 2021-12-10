@@ -104,7 +104,7 @@
         android:id="@+id/container_search_recommend"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        tools:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -205,7 +205,24 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_0A1A2A"
+                android:textStyle="bold"
+                android:textSize="@dimen/_28sp"
+                android:text="热搜专辑"
+                android:layout_marginTop="@dimen/_34dp"
+                android:layout_marginStart="@dimen/_122dp" />
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/rc_hot_albums"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_122dp"
+                android:paddingEnd="@dimen/_122dp"
+                app:justifyContent="space_between"
+                app:flexWrap="wrap"
+                android:layout_marginTop="@dimen/_24dp"/>
         </LinearLayout>
     </ScrollView>
 

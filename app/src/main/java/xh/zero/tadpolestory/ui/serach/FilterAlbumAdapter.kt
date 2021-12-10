@@ -14,6 +14,7 @@ import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.TadpoleNetworkStateViewHolder
+import xh.zero.tadpolestory.utils.TadpoleUtil
 import kotlin.math.roundToInt
 
 class FilterAlbumAdapter(
@@ -30,10 +31,11 @@ class FilterAlbumAdapter(
             v.findViewById<TextView>(R.id.tv_album_subscribe).text = "$subscribe_count"
             v.findViewById<TextView>(R.id.tv_album_total).text = "${include_track_count}集"
 
-            Glide.with(v.context)
-                .load(cover_url_large)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
-                .into(v.findViewById<ImageView>(R.id.iv_album_cover))
+//            Glide.with(v.context)
+//                .load(cover_url_large)
+//                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
+//                .into(v.findViewById<ImageView>(R.id.iv_album_cover))
+            TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover), item.cover_url_large.orEmpty())
 
             v.findViewById<View>(R.id.v_first).setOnClickListener { onItemClick(this) }
         }
@@ -50,10 +52,12 @@ class FilterAlbumAdapter(
         v.findViewById<TextView>(R.id.tv_album_subscribe_2).text = "${item.subscribe_count}"
         v.findViewById<TextView>(R.id.tv_album_total_2).text = "${item.include_track_count}集"
 
-        Glide.with(v.context)
-            .load(item.cover_url_large)
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
-            .into(v.findViewById<ImageView>(R.id.iv_album_cover_2))
+//        Glide.with(v.context)
+//            .load(item.cover_url_large)
+//            .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
+//            .into(v.findViewById<ImageView>(R.id.iv_album_cover_2))
+        TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover_2), item.cover_url_large.orEmpty())
+
 
         v.findViewById<View>(R.id.v_second).setOnClickListener { onItemClick(item) }
     }
