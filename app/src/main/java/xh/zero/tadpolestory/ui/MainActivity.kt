@@ -125,10 +125,13 @@ class MainActivity : BaseActivity(),
                 putString("albumTags", intent.getStringExtra("albumTags"))
                 putString("albumIntro", intent.getStringExtra("albumIntro"))
 
-            }, navOptions { anim {
-                enter = R.anim.page_enter
-                popExit = R.anim.page_exit
-            } })
+            }, navOptions {
+                anim {
+                    enter = R.anim.page_enter
+                    popExit = R.anim.page_exit
+                }
+                launchSingleTop = true
+            })
         }
     }
 

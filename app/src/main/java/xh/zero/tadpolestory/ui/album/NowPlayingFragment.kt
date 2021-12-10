@@ -124,6 +124,16 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             viewModel.next()
         }
 
+        binding.btnMediaNext15s.setOnClickListener {
+            viewModel.playForward15s()
+        }
+        binding.topBtnMediaNext15s.setOnClickListener {
+            viewModel.playForward15s()
+        }
+        binding.btnMediaPrev15s.setOnClickListener {
+            viewModel.playBackward15s()
+        }
+
         binding.btnMediaMultiple.setOnClickListener {
             showMultiplePlayDialog()
         }
@@ -266,6 +276,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     v.setOnClickListener {
                         // 相关专辑
                         MainActivity.startToAlbumDetail(context, item)
+                        activity?.finish()
                     }
                 }
 
@@ -296,6 +307,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topPbMediaProgress2.setProgress(progress, true)
             }
         }
+        // TODO 增加缓存条以后，拖动进度条时滑块会闪一下
+        viewModel.mediaBufferProgress.observe(viewLifecycleOwner) { progress ->
+            if (!isTouchingSeekBar) {
+                binding.pbMediaProgress.secondaryProgress = progress
+                binding.topPbMediaProgress.secondaryProgress = progress
+                binding.topPbMediaProgress2.secondaryProgress = progress
+            }
+        }
 
         binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -308,9 +327,11 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                isTouchingSeekBar = false
+                //                isTouchingSeekBar = false
                 if (binding.pbMediaProgress.isVisible) {
-                    seekToPosition(seekBar)
+                    seekToPosition(seekBar) {
+                        isTouchingSeekBar = false
+                    }
                 }
             }
         })
@@ -325,9 +346,11 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                isTouchingSeekBar = false
+//                isTouchingSeekBar = false
                 if (binding.topPbMediaProgress.isVisible) {
-                    seekToPosition(seekBar)
+                    seekToPosition(seekBar) {
+                        isTouchingSeekBar = false
+                    }
                 }
             }
         })
@@ -342,21 +365,28 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                isTouchingSeekBar = false
+//                isTouchingSeekBar = false
                 if (binding.topPbMediaProgress2.isVisible) {
-                   seekToPosition(seekBar)
+                   seekToPosition(seekBar) {
+                       isTouchingSeekBar = false
+                   }
                 }
             }
         })
     }
 
-    private fun seekToPosition(seekBar: SeekBar?) {
+    private fun seekToPosition(seekBar: SeekBar?, complete: () -> Unit) {
         viewModel.mediaMetadata.value?.let {
             val posMs = (it.duration * (seekBar?.progress ?: 0f).toFloat() / 500f).roundToLong()
             viewModel.seekToPosition(
                 if (posMs < 0) 0 else if (posMs > it.duration) it.duration else posMs
             ) {
-                viewModel.rePlay()
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(100)
+                    withContext(Dispatchers.Main) {
+                        complete()
+                    }
+                }
             }
         }
     }
@@ -515,6 +545,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         topPbMediaProgress.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
     }
 
+    /**
+     * 倍数播放
+     */
     private fun showMultiplePlayDialog() {
         PromptDialog.Builder(requireContext())
             .setViewId(R.layout.dialog_multiple_play)

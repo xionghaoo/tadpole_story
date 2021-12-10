@@ -43,6 +43,7 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastContext
@@ -50,6 +51,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultAllocator
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
+import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import java.io.File
+
 
 /**
  * This class is the entry point for browsing and playback commands from the APP's UI
@@ -105,6 +113,9 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         )
     }
 
+    private lateinit var cacheDataSourceFactory: CacheDataSourceFactory
+    private val extractorsFactory = DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true)
+
     private var isForegroundService = false
 
     private val uAmpAudioAttributes = AudioAttributes.Builder()
@@ -119,7 +130,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
      * See [Player.AudioComponent.setAudioAttributes] for details.
      */
     private val exoPlayer: ExoPlayer by lazy {
-        SimpleExoPlayer.Builder(this).build().apply {
+        ExoPlayer.Builder(this).build().apply {
             setAudioAttributes(uAmpAudioAttributes, true)
             setHandleAudioBecomingNoisy(true)
             addListener(playerListener)
@@ -159,6 +170,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 //            0,
 //            Intent(this, Nowplaying),
 //            Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        cacheDataSourceFactory = CacheDataSourceFactory(this, 100 * 1024 * 1024, 5 * 1024 * 1024)
 
         // Create a new MediaSession.
         mediaSession = MediaSessionCompat(this, "MusicService")
@@ -396,7 +409,22 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         currentPlayer.playWhenReady = playWhenReady
         currentPlayer.stop(/* reset= */ true)
         if (currentPlayer == exoPlayer) {
-            val mediaSource = metadataList.toMediaSource(dataSourceFactory)
+
+            // Specify cache folder, my cache folder named media which is inside getCacheDir.
+//            val cacheFolder = File(cacheDir, "media")
+//
+//            // Specify cache size and removing policies
+//            val cacheEvictor = LeastRecentlyUsedCacheEvictor(1 * 1024 * 1024) // My cache size will be 1MB and it will automatically remove least recently used files if the size is reached out.
+//
+//            // Build cache
+//            val cache = SimpleCache(cacheFolder, cacheEvictor)
+
+            // Build data source factory with cache enabled, if data is available in cache it will return immediately, otherwise it will open a new connection to get the data.
+
+
+//            val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+
+            val mediaSource = metadataList.toMediaSource(cacheDataSourceFactory, extractorsFactory)
             exoPlayer.prepare(mediaSource)
             exoPlayer.seekTo(initialWindowIndex, playbackStartPositionMs)
         } else /* currentPlayer == castPlayer */ {
@@ -471,6 +499,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
     fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean, isPaging: Boolean) {
         mediaSource.reset()
+        currentPlaylistItems = emptyList()
         serviceScope.launch {
             mediaSource.load(mediaId, page, isRefresh, isPaging)
             notifyChildrenChanged(mediaId)
@@ -478,7 +507,21 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     }
 
     fun setPlaybackSpeed(speed: Float) {
-        exoPlayer.setPlaybackSpeed(speed)
+        currentPlayer.setPlaybackSpeed(speed)
+    }
+
+    fun playForward15s() {
+        if (currentPlayer.duration == C.TIME_UNSET) return
+        var forwardPos = currentPlayer.currentPosition + 15_000
+        if (forwardPos > currentPlayer.duration) forwardPos = currentPlayer.duration
+        currentPlayer.seekTo(forwardPos)
+    }
+
+    fun playBackward15s() {
+        var backPos = currentPlayer.currentPosition - 15_000
+        if (backPos < 0) backPos = 0
+        Log.d(TAG, "playBackward15s: $backPos")
+        currentPlayer.seekTo(backPos)
     }
 
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
@@ -638,7 +681,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     /**
      * Listen for events from ExoPlayer.
      */
-    private inner class PlayerEventListener : Player.EventListener {
+    private inner class PlayerEventListener : Player.Listener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             when (playbackState) {
                 Player.STATE_BUFFERING,

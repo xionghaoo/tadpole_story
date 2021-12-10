@@ -61,6 +61,9 @@ class NowPlayingViewModel @Inject constructor(
     val mediaProgress = MutableLiveData<Int>().apply {
         postValue(0)
     }
+    val mediaBufferProgress = MutableLiveData<Int>().apply {
+        postValue(0)
+    }
     val mediaButtonRes = MutableLiveData<Int>().apply {
         postValue(R.mipmap.ic_media_play)
     }
@@ -106,13 +109,17 @@ class NowPlayingViewModel @Inject constructor(
      */
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
+        val totalDuration = mediaMetadata.value?.duration ?: 0L
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
-            val totalDuration = mediaMetadata.value?.duration ?: 0L
             mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * 500).roundToInt())
         }
-        if (updatePosition)
-            checkPlaybackPosition()
+        if (totalDuration > 0) {
+            val bufferPosition = playbackState.bufferedPosition
+            mediaBufferProgress.postValue(((bufferPosition.toFloat() / totalDuration) * 500).roundToInt())
+        }
+
+        if (updatePosition) checkPlaybackPosition()
     }, POSITION_UPDATE_INTERVAL_MILLIS)
 
     fun playMediaId(mediaId: String) {
@@ -148,37 +155,48 @@ class NowPlayingViewModel @Inject constructor(
         }
     }
 
-    fun seekToPosition(posMs: Long, success: () -> Unit) {
+    fun seekToPosition(posMs: Long, complete: () -> Unit) {
         musicServiceConnection.sendCommand(SEEK_TO_POSITION, Bundle().apply {
             putLong(EXTRA_MEDIA_POSITION, posMs)
-        }) { code, _ ->
-            if (code == Activity.RESULT_OK) {
-                success()
-            }
+        }) { _, _ ->
+            rePlay()
+            complete()
         }
     }
 
     fun next() {
         musicServiceConnection.sendCommand(PLAY_NEXT, Bundle.EMPTY) { code, bundle ->
-//            bundle?.getBoolean(HAS_NEXT)?.let {
-//                switchState.postValue(Pair(first = true, second = it))
-//            }
+            rePlay()
         }
     }
 
     fun prev() {
         musicServiceConnection.sendCommand(PLAY_PREV, Bundle.EMPTY) { code, bundle ->
-//            bundle?.getBoolean(HAS_PREV)?.let {
-//                switchState.postValue(Pair(first = it, second = true))
-//            }
+            rePlay()
         }
     }
 
     fun setPlaySpeed(speed: Float) {
         musicServiceConnection.sendCommand(SET_PLAY_SPEED, Bundle().apply {
             putFloat("speed", speed)
-        }) { code, bundle ->
+        }) { _, _ ->
 
+        }
+    }
+
+    fun playForward15s() {
+        musicServiceConnection.sendCommand(PLAY_SEEK, Bundle().apply {
+            putInt("direction", 0)
+        }) { _, _ ->
+            rePlay()
+        }
+    }
+
+    fun playBackward15s() {
+        musicServiceConnection.sendCommand(PLAY_SEEK, Bundle().apply {
+            putInt("direction", 1)
+        }) { _, _ ->
+            rePlay()
         }
     }
 

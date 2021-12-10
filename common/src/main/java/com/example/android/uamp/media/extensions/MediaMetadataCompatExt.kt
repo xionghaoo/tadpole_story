@@ -21,6 +21,7 @@ import android.net.Uri
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
@@ -262,20 +263,21 @@ inline var MediaMetadataCompat.Builder.flag: Int
  *
  * For convenience, place the [MediaDescriptionCompat] into the tag so it can be retrieved later.
  */
-fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory) =
-    ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaUri)
+fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory, extractorsFactory: DefaultExtractorsFactory) =
+    ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory).createMediaSource(mediaUri)
 
 /**
  * Extension method for building a [ConcatenatingMediaSource] given a [List]
  * of [MediaMetadataCompat] objects.
  */
 fun List<MediaMetadataCompat>.toMediaSource(
-    dataSourceFactory: DataSource.Factory
+    dataSourceFactory: DataSource.Factory,
+    extractorsFactory: DefaultExtractorsFactory
 ): ConcatenatingMediaSource {
 
     val concatenatingMediaSource = ConcatenatingMediaSource()
     forEach {
-        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory))
+        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory, extractorsFactory))
     }
     return concatenatingMediaSource
 }

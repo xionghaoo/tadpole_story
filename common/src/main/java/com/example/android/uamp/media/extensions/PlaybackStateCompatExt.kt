@@ -73,3 +73,10 @@ inline val PlaybackStateCompat.currentPlayBackPosition: Long
         position
     }
 
+//inline val PlaybackStateCompat.currentPlayBackBufferedPosition: Long
+//    get() = if (state == PlaybackStateCompat.STATE_PLAYING) {
+//        val timeDelta = SystemClock.elapsedRealtime() - lastPositionUpdateTime
+//        (bufferedPosition + (timeDelta * playbackSpeed)).toLong()
+//    } else {
+//        bufferedPosition
+//    }

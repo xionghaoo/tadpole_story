@@ -22,6 +22,7 @@ const val EXTRA_MEDIA_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.EXTRA_MEDIA_PO
 
 const val LOAD_SONG_FOR_PAGE = "${Configs.PACKAGE_NAME}.COMMAND.LOAD_SONG_FOR_PAGE"
 const val SET_PLAY_SPEED = "${Configs.PACKAGE_NAME}.COMMAND.SET_PLAY_SPEED"
+const val PLAY_SEEK = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_SEEK"
 
 typealias CommandHandler = (parameters: Bundle, callback: ResultReceiver?) -> Boolean
 
@@ -67,6 +68,7 @@ class TadpoleMusicService : MusicService() {
             PLAY_NEXT -> playNextCommand(extras ?: Bundle.EMPTY, cb)
             LOAD_SONG_FOR_PAGE -> loadSongForPageCommand(extras ?: Bundle.EMPTY, cb)
             SET_PLAY_SPEED -> setPlaySpeedCommand(extras ?: Bundle.EMPTY, cb)
+            PLAY_SEEK -> playSeekCommand(extras ?: Bundle.EMPTY, cb)
             else -> false
         }
     }
@@ -82,6 +84,7 @@ class TadpoleMusicService : MusicService() {
         callback?.send(Activity.RESULT_OK, Bundle().apply {
             putBoolean(HAS_PREV, hasPrev)
         })
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true
     }
 
@@ -90,6 +93,7 @@ class TadpoleMusicService : MusicService() {
         callback?.send(Activity.RESULT_OK, Bundle().apply {
             putBoolean(HAS_NEXT, hasNext)
         })
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true
     }
 
@@ -107,6 +111,17 @@ class TadpoleMusicService : MusicService() {
     private val setPlaySpeedCommand: CommandHandler = { extras, callback ->
         val speed = extras.getFloat("speed")
         setPlaybackSpeed(speed)
+        true
+    }
+
+    private val playSeekCommand: CommandHandler = { extras, callback ->
+        val direction = extras.getInt("direction")
+        if (direction == 0) {
+            playForward15s()
+        } else {
+            playBackward15s()
+        }
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true
     }
 }
