@@ -174,6 +174,14 @@ class NowPlayingViewModel @Inject constructor(
         }
     }
 
+    fun setPlaySpeed(speed: Float) {
+        musicServiceConnection.sendCommand(SET_PLAY_SPEED, Bundle().apply {
+            putFloat("speed", speed)
+        }) { code, bundle ->
+
+        }
+    }
+
     private fun checkSwitchState(orderNum: Long, totalNum: Long) {
         if (orderNum == 0L) {
             switchState.postValue(Pair(first = false, second = true))

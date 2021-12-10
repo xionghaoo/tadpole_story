@@ -477,6 +477,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
+    fun setPlaybackSpeed(speed: Float) {
+        exoPlayer.setPlaybackSpeed(speed)
+    }
+
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
 
         /**

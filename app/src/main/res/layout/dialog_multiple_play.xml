@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/_628dp"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/_640dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/shape_dialog_bg">
+
+        <TextView
+            android:id="@+id/btn_dialog_cancel"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_68dp"
+            android:layout_marginStart="@dimen/_47dp"
+            android:layout_marginEnd="@dimen/_47dp"
+            android:layout_marginBottom="@dimen/_32dp"
+            android:layout_marginTop="@dimen/_68dp"
+            android:background="@drawable/shape_dialog_cancel"
+            android:gravity="center"
+            android:paddingStart="@dimen/_20dp"
+            android:paddingEnd="@dimen/_20dp"
+            android:text="取消"
+            android:textColor="@color/color_0C1630"
+            android:textSize="@dimen/_28sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/container_dialog_select_items">
+
+        </TextView>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/container_dialog_select_items"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="space_between"
+            android:layout_marginTop="@dimen/_36dp"
+            android:layout_marginStart="@dimen/_47dp"
+            android:layout_marginEnd="@dimen/_47dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

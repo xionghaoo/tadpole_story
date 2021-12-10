@@ -1,18 +1,15 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.util.TypedValue
+import android.view.*
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.core.graphics.drawable.updateBounds
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -27,9 +24,10 @@ import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
-import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainActivity
+import xh.zero.tadpolestory.utils.OperationType
+import xh.zero.tadpolestory.utils.PromptDialog
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -61,6 +59,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
     private var currentPlayMediaId: String? = null
     private var currentScrollY: Int = 0
+
+    private var selectedMultipleIndex = 2
 
     private val albumTitle: String by lazy {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
@@ -122,6 +122,13 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
         binding.btnMediaNext.setOnClickListener {
             viewModel.next()
+        }
+
+        binding.btnMediaMultiple.setOnClickListener {
+            showMultiplePlayDialog()
+        }
+        binding.topBtnMediaMultiple.setOnClickListener {
+            showMultiplePlayDialog()
         }
 
         // 上一曲，下一曲按钮状态
@@ -506,6 +513,73 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
         val yDiff = pbMediaProgressY - topPbMediaProgressY
         topPbMediaProgress.translationY = (if (yDiff > 0f) yDiff else 0f) * percent
+    }
+
+    private fun showMultiplePlayDialog() {
+        PromptDialog.Builder(requireContext())
+            .setViewId(R.layout.dialog_multiple_play)
+            .isTransparent(true)
+            .configView { v, requestDismiss ->
+                val container = v.findViewById<FlexboxLayout>(R.id.container_dialog_select_items)
+                val items = arrayOf(
+                    "0.5x", "0.75x", "1.0x", "1.25x", "1.5x", "2.0x"
+                )
+                items.forEachIndexed { index, item ->
+                    val tv = TextView(context)
+                    container.addView(tv)
+                    tv.tag = index
+                    val lp = tv.layoutParams as FlexboxLayout.LayoutParams
+                    lp.width = resources.getDimension(R.dimen._162dp).toInt()
+                    lp.height = resources.getDimension(R.dimen._52dp).toInt()
+                    lp.topMargin = resources.getDimension(R.dimen._48dp).toInt()
+//                    if (index > 0) {
+//                        lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
+//                    }
+                    tv.text = item
+                    tv.setBackgroundResource(R.drawable.shape_album_tag)
+                    tv.gravity = Gravity.CENTER
+                    tv.setTextColor(resources.getColor(R.color.color_42444B))
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._22dp))
+
+                    selectMultipleTag(tv)
+
+                    tv.setOnClickListener { v ->
+                        val vIndex = v.tag as Int
+                        selectedMultipleIndex = vIndex
+                        viewModel.setPlaySpeed(
+                            when(vIndex) {
+                                0 -> 0.5f
+                                1 -> 0.75f
+                                2 -> 1f
+                                3 -> 1.25f
+                                4 -> 1.5f
+                                5 -> 2.0f
+                                else -> 1f
+                            }
+                        )
+                        requestDismiss.invoke()
+                        container.children.forEach {
+                            selectMultipleTag(it as TextView)
+                        }
+                    }
+                }
+            }
+            .addOperation(OperationType.CANCEL, R.id.btn_dialog_cancel, true, null)
+            .build()
+            .show()
+    }
+
+    private fun selectMultipleTag(view: TextView) {
+        val vIndex = view.tag as Int
+        if (vIndex == selectedMultipleIndex) {
+            // 选中
+            view.setBackgroundResource(R.drawable.shape_album_tag_selected)
+            view.setTextColor(Color.WHITE)
+        } else {
+            // 未选中
+            view.setBackgroundResource(R.drawable.shape_album_tag)
+            view.setTextColor(resources.getColor(R.color.color_42444B))
+        }
     }
 
     companion object {
