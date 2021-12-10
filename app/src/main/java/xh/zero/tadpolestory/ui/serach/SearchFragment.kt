@@ -203,6 +203,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private fun getSearchWords(q: String) {
         viewModel.getSearchWords(q).observe(viewLifecycleOwner) {
             handleResponse(it) { r ->
+                searchWordAdapter.currentSearchWord = q
                 searchWordAdapter.updateData(r.keywords ?: emptyList())
             }
         }

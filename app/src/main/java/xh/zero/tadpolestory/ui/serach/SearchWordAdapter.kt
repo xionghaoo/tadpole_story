@@ -1,5 +1,8 @@
 package xh.zero.tadpolestory.ui.serach
 
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.TextView
 import xh.zero.core.adapter.PlainListAdapter
@@ -11,10 +14,21 @@ class SearchWordAdapter(
     private val onItemClick: (String?) -> Unit
 ) : PlainListAdapter<SearchWordResult.Keywords>(items) {
 
-    override fun bindView(v: View, item: SearchWordResult.Keywords, position: Int) {
-        v.findViewById<TextView>(R.id.tv_search_word_title).text = item.keyword
+    var currentSearchWord: String = ""
 
-//        v.findViewById<TextView>(R.id.tv_search_word_count).text = ""
+    override fun bindView(v: View, item: SearchWordResult.Keywords, position: Int) {
+        val ss = SpannableString(item.keyword)
+        val start = item.keyword?.indexOf(currentSearchWord)
+        if (start != null) {
+            ss.setSpan(
+                ForegroundColorSpan(v.resources.getColor(R.color.color_FF9F00)),
+                start,
+                start + currentSearchWord.length,
+                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+        v.findViewById<TextView>(R.id.tv_search_word_title).text = ss
+
         v.setOnClickListener {
             onItemClick(item.keyword)
         }
