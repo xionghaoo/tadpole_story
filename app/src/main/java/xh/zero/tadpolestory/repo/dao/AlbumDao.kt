@@ -16,6 +16,9 @@ abstract class AlbumDao {
     @Query("SELECT * FROM Album")
     abstract suspend fun find() : Album?
 
+    @Query("SELECT * FROM Album ORDER BY createdTime DESC")
+    abstract fun findAll() : LiveData<List<Album>>
+
     @Query("DELETE FROM Album")
     abstract suspend fun clear()
 }

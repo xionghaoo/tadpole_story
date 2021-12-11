@@ -1,5 +1,6 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
@@ -16,10 +17,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.flexbox.JustifyContent
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 import xh.zero.core.utils.SystemUtil
 import xh.zero.core.utils.ToastUtil
@@ -27,7 +26,6 @@ import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
-import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainActivity
 import xh.zero.tadpolestory.utils.OperationType
@@ -82,9 +80,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-//        binding.vBack.setOnClickListener {
-//            activity?.onBackPressed()
-//        }
+        activity?.sendBroadcast(Intent(AlbumDetailFragment.ACTION_RECORD_ALBUM))
 
         viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
@@ -144,9 +140,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             // 跳转到曲目列表
             ToastUtil.show(context, "跳转到曲目列表")
             // TODO 交互存在问题
-            viewModel.repo.findCurrentAlbum { album ->
-                if (album != null) MainActivity.startToAlbumDetail(context, album)
-            }
+//            viewModel.repo.findCurrentAlbum { album ->
+//                if (album != null) MainActivity.startToAlbumDetail(context, album)
+//            }
         }
 
         // 上一曲，下一曲按钮状态

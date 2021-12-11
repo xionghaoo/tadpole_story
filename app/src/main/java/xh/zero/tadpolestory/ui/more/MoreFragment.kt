@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.databinding.FragmentMoreBinding
 import xh.zero.tadpolestory.ui.BaseFragment
 
+@AndroidEntryPoint
 class MoreFragment : BaseFragment<FragmentMoreBinding>() {
 
     private val titles = arrayOf("订阅", "播放历史", "版本更新")
@@ -61,7 +63,8 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
             return when(position) {
                 0 -> MoreSubscribeFragment.newInstance(position)
                 1 -> MoreHistoryFragment.newInstance()
-                else -> MoreHistoryFragment.newInstance()
+                2 -> MoreUpdateFragment.newInstance()
+                else -> throw IllegalArgumentException("非法位置")
             }
         }
 

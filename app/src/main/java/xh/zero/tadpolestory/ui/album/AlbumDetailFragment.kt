@@ -1,5 +1,9 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -40,6 +44,22 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
         AlbumViewModel.provideFactory(albumViewModelFactory, args.album.id.toString())
     }
 
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            viewModel.repo.savePlayingAlbum(args.album)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.registerReceiver(receiver, IntentFilter(ACTION_RECORD_ALBUM))
+    }
+
+    override fun onDestroy() {
+        activity?.unregisterReceiver(receiver)
+        super.onDestroy()
+    }
+
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,9 +71,6 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.repo.saveCurrentAlbum(args.album)
-
-
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -104,6 +121,10 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
         }
 
         override fun getPageTitle(position: Int): CharSequence? = titles[position]
+    }
+
+    companion object {
+        const val ACTION_RECORD_ALBUM = "${Configs.PACKAGE_NAME}.AlbumDetailFragment.ACTION_RECORD_ALBUM"
     }
 
 }

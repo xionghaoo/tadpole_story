@@ -84,6 +84,8 @@ data class Album(
 //    var quality_score: String? = null
     var play_count: Long = 0
 
+    var createdTime: Long = 0
+
 //    var is_finished = 0
 //    var share_count: Long = 0
 

@@ -50,7 +50,4 @@ class NowPlayingActivity : BaseActivity() {
 //        overridePendingTransition(R.anim.page_enter, R.anim.page_exit)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-    }
 }

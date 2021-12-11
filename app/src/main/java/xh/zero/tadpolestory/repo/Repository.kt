@@ -103,12 +103,14 @@ class Repository @Inject constructor(
         }
     }
 
-    fun saveCurrentAlbum(album: Album) {
+    fun savePlayingAlbum(album: Album) {
         CoroutineScope(Dispatchers.Default).launch {
-            db.albumDao().clear()
+            album.createdTime = System.currentTimeMillis()
             db.albumDao().insert(album)
         }
     }
+
+    fun loadAllAlbums() = db.albumDao().findAll()
 
     fun findCurrentAlbum(complete: (Album?) -> Unit) {
         CoroutineScope(Dispatchers.Default).launch {
