@@ -3,12 +3,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.more.MoreUpdateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_update"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_version_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="当前版本：4.0.0"
+            android:textSize="@dimen/_26sp"
+            android:textColor="@color/color_0A1A2A"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/_42dp"
+            android:layout_marginStart="@dimen/_52dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+            android:id="@+id/tv_update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="更新时间：2021.8.14"
+            android:layout_marginBottom="@dimen/_42dp"
+            android:layout_marginTop="@dimen/_8dp"
+            app:layout_constraintStart_toStartOf="@id/tv_version_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_version_name"/>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/_42dp"
+            android:layout_height="@dimen/_42dp"
+            android:src="@mipmap/ic_more_16"
+            android:layout_marginEnd="@dimen/_108dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_version_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_update_time"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

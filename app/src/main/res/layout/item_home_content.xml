@@ -38,13 +38,13 @@
         app:layout_constraintTop_toTopOf="@+id/tv_album_container_title" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/btn_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="更多"
+        android:padding="@dimen/_4dp"
         android:textSize="@dimen/_22sp"
         android:textColor="@color/color_42444B"
-        android:layout_marginEnd="@dimen/_4dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />

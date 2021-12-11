@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -24,10 +25,18 @@ class StaticTabLayout : LinearLayout {
         titles.forEachIndexed { index, title ->
             val tab = LayoutInflater.from(context).inflate(R.layout.tab_item_view, null)
             tab.findViewById<TextView>(R.id.tv_tab_title).text = title
+            tab.setPadding(
+                resources.getDimension(R.dimen._17dp).toInt(),
+                resources.getDimension(R.dimen._8dp).toInt(),
+                resources.getDimension(R.dimen._17dp).toInt(),
+                resources.getDimension(R.dimen._5dp).toInt(),
+            )
             addView(tab)
             val lp = tab.layoutParams as LinearLayout.LayoutParams
+            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
             if (index > 0) {
-                lp.rightMargin = resources.getDimension(R.dimen._24dp).toInt()
+                lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
             } else {
                 selectTab(index)
             }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -16,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
+import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildStoryBinding
 import xh.zero.tadpolestory.handleResponse
@@ -27,6 +29,9 @@ import xh.zero.tadpolestory.ui.MainViewModel
 import xh.zero.tadpolestory.ui.serach.FilterFragment.Companion.TAG_NAME_ALL
 import kotlin.math.roundToInt
 
+/**
+ * 儿童故事
+ */
 @AndroidEntryPoint
 class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
 
@@ -128,6 +133,10 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         val layout = layoutInflater.inflate(R.layout.item_home_content, null)
         layout.findViewById<TextView>(R.id.tv_album_container_title).text = title
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
+        layout.findViewById<View>(R.id.btn_more).setOnClickListener {
+            // TODO 每日推荐，猜你喜欢 - 更多
+            ToastUtil.show(requireContext(), "更多")
+        }
         rcAlbumList.removeAllViews()
         albums.forEach { item ->
             val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
@@ -145,15 +154,6 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
 
             v.setOnClickListener {
                 findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
-//                    albumId = item.id,
-//                    totalCount = item.include_track_count,
-//                    albumTitle = item.album_title.orEmpty(),
-//                    albumCover = item.cover_url_large.orEmpty(),
-//                    albumDesc = item.meta.orEmpty(),
-//                    albumSubscribeCount = item.subscribe_count,
-//                    albumTags = item.album_tags.orEmpty(),
-//                    albumIntro = item.album_intro.orEmpty(),
-//                    albumRichInfo = item.short_rich_intro.orEmpty(),
                     album = item
                 ))
             }
@@ -197,10 +197,6 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 } else {
                     findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(tag?.display_name ?: TAG_NAME_ALL))
                 }
-
-//                binding.llTagList.children.forEach { child ->
-//                    selectTagView(child as TextView)
-//                }
             }
         }
     }

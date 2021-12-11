@@ -15,12 +15,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <androidx.appcompat.widget.AppCompatImageView
+            <View
                 android:id="@+id/v_back"
                 android:layout_width="@dimen/_106dp"
                 android:layout_height="@dimen/_88dp"
                 android:layout_marginTop="@dimen/_48dp"
-                android:src="@mipmap/ic_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
