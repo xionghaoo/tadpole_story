@@ -48,27 +48,9 @@ class MainActivity : BaseActivity(),
         const val ACTION_ALBUM_DETAIL = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_ALBUM_DETAIL"
 
         fun startToAlbumDetail(context: Context?, item: Album) {
-            /**
-             *  albumId = item.id,
-            totalCount = item.include_track_count,
-            albumTitle = item.album_title.orEmpty(),
-            albumCover = item.cover_url_large.orEmpty(),
-            albumDesc = item.meta.orEmpty(),
-            albumSubscribeCount = item.subscribe_count,
-            albumTags = item.album_tags.orEmpty(),
-            albumIntro = item.album_intro.orEmpty()
-             */
             context?.startActivity(Intent(context, MainActivity::class.java).apply {
                 action = ACTION_ALBUM_DETAIL
-                putExtra("albumId", item.id)
-                putExtra("totalCount", item.include_track_count)
-                putExtra("albumTitle", item.album_title.orEmpty())
-                putExtra("albumCover", item.cover_url_large.orEmpty())
-                putExtra("albumDesc", item.meta.orEmpty())
-                putExtra("albumSubscribeCount", item.subscribe_count)
-                putExtra("albumTags", item.album_tags.orEmpty())
-                putExtra("albumIntro", item.album_intro.orEmpty())
-                putExtra("albumRichInfo", item.short_rich_intro.orEmpty())
+                putExtra("album", item)
             })
         }
     }
@@ -119,15 +101,7 @@ class MainActivity : BaseActivity(),
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
             val navController = navHostFragment.navController
             navController.navigate(R.id.albumDetailFragment, Bundle().apply {
-                putInt("albumId", intent.getIntExtra("albumId", 0))
-                putLong("totalCount", intent.getLongExtra("totalCount", 0))
-                putString("albumTitle", intent.getStringExtra("albumTitle"))
-                putString("albumCover", intent.getStringExtra("albumCover"))
-                putString("albumDesc", intent.getStringExtra("albumDesc"))
-                putLong("albumSubscribeCount", intent.getLongExtra("albumSubscribeCount", 0))
-                putString("albumTags", intent.getStringExtra("albumTags"))
-                putString("albumIntro", intent.getStringExtra("albumIntro"))
-                putString("albumRichInfo", intent.getStringExtra("albumRichInfo"))
+                putParcelable("album", intent.getParcelableExtra("album"))
 
             }, navOptions {
                 anim {

@@ -501,7 +501,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
     fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean, isPaging: Boolean) {
         mediaSource.reset()
-        currentPlaylistItems = emptyList()
         serviceScope.launch {
             mediaSource.load(mediaId, page, isRefresh, isPaging)
             notifyChildrenChanged(mediaId)
@@ -547,8 +546,9 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     private inner class UampQueueNavigator(
         mediaSession: MediaSessionCompat
     ) : TimelineQueueNavigator(mediaSession) {
-        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat =
-            currentPlaylistItems[windowIndex].description
+        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
+            return currentPlaylistItems[windowIndex].description
+        }
     }
 
     private inner class UampPlaybackPreparer : MediaSessionConnector.PlaybackPreparer {

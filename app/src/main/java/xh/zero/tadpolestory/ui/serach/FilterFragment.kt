@@ -67,15 +67,16 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         adapter = FilterAlbumAdapter(
             onItemClick = { album ->
                 findNavController().navigate(FilterFragmentDirections.actionFilterFragmentToAlbumDetailFragment(
-                    albumId = album.id,
-                    albumTitle = album.album_title.orEmpty(),
-                    totalCount = album.include_track_count,
-                    albumCover = album.cover_url_large.orEmpty(),
-                    albumDesc = album.meta.orEmpty(),
-                    albumSubscribeCount = album.subscribe_count,
-                    albumTags = album.album_tags.orEmpty(),
-                    albumIntro = album.album_intro.orEmpty(),
-                    albumRichInfo = album.short_rich_intro.orEmpty()
+//                    albumId = album.id,
+//                    albumTitle = album.album_title.orEmpty(),
+//                    totalCount = album.include_track_count,
+//                    albumCover = album.cover_url_large.orEmpty(),
+//                    albumDesc = album.meta.orEmpty(),
+//                    albumSubscribeCount = album.subscribe_count,
+//                    albumTags = album.album_tags.orEmpty(),
+//                    albumIntro = album.album_intro.orEmpty(),
+//                    albumRichInfo = album.short_rich_intro.orEmpty(),
+                    album = album
                 ))
             },
             retry = {

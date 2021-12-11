@@ -34,36 +34,12 @@
         android:id="@+id/albumDetailFragment"
         android:name="xh.zero.tadpolestory.ui.album.AlbumDetailFragment"
         android:label="AlbumDetailFragment" >
-        <argument
-            android:name="albumId"
-            app:argType="integer"
-            android:defaultValue="0" />
-        <argument
-            android:name="totalCount"
-            app:argType="long" />
-        <argument
-            android:name="albumTitle"
-            app:argType="string"
-            android:defaultValue="" />
-        <argument
-            android:name="albumCover"
-            app:argType="string" />
-        <argument android:name="albumDesc"
-            app:argType="string" />
-        <argument
-            android:name="albumSubscribeCount"
-            app:argType="long" />
-        <argument
-            android:name="albumTags"
-            app:argType="string" />
-        <argument android:name="albumIntro"
-            app:argType="string" />
         <action
             android:id="@+id/action_albumDetailFragment_to_albumRichIntroFragment"
             app:destination="@id/albumRichIntroFragment" />
         <argument
-            android:name="albumRichInfo"
-            app:argType="string" />
+            android:name="album"
+            app:argType="xh.zero.tadpolestory.repo.data.Album" />
     </fragment>
     <fragment
         android:id="@+id/filterFragment"

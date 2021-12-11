@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import xh.zero.core.utils.SystemUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.remoteRequestStrategy
@@ -99,6 +100,22 @@ class Repository @Inject constructor(
     fun clearSearchHistory() {
         CoroutineScope(Dispatchers.Default).launch {
             db.searchHistoryDao().clear()
+        }
+    }
+
+    fun saveCurrentAlbum(album: Album) {
+        CoroutineScope(Dispatchers.Default).launch {
+            db.albumDao().clear()
+            db.albumDao().insert(album)
+        }
+    }
+
+    fun findCurrentAlbum(complete: (Album?) -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val item = db.albumDao().find()
+            withContext(Dispatchers.Main) {
+                complete(item)
+            }
         }
     }
 }

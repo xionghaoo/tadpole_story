@@ -52,6 +52,5 @@ class NowPlayingActivity : BaseActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Timber.d("onNewIntent")
     }
 }

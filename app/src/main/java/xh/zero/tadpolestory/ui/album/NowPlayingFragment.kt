@@ -16,8 +16,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.flexbox.JustifyContent
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 import xh.zero.core.utils.SystemUtil
 import xh.zero.core.utils.ToastUtil
@@ -25,6 +27,7 @@ import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentNowPlayingBinding
 import xh.zero.tadpolestory.handleResponse
+import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainActivity
 import xh.zero.tadpolestory.utils.OperationType
@@ -136,6 +139,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
         binding.btnMediaTiming.setOnClickListener {
             showTimingPlay()
+        }
+        binding.btnMediaCatelog.setOnClickListener {
+            // 跳转到曲目列表
+            ToastUtil.show(context, "跳转到曲目列表")
+            // TODO 交互存在问题
+            viewModel.repo.findCurrentAlbum { album ->
+                if (album != null) MainActivity.startToAlbumDetail(context, album)
+            }
         }
 
         // 上一曲，下一曲按钮状态

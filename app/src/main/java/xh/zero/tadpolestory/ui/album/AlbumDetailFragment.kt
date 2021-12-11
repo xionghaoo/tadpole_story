@@ -11,45 +11,57 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import xh.zero.core.replaceFragment
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentAlbumDetailBinding
 import xh.zero.tadpolestory.replaceFragment
+import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainFragmentDirections
 import xh.zero.tadpolestory.utils.TadpoleUtil
+import javax.inject.Inject
 
-class AlbumDetailFragment : Fragment() {
-
-    private var _binding: FragmentAlbumDetailBinding? = null
-    private val binding: FragmentAlbumDetailBinding get() = _binding!!
+@AndroidEntryPoint
+class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 
     private val args: AlbumDetailFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        if (_binding == null) {
-            _binding = FragmentAlbumDetailBinding.inflate(layoutInflater, container, false)
-        }
-        return binding.root
+    @Inject
+    lateinit var albumViewModelFactory: AlbumViewModel.AssistedFactory
+    private val viewModel: AlbumViewModel by viewModels {
+        AlbumViewModel.provideFactory(albumViewModelFactory, args.album.id.toString())
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateBindLayout(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): FragmentAlbumDetailBinding {
+        return FragmentAlbumDetailBinding.inflate(inflater, container, false)
+    }
+
+    override fun rootView(): View = binding.root
+
+    override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.repo.saveCurrentAlbum(args.album)
+
 
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
-        binding.tvAlbumTitle.text = args.albumTitle
-        TadpoleUtil.loadAvatar(context, binding.ivAlbumCover, args.albumCover)
-        binding.tvAlbumDesc.text = args.albumDesc
-        binding.tvAlbumSubscribe.text = "订阅量: ${args.albumSubscribeCount}"
-        val tags = args.albumTags.split(",")
+        binding.tvAlbumTitle.text = args.album.album_title
+        TadpoleUtil.loadAvatar(context, binding.ivAlbumCover, args.album.cover_url_large.orEmpty())
+        binding.tvAlbumDesc.text = args.album.recommend_reason
+        binding.tvAlbumSubscribe.text = "订阅量: ${args.album.subscribe_count}"
+        val tags = args.album.album_tags.orEmpty().split(",")
         binding.tvAlbumTags.removeAllViews()
         tags.forEach { tag ->
             val tv = TextView(context)
@@ -86,9 +98,9 @@ class AlbumDetailFragment : Fragment() {
         override fun getCount(): Int = 2
 
         override fun getItem(position: Int): Fragment = if (position == 0) {
-            AlbumInfoFragment.newInstance(args.albumIntro, args.albumRichInfo)
+            AlbumInfoFragment.newInstance(args.album.album_intro.orEmpty(), args.album.short_rich_intro.orEmpty())
         } else {
-            TrackListFragment.newInstance(args.albumId.toString(), args.totalCount, args.albumTitle)
+            TrackListFragment.newInstance(args.album.id.toString(), args.album.include_track_count, args.album.album_title.orEmpty())
         }
 
         override fun getPageTitle(position: Int): CharSequence? = titles[position]

@@ -18,6 +18,7 @@ interface PreferenceStorage {
     var serialNumber: String?
     var nowPlayingAlbumId: String?
     var nowPlayingAlbumTitle: String?
+//    var nowPlayingAlbum: String?
 
     fun clearCache()
 }
@@ -36,6 +37,7 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
     override var serialNumber: String? by StringPreference(prefs, PREF_SERIAL_NUMBER, null)
     override var nowPlayingAlbumId: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_ID, null)
     override var nowPlayingAlbumTitle: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
+//    override var nowPlayingAlbum: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
 
     init {
 //        deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -54,6 +56,7 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
         const val PREF_SERIAL_NUMBER = "pref_serial_number"
         const val PREF_NOW_PLAYING_ALBUM_ID = "pref_now_playing_album_id"
         const val PREF_NOW_PLAYING_ALBUM_TITLE = "pref_now_playing_album_title"
+//        const val PREF_NOW_PLAYING_ALBUM = "pref_now_playing_album"
     }
 }
 
