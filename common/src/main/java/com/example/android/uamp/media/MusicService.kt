@@ -52,6 +52,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultAllocator
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
@@ -683,11 +685,11 @@ abstract class MusicService : MediaBrowserServiceCompat() {
      */
     private inner class PlayerEventListener : Player.Listener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playbackState,")
+
             when (playbackState) {
                 Player.STATE_BUFFERING,
                 Player.STATE_READY -> {
-                    Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playbackState,")
-
                     notificationManager.showNotificationForPlayer(currentPlayer)
                     if (playbackState == Player.STATE_READY) {
 
@@ -721,6 +723,16 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             ).show()
         }
 
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
+            mediaSession.sendSessionEvent(PLAYER_TRACK_CHANGE, Bundle().apply {
+                putInt("reason", reason)
+            })
+        }
+
     }
 }
 
@@ -728,6 +740,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
  * (Media) Session events
  */
 const val NETWORK_FAILURE = "com.example.android.uamp.media.session.NETWORK_FAILURE"
+const val PLAYER_TRACK_CHANGE = "com.example.android.uamp.media.session.PLAYER_TRACK_CHANGE"
 
 /** Content styling constants */
 private const val CONTENT_STYLE_BROWSABLE_HINT = "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT"

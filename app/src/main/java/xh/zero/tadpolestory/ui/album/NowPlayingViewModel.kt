@@ -1,6 +1,5 @@
 package xh.zero.tadpolestory.ui.album
 
-import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -14,7 +13,9 @@ import com.example.android.uamp.common.EMPTY_PLAYBACK_STATE
 import com.example.android.uamp.common.MusicServiceConnection
 import com.example.android.uamp.common.NOTHING_PLAYING
 import com.example.android.uamp.media.extensions.*
+import com.google.android.exoplayer2.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import timber.log.Timber
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.repo.*
@@ -62,9 +63,6 @@ class NowPlayingViewModel @Inject constructor(
     val mediaProgress = MutableLiveData<Int>().apply {
         postValue(0)
     }
-    val mediaBufferProgress = MutableLiveData<Int>().apply {
-        postValue(0)
-    }
     var bufferProgress = 0
 
     val mediaButtonRes = MutableLiveData<Int>().apply {
@@ -73,8 +71,12 @@ class NowPlayingViewModel @Inject constructor(
     val switchState = MutableLiveData<Pair<Boolean, Boolean>>().apply {
         postValue(Pair(first = false, second = true))
     }
+    private var stopAfterTimeJob: Job? = null
 
     var isPlaying: Boolean = false
+
+    private var autoStopCountIndex = 0
+    private var autoStopCount = 0
 
     fun getRelativeAlbum(trackId: Int) = repo.getRelativeAlbum(trackId)
 
@@ -99,11 +101,18 @@ class NowPlayingViewModel @Inject constructor(
         updateState(playbackState, it)
     }
 
+    private val trackSwitchStateObserver = Observer<Int?> { state ->
+        if (playbackState.isPlaying && state == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
+            // 曲目自动切换监听
+            if (autoStopCountIndex == 2) autoStopCount = 2
+        }
+    }
+
     private val musicServiceConnection = musicServiceConnection.also {
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
+        it.trackSwitchState.observeForever(trackSwitchStateObserver)
         checkPlaybackPosition()
-//        checkPlaybackBufferPosition()
     }
 
     /**
@@ -114,6 +123,13 @@ class NowPlayingViewModel @Inject constructor(
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
         val totalDuration = mediaMetadata.value?.duration ?: 0L
+        if (totalDuration in 1..currPosition && playbackState.isPlaying && autoStopCountIndex > 0) {
+            if (autoStopCount == autoStopCountIndex) {
+                // 播放到结尾，自动停止
+                musicServiceConnection.transportControls.pause()
+            }
+        }
+
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
             mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * NowPlayingFragment.MAX_PROGRESS).roundToInt())
@@ -126,22 +142,6 @@ class NowPlayingViewModel @Inject constructor(
 
         if (updatePosition) checkPlaybackPosition()
     }, POSITION_UPDATE_INTERVAL_MILLIS)
-
-//    private fun checkPlaybackBufferPosition(): Boolean = handler.postDelayed({
-////        val currPosition = playbackState.currentPlayBackPosition
-//        val totalDuration = mediaMetadata.value?.duration ?: 0L
-////        if (mediaPosition.value != currPosition) {
-////            mediaPosition.postValue(currPosition)
-////            mediaProgress.postValue(((currPosition.toFloat() / totalDuration) * 500).roundToInt())
-////        }
-//        if (totalDuration > 0) {
-//            val bufferPosition = playbackState.bufferedPosition
-//            mediaBufferProgress.postValue(((bufferPosition.toFloat() / totalDuration) * 500).roundToInt())
-//            Timber.d("checkPlaybackBufferPosition: ${totalDuration}, ${bufferPosition}")
-//        }
-//
-//        if (updateBufferPosition) checkPlaybackBufferPosition()
-//    }, 300)
 
     fun playMediaId(mediaId: String) {
         val nowPlaying = musicServiceConnection.nowPlaying.value
@@ -166,7 +166,7 @@ class NowPlayingViewModel @Inject constructor(
         }
     }
 
-    fun rePlay() {
+    private fun rePlay() {
         musicServiceConnection.playbackState.value?.let { playbackState ->
             if (!playbackState.isPlaying) {
                 mediaMetadata.value?.let {
@@ -188,6 +188,8 @@ class NowPlayingViewModel @Inject constructor(
     fun next() {
         musicServiceConnection.sendCommand(PLAY_NEXT, Bundle.EMPTY) { code, bundle ->
             rePlay()
+            // 曲目手动切换监听
+            if (autoStopCountIndex == 2) autoStopCount = 2
         }
     }
 
@@ -221,7 +223,52 @@ class NowPlayingViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 播放完当前曲目自动停止
+     */
+    fun stopOnThisEnd() {
+        resetTimingConfig()
+        autoStopCount = 1
+        autoStopCountIndex = 1
+    }
+
+    /**
+     * 播放完下一曲目自动停止
+     */
+    fun stopOnNextEnd() {
+        resetTimingConfig()
+        autoStopCount = 1
+        autoStopCountIndex = 2
+    }
+
+    /**
+     * 定时停止播放
+     */
+    fun stopAfterTime(minute: Int) {
+        resetTimingConfig()
+        if (stopAfterTimeJob == null) {
+            stopAfterTimeJob = CoroutineScope(Dispatchers.Default).launch {
+                delay(minute * 60 * 1000L)
+                Timber.d("停止曲目")
+                musicServiceConnection.transportControls.pause()
+                stopAfterTimeJob?.cancel()
+                stopAfterTimeJob = null
+            }
+        }
+    }
+
+    fun resetTimingConfig() {
+        autoStopCount = 0
+        autoStopCountIndex = 0
+        stopAfterTimeJob?.cancel()
+        stopAfterTimeJob = null
+    }
+
     private fun checkSwitchState(orderNum: Long, totalNum: Long) {
+        if (totalNum <= 1L) {
+            switchState.postValue(Pair(first = false, second = false))
+            return
+        }
         if (orderNum == 0L) {
             switchState.postValue(Pair(first = false, second = true))
         } else if (orderNum == totalNum - 1) {
@@ -237,6 +284,7 @@ class NowPlayingViewModel @Inject constructor(
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
+        musicServiceConnection.trackSwitchState.removeObserver(trackSwitchStateObserver)
 
         // Stop updating the position
         updatePosition = false
@@ -272,6 +320,7 @@ class NowPlayingViewModel @Inject constructor(
         )
         isPlaying = playbackState.isPlaying
     }
+
 }
 
 private const val POSITION_UPDATE_INTERVAL_MILLIS = 100L

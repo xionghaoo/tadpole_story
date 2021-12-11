@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.flexbox.JustifyContent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -61,6 +62,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private var currentScrollY: Int = 0
 
     private var selectedMultipleIndex = 2
+    private var selectedTimingIndex = 0
 
     private val albumTitle: String by lazy {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
@@ -131,6 +133,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
         binding.topBtnMediaMultiple.setOnClickListener {
             showMultiplePlayDialog()
+        }
+        binding.btnMediaTiming.setOnClickListener {
+            showTimingPlay()
         }
 
         // 上一曲，下一曲按钮状态
@@ -572,7 +577,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     tv.setTextColor(resources.getColor(R.color.color_42444B))
                     tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._22dp))
 
-                    selectMultipleTag(tv)
+                    selectPlayTag(tv, selectedMultipleIndex)
 
                     tv.setOnClickListener { v ->
                         val vIndex = v.tag as Int
@@ -590,7 +595,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                         )
                         requestDismiss.invoke()
                         container.children.forEach {
-                            selectMultipleTag(it as TextView)
+                            selectPlayTag(it as TextView, selectedMultipleIndex)
                         }
                     }
                 }
@@ -600,9 +605,66 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .show()
     }
 
-    private fun selectMultipleTag(view: TextView) {
+    /**
+     * 定时播放
+     */
+    private fun showTimingPlay() {
+        PromptDialog.Builder(requireContext())
+            .setViewId(R.layout.dialog_multiple_play)
+            .isTransparent(true)
+            .configView { v, requestDismiss ->
+                val container = v.findViewById<FlexboxLayout>(R.id.container_dialog_select_items)
+                container.justifyContent = JustifyContent.FLEX_START
+                val items = arrayOf(
+                    "不开启", "播完本集", "播完下一级", "10分钟后", "20分钟后", "30分钟后", "60分钟后", "90分钟后"
+                )
+                items.forEachIndexed { index, item ->
+                    val tv = TextView(context)
+                    container.addView(tv)
+                    tv.tag = index
+                    val lp = tv.layoutParams as FlexboxLayout.LayoutParams
+                    lp.width = resources.getDimension(R.dimen._162dp).toInt()
+                    lp.height = resources.getDimension(R.dimen._52dp).toInt()
+                    lp.topMargin = resources.getDimension(R.dimen._48dp).toInt()
+                    if (index % 3 != 0) {
+                        lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
+                    }
+                    tv.text = item
+                    tv.setBackgroundResource(R.drawable.shape_album_tag)
+                    tv.gravity = Gravity.CENTER
+                    tv.setTextColor(resources.getColor(R.color.color_42444B))
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._22dp))
+
+                    selectPlayTag(tv, selectedTimingIndex)
+
+                    tv.setOnClickListener { v ->
+                        val vIndex = v.tag as Int
+                        selectedTimingIndex = vIndex
+                        when (vIndex) {
+                            0 -> viewModel.resetTimingConfig()
+                            1 -> viewModel.stopOnThisEnd()
+                            2 -> viewModel.stopOnNextEnd()
+                            3 -> viewModel.stopAfterTime(10)
+                            4 -> viewModel.stopAfterTime(20)
+                            5 -> viewModel.stopAfterTime(30)
+                            6 -> viewModel.stopAfterTime(60)
+                            7 -> viewModel.stopAfterTime(90)
+                        }
+                        requestDismiss.invoke()
+                        container.children.forEach {
+                            selectPlayTag(it as TextView, selectedTimingIndex)
+                        }
+                    }
+                }
+            }
+            .addOperation(OperationType.CANCEL, R.id.btn_dialog_cancel, true, null)
+            .build()
+            .show()
+    }
+
+    private fun selectPlayTag(view: TextView, selectedIndex: Int) {
         val vIndex = view.tag as Int
-        if (vIndex == selectedMultipleIndex) {
+        if (vIndex == selectedIndex) {
             // 选中
             view.setBackgroundResource(R.drawable.shape_album_tag_selected)
             view.setTextColor(Color.WHITE)

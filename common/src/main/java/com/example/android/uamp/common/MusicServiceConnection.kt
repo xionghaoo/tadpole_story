@@ -30,6 +30,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.example.android.uamp.common.MusicServiceConnection.MediaBrowserConnectionCallback
 import com.example.android.uamp.media.NETWORK_FAILURE
+import com.example.android.uamp.media.PLAYER_TRACK_CHANGE
 import com.example.android.uamp.media.extensions.id
 
 /**
@@ -56,6 +57,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
         .apply { postValue(false) }
     val networkFailure = MutableLiveData<Boolean>()
         .apply { postValue(false) }
+    val trackSwitchState = MutableLiveData<Int?>()
 
     val rootMediaId: String get() = mediaBrowser.root
 
@@ -158,6 +160,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
             super.onSessionEvent(event, extras)
             when (event) {
                 NETWORK_FAILURE -> networkFailure.postValue(true)
+                PLAYER_TRACK_CHANGE -> trackSwitchState.postValue(extras?.getInt("reason") ?: -1)
             }
         }
 
