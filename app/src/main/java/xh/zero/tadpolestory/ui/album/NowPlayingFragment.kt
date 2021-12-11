@@ -394,6 +394,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 滚动位置事件处理
+     */
     private fun handleTransform(scrollY: Int) {
         currentScrollY = scrollY
         // 当前播放向上滚动的百分比，由100%逐渐减小到0
@@ -439,7 +442,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topBtnSubscribe.visibility = View.INVISIBLE
             }
 
-            // 滚动到进度条
+            // 向上滚动到底层进度条
             if (scrollY > progressBarScrollDiff) {
                 var pbPercent: Float = 1f - (scrollY.toFloat() - progressBarScrollDiff) / (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff)
                 if (pbPercent > 1f) pbPercent = 1f
@@ -461,8 +464,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topBtnMediaMultiple.visibility = View.INVISIBLE
             }
 
-            // 滚到到推荐内容
             if (scrollY >= relativeAlbumExtra1ScrollDiff) {
+                // 向上滚到到推荐内容
                 binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.VISIBLE
                 binding.topTvMediaRelativeMore.visibility = View.VISIBLE
@@ -475,7 +478,10 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 // 显示第三状态进度条
                 binding.topPbMediaProgress2.visibility = View.VISIBLE
                 binding.topPbMediaProgress.visibility = View.INVISIBLE
+
+                binding.topScrollCover.root.visibility = if (scrollY > relativeAlbumExtra1ScrollDiff) View.VISIBLE else View.INVISIBLE
             } else {
+                // 向下滚出推荐内容
                 binding.topTvMediaRelativeExtra1.visibility = View.INVISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.INVISIBLE
                 binding.topTvMediaRelativeMore.visibility = View.INVISIBLE
@@ -488,6 +494,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 // 隐藏第三状态进度条
                 binding.topPbMediaProgress2.visibility = View.INVISIBLE
                 binding.topPbMediaProgress.visibility = View.VISIBLE
+
+                binding.topScrollCover.root.visibility = View.INVISIBLE
             }
         } else {
             binding.ivMediaCoverImg.visibility = View.VISIBLE

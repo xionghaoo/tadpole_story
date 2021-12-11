@@ -301,6 +301,7 @@
             android:layout_width="@dimen/_106dp"
             android:layout_height="@dimen/_88dp"
             android:layout_marginTop="@dimen/_48dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -513,6 +514,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <include
+            android:id="@+id/top_scroll_cover"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_24dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/top_placeholder"
+            layout="@layout/cover_scroll_header"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
