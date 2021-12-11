@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentAlbumInfoBinding
@@ -14,6 +15,10 @@ class AlbumInfoFragment : BaseFragment<FragmentAlbumInfoBinding>() {
 
     private val albumIntro: String by lazy {
         arguments?.getString(ARG_ALBUM_INTRO) ?: ""
+    }
+
+    private val albumRichIntro: String by lazy {
+        arguments?.getString(ARG_ALBUM_RICH_INTRO) ?: ""
     }
 
     override fun onCreateBindLayout(
@@ -29,16 +34,18 @@ class AlbumInfoFragment : BaseFragment<FragmentAlbumInfoBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.tvAlbumIntro.text = albumIntro
         binding.btnAlbumIntroAll.setOnClickListener {
-            ToastUtil.show(context, "查看更多")
+            findNavController().navigate(AlbumDetailFragmentDirections.actionAlbumDetailFragmentToAlbumRichIntroFragment(albumRichIntro))
         }
     }
 
     companion object {
         private const val ARG_ALBUM_INTRO = "ARG_ALBUM_INTRO"
+        private const val ARG_ALBUM_RICH_INTRO = "ARG_ALBUM_RICH_INTRO"
 
-        fun newInstance(intro: String) = AlbumInfoFragment().apply {
+        fun newInstance(intro: String, richInfo: String) = AlbumInfoFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ALBUM_INTRO, intro)
+                putString(ARG_ALBUM_RICH_INTRO, richInfo)
             }
         }
     }

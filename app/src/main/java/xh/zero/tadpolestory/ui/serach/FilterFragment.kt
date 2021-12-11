@@ -74,7 +74,8 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     albumDesc = album.meta.orEmpty(),
                     albumSubscribeCount = album.subscribe_count,
                     albumTags = album.album_tags.orEmpty(),
-                    albumIntro = album.album_intro.orEmpty()
+                    albumIntro = album.album_intro.orEmpty(),
+                    albumRichInfo = album.short_rich_intro.orEmpty()
                 ))
             },
             retry = {

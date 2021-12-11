@@ -152,7 +152,8 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                     albumDesc = item.meta.orEmpty(),
                     albumSubscribeCount = item.subscribe_count,
                     albumTags = item.album_tags.orEmpty(),
-                    albumIntro = item.album_intro.orEmpty()
+                    albumIntro = item.album_intro.orEmpty(),
+                    albumRichInfo = item.short_rich_intro.orEmpty()
                 ))
             }
         }

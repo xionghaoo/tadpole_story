@@ -86,7 +86,7 @@ class AlbumDetailFragment : Fragment() {
         override fun getCount(): Int = 2
 
         override fun getItem(position: Int): Fragment = if (position == 0) {
-            AlbumInfoFragment.newInstance(args.albumIntro)
+            AlbumInfoFragment.newInstance(args.albumIntro, args.albumRichInfo)
         } else {
             TrackListFragment.newInstance(args.albumId.toString(), args.totalCount, args.albumTitle)
         }

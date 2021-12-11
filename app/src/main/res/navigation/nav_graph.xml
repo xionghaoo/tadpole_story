@@ -58,6 +58,12 @@
             app:argType="string" />
         <argument android:name="albumIntro"
             app:argType="string" />
+        <action
+            android:id="@+id/action_albumDetailFragment_to_albumRichIntroFragment"
+            app:destination="@id/albumRichIntroFragment" />
+        <argument
+            android:name="albumRichInfo"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/filterFragment"
@@ -86,5 +92,14 @@
             app:destination="@id/albumDetailFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/albumRichIntroFragment"
+        android:name="xh.zero.tadpolestory.ui.album.AlbumRichIntroFragment"
+        android:label="fragment_album_rich_intro"
+        tools:layout="@layout/fragment_album_rich_intro" >
+        <argument
+            android:name="albumRichInfo"
+            app:argType="string" />
     </fragment>
 </navigation>

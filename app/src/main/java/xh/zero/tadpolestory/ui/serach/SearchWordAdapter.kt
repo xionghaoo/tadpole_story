@@ -19,7 +19,7 @@ class SearchWordAdapter(
     override fun bindView(v: View, item: SearchWordResult.Keywords, position: Int) {
         val ss = SpannableString(item.keyword)
         val start = item.keyword?.indexOf(currentSearchWord)
-        if (start != null) {
+        if (start != null && start >= 0) {
             ss.setSpan(
                 ForegroundColorSpan(v.resources.getColor(R.color.color_FF9F00)),
                 start,

@@ -68,6 +68,7 @@ class MainActivity : BaseActivity(),
                 putExtra("albumSubscribeCount", item.subscribe_count)
                 putExtra("albumTags", item.album_tags.orEmpty())
                 putExtra("albumIntro", item.album_intro.orEmpty())
+                putExtra("albumRichInfo", item.short_rich_intro.orEmpty())
             })
         }
     }
@@ -126,6 +127,7 @@ class MainActivity : BaseActivity(),
                 putLong("albumSubscribeCount", intent.getLongExtra("albumSubscribeCount", 0))
                 putString("albumTags", intent.getStringExtra("albumTags"))
                 putString("albumIntro", intent.getStringExtra("albumIntro"))
+                putString("albumRichInfo", intent.getStringExtra("albumRichInfo"))
 
             }, navOptions {
                 anim {
