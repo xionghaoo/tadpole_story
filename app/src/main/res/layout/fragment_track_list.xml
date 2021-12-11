@@ -113,5 +113,31 @@
             app:flexWrap="wrap" />
     </ScrollView>
 
+    <FrameLayout
+        android:id="@+id/v_scroll_cover_track_list"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_24dp"
+        android:visibility="invisible"
+        android:layout_marginStart="@dimen/_66dp"
+        android:layout_marginEnd="@dimen/_66dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rc_track_list" >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_scroll_elevation"/>
+        <View
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@drawable/shape_scroll_elevation_cover_start" />
+        <View
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@drawable/shape_scroll_elevation_cover_end" />
+    </FrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

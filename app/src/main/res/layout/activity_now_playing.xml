@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-<!--    <ImageView-->
-<!--        android:id="@+id/btn_back"-->
-<!--        android:layout_width="@dimen/_106dp"-->
-<!--        android:layout_height="@dimen/_88dp"-->
-<!--        android:src="@mipmap/ic_back"-->
-<!--        android:layout_marginTop="@dimen/_48dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/_106dp"
+        android:layout_height="@dimen/_88dp"
+        android:src="@mipmap/ic_back"
+        android:layout_marginTop="@dimen/_48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

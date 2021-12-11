@@ -7,11 +7,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.serach.FilterFragment">
 
-    <ImageView
+    <View
         android:id="@+id/btn_back"
         android:layout_width="@dimen/_106dp"
         android:layout_height="@dimen/_88dp"
-        android:src="@mipmap/ic_back"
         android:layout_marginTop="@dimen/_48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -50,6 +50,8 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
     private var isShowTrackSelectPanel = false
     private var selectedIndex: Int? = null
 
+    private var currentTrackListCoverScrollY = 0
+
 //    private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
 //    private var currentPage = 1
@@ -94,7 +96,6 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             viewModel.playMedia(item, pauseAllowed = false)
             // 显示正在播放页面
             NowPlayingActivity.start(context, albumTitle)
-//            findNavController().navigate(AlbumDetailFragmentDirections.actionAlbumDetailFragmentToNowPlayingFragment(albumTitle))
         }
         binding.rcTrackList.adapter = adapter
         binding.rcTrackList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -117,6 +118,11 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         })
         binding.btnAlbumTracks.setOnClickListener {
             toggleTrackSelectPanel()
+        }
+
+        binding.containerAlbumTrackList.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            currentTrackListCoverScrollY = scrollY
+            binding.vScrollCoverTrackList.visibility = if (scrollY > 0) View.VISIBLE else View.INVISIBLE
         }
 
         viewModel.loadMediaItems.observe(viewLifecycleOwner) { items ->
@@ -221,17 +227,12 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
     private fun toggleTrackSelectPanel() {
         isShowTrackSelectPanel = isShowTrackSelectPanel.not()
         binding.containerAlbumTrackList.visibility = if (isShowTrackSelectPanel) View.VISIBLE else View.GONE
-//        binding.containerAlbumTrackList.apply {
-//            if (isShowTrackSelectPanel) {
-//                visibility = View.VISIBLE
-//                isFocusable = true
-//                isClickable = true
-//            } else {
-//                visibility = View.GONE
-//                isFocusable = false
-//                isClickable = false
-//            }
-//        }
+        if (!isShowTrackSelectPanel) {
+            binding.vScrollCoverTrackList.visibility = View.GONE
+        } else if (currentTrackListCoverScrollY > 0) {
+            binding.vScrollCoverTrackList.visibility = View.VISIBLE
+        }
+
         binding.ivTrackPanelStatus.setImageResource(
             if (isShowTrackSelectPanel) {
                 R.mipmap.ic_up_16
@@ -246,20 +247,12 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             }
             binding.vTrackSelectPanelCover.animate()
                 .alpha(1f)
-//                .withEndAction {
-//                    binding.vTrackSelectPanelCover.isFocusable = true
-//                    binding.vTrackSelectPanelCover.isClickable = true
-//                }
                 .start()
         } else {
-//            binding.vTrackSelectPanelCover.visibility = View.GONE
-
             binding.vTrackSelectPanelCover.animate()
                 .alpha(0f)
                 .withEndAction {
                     binding.vTrackSelectPanelCover.visibility = View.GONE
-//                    binding.vTrackSelectPanelCover.isFocusable = false
-//                    binding.vTrackSelectPanelCover.isClickable = false
                 }
                 .start()
         }

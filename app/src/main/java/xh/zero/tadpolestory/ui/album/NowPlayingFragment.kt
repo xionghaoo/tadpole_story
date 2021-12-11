@@ -77,9 +77,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.vBack.setOnClickListener {
-            activity?.onBackPressed()
-        }
+//        binding.vBack.setOnClickListener {
+//            activity?.onBackPressed()
+//        }
 
         viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
