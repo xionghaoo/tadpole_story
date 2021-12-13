@@ -36,10 +36,10 @@ class RankAdapter(
             )
         } else {
             tvIndex.visibility = View.VISIBLE
-            tvIndex.text = index.toString()
+            tvIndex.text = (index + 1).toString()
             ivIndex.visibility = View.GONE
         }
-        TadpoleUtil.loadAvatar(v.context, v.findViewById<ImageView>(R.id.iv_rank_album_cover), item.cover_url_large.orEmpty())
+        TadpoleUtil.loadAvatar(v.context, v.findViewById<ImageView>(R.id.iv_rank_album_cover), item.cover_url_middle.orEmpty())
         v.findViewById<TextView>(R.id.tv_rank_album_title).text = item.album_title
         v.findViewById<TextView>(R.id.tv_rank_album_desc).text = item.recommend_reason
         v.findViewById<TextView>(R.id.tv_rank_album_play_count).text = item.play_count.toString()
@@ -65,9 +65,9 @@ class RankAdapter(
             } else {
                 ivIndex2.visibility = View.GONE
                 tvIndex2.visibility = View.VISIBLE
-                tvIndex2.text = index2.toString()
+                tvIndex2.text = (index2 + 1).toString()
             }
-            TadpoleUtil.loadAvatar(v.context, v.findViewById<ImageView>(R.id.iv_rank_album_cover_2), extraItem.cover_url_large.orEmpty())
+            TadpoleUtil.loadAvatar(v.context, v.findViewById<ImageView>(R.id.iv_rank_album_cover_2), extraItem.cover_url_middle.orEmpty())
             v.findViewById<TextView>(R.id.tv_rank_album_title_2).text = extraItem.album_title
             v.findViewById<TextView>(R.id.tv_rank_album_desc_2).text = extraItem.recommend_reason
             v.findViewById<TextView>(R.id.tv_rank_album_play_count_2).text = extraItem.play_count.toString()
