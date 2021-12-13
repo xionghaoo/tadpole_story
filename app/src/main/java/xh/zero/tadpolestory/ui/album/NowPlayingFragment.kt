@@ -1,7 +1,7 @@
 package xh.zero.tadpolestory.ui.album
 
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.*
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
@@ -18,8 +18,10 @@ import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.flexbox.JustifyContent
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.*
 import timber.log.Timber
+import xh.zero.core.utils.ImageUtil
 import xh.zero.core.utils.SystemUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.GlideApp
@@ -33,10 +35,14 @@ import xh.zero.tadpolestory.utils.PromptDialog
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
+import androidx.core.content.ContextCompat
+
+/**
+ * 播放页面
+ */
 @AndroidEntryPoint
 class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
-//    private lateinit var binding: FragmentNowPlayingBinding
     private val viewModel: NowPlayingViewModel by viewModels()
     private var isTouchingSeekBar = false
 
@@ -230,6 +236,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 渲染UI
+     */
     private fun updateUI(mediaItem: NowPlayingViewModel.NowPlayingMetadata) {
         // 播放状态发生变化时，会触发mediaItem的变化
         if (currentPlayMediaId == mediaItem.id) return
@@ -252,6 +261,30 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .apply(RequestOptions.bitmapTransform(RoundedCorners((resources.getDimension(R.dimen._24dp) * rate).roundToInt())))
             .into(binding.topIvMediaCoverImg)
         loadRelativeAlbum(mediaItem.id.toInt())
+
+        // 加载背景
+        CoroutineScope(Dispatchers.IO).launch {
+            val img: Bitmap = GlideApp.with(requireContext()).asBitmap().load(mediaItem.albumArtUri).submit().get()
+            // 给背景加上白色
+            val paint = Paint()
+            val filter: ColorFilter = PorterDuffColorFilter(
+                ContextCompat.getColor(requireContext(), R.color.white_62),
+                PorterDuff.Mode.SRC_IN
+            )
+            paint.colorFilter = filter
+            val canvas = Canvas(img)
+            canvas.drawBitmap(img, 0f, 0f, paint)
+
+            withContext(Dispatchers.Main) {
+                GlideApp.with(requireContext())
+                    .load(img)
+                    // 背景虚化
+                    .apply(RequestOptions.bitmapTransform(BlurTransformation(50)))
+                    .into(binding.ivBackground)
+            }
+        }
+
+
     }
 
     /**
@@ -325,14 +358,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topPbMediaProgress2.secondaryProgress = viewModel.bufferProgress
             }
         }
-        // TODO 增加缓存条以后，拖动进度条时滑块会闪一下
-//        viewModel.mediaBufferProgress.observe(viewLifecycleOwner) { progress ->
-//            if (!isTouchingSeekBar) {
-//                binding.pbMediaProgress.secondaryProgress = progress
-//                binding.topPbMediaProgress.secondaryProgress = progress
-//                binding.topPbMediaProgress2.secondaryProgress = progress
-//            }
-//        }
 
         binding.pbMediaProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -419,7 +444,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             var percent: Float = 1f - scrollY.toFloat() / coverImgY
             if (percent > 1f) percent = 1f
             if (percent < 0f) percent = 0f
-//            Timber.d("handleTransform:: percent: $percent, ${relativeAlbumExtra1ScrollDiff}, $scrollY")
 
             transformCoverImage(percent)
             transformAlbumTitle(percent)
@@ -440,7 +464,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topBackground.alpha = 1f
             }
 
-            // 刚开始滚动，到40%时开始变换显示内容
+            // 向上滚动封面，到40%时开始变换显示内容
             if (percent <= 0.4f) {
                 val alpha = (0.4f - percent) / 0.4f
                 // 显示top view
@@ -451,10 +475,16 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topTvMediaTitle.alpha = alpha
                 binding.topTvMediaSubtitle.alpha = alpha
                 binding.topBtnSubscribe.alpha = alpha
+
+                // 逐渐显示二级背景
+                binding.topIvBackground.visibility = View.VISIBLE
+                binding.topIvBackground.alpha = alpha
             }  else {
                 binding.topTvMediaTitle.visibility = View.INVISIBLE
                 binding.topTvMediaSubtitle.visibility = View.INVISIBLE
                 binding.topBtnSubscribe.visibility = View.INVISIBLE
+
+                binding.topIvBackground.visibility = View.INVISIBLE
             }
 
             // 向上滚动到底层进度条
@@ -479,8 +509,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 binding.topBtnMediaMultiple.visibility = View.INVISIBLE
             }
 
+            // 向上滚到到推荐内容
             if (scrollY >= relativeAlbumExtra1ScrollDiff) {
-                // 向上滚到到推荐内容
                 binding.topTvMediaRelativeExtra1.visibility = View.VISIBLE
                 binding.topTvMediaRelativeExtra2.visibility = View.VISIBLE
                 binding.topTvMediaRelativeMore.visibility = View.VISIBLE
