@@ -2,10 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/_466dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/_16dp"
-    android:layout_marginBottom="@dimen/_16dp">
+    android:layout_width="@dimen/_412dp"
+    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_album_cover"
@@ -65,8 +63,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="102集"
-        android:textSize="@dimen/_16sp"
-        android:textColor="@color/color_98999A"
         android:layout_marginStart="@dimen/_4dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView22"
         app:layout_constraintStart_toEndOf="@+id/textView22"
@@ -85,4 +81,5 @@
         android:layout_marginBottom="@dimen/_4dp"
         app:layout_constraintBottom_toTopOf="@+id/textView20"
         app:layout_constraintStart_toStartOf="@+id/tv_album_title" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

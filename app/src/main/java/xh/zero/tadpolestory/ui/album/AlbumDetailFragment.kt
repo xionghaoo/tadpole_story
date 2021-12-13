@@ -26,6 +26,7 @@ import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentAlbumDetailBinding
+import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.BaseFragment
@@ -41,14 +42,16 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
     @Inject
     lateinit var albumViewModelFactory: AlbumViewModel.AssistedFactory
     private val viewModel: AlbumViewModel by viewModels {
-        AlbumViewModel.provideFactory(albumViewModelFactory, args.album.id.toString())
+        AlbumViewModel.provideFactory(albumViewModelFactory, album.id.toString())
     }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            viewModel.repo.savePlayingAlbum(args.album)
+            viewModel.repo.savePlayingAlbum(album)
         }
     }
+    
+    private lateinit var album: Album
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,14 +74,15 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
+        album = args.album
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
-        binding.tvAlbumTitle.text = args.album.album_title
-        TadpoleUtil.loadAvatar(context, binding.ivAlbumCover, args.album.cover_url_large.orEmpty())
-        binding.tvAlbumDesc.text = args.album.recommend_reason
-        binding.tvAlbumSubscribe.text = "订阅量: ${args.album.subscribe_count}"
-        val tags = args.album.album_tags.orEmpty().split(",")
+        binding.tvAlbumTitle.text = album.album_title
+        TadpoleUtil.loadAvatar(context, binding.ivAlbumCover, album.cover_url_large.orEmpty())
+        binding.tvAlbumDesc.text = album.recommend_reason
+        binding.tvAlbumSubscribe.text = "订阅量: ${album.subscribe_count}"
+        val tags = album.album_tags.orEmpty().split(",")
         binding.tvAlbumTags.removeAllViews()
         tags.forEach { tag ->
             val tv = TextView(context)
@@ -106,6 +110,16 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 
         binding.vpAlbumDetail.adapter = AlbumDetailAdapter()
         binding.tlAlbumDetail.setViewPager(binding.vpAlbumDetail)
+
+//        viewModel.loadAlbumInfo().observe(this) {
+//            handleResponse(it) { r ->
+//                if (r.isNotEmpty()) {
+//                    val item = r.first()
+//                    album.cover_url_large = item.cover_url_large
+//                    album.cover_url_middle = item.cover_url_middle
+//                }
+//            }
+//        }
     }
 
     inner class AlbumDetailAdapter : FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -115,9 +129,9 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
         override fun getCount(): Int = 2
 
         override fun getItem(position: Int): Fragment = if (position == 0) {
-            AlbumInfoFragment.newInstance(args.album.album_intro.orEmpty(), args.album.short_rich_intro.orEmpty())
+            AlbumInfoFragment.newInstance(album.album_intro.orEmpty(), album.short_rich_intro.orEmpty())
         } else {
-            TrackListFragment.newInstance(args.album.id.toString(), args.album.include_track_count, args.album.album_title.orEmpty())
+            TrackListFragment.newInstance(album.id.toString(), album.include_track_count, album.album_title.orEmpty())
         }
 
         override fun getPageTitle(position: Int): CharSequence? = titles[position]

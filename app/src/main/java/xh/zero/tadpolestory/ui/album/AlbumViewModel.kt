@@ -174,6 +174,8 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
+    fun loadAlbumInfo() = repo.getAlbumsForIds("$mediaId")
+
     /**
      * Since we use [LiveData.observeForever] above (in [musicServiceConnection]), we want
      * to call [LiveData.removeObserver] here to prevent leaking resources when the [ViewModel]

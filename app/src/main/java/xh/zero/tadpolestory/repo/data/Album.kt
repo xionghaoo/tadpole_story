@@ -16,6 +16,8 @@ data class Album(
     var album_intro: String? = null,
     var category_id: Int = 0,
     var cover_url_large: String? = null,
+    var cover_url_middle: String? = null,
+    var cover_url_small: String? = null,
     var kind: String? = null,
     var include_track_count: Long = 0,
     var meta: String? = null,
@@ -68,9 +70,9 @@ data class Album(
      * is_verified : true
      */
 //    var announcer: Announcer? = null
-    var cover_url_small: String? = null
+//    var cover_url_small: String? = null
     var created_at: Long = 0
-    var cover_url_middle: String? = null
+//    var cover_url_middle: String? = null
 
     var updated_at: Long = 0
     var favorite_count = 0

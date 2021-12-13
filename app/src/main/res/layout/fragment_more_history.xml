@@ -1,14 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.more.MoreHistoryFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/v_first"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/_24dp">
+            <TextView
+                android:id="@+id/tv_today_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_28sp"
+                android:paddingStart="@dimen/_52dp"
+                android:paddingEnd="@dimen/_52dp"
+                android:textColor="@color/color_07070D"
+                android:textStyle="bold"/>
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/fl_today_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:flexWrap="wrap"
+                app:justifyContent="space_between"
+                android:paddingStart="@dimen/_52dp"
+                android:paddingEnd="@dimen/_68dp"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/v_second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/_26dp">
+            <TextView
+                android:id="@+id/tv_more_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_28sp"
+                android:paddingStart="@dimen/_52dp"
+                android:paddingEnd="@dimen/_52dp"
+                android:textColor="@color/color_07070D"
+                android:textStyle="bold"/>
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/fl_more_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:flexWrap="wrap"
+                app:justifyContent="space_between"
+                android:paddingStart="@dimen/_52dp"
+                android:paddingEnd="@dimen/_68dp"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-</FrameLayout>
+</ScrollView>

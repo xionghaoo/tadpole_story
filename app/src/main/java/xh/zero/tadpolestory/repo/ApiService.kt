@@ -87,6 +87,11 @@ interface ApiService {
         @Query("count") count: Int = Configs.PAGE_SIZE,
     ) : LiveData<ApiResponse<AlbumResponse>>
 
+    @GET("$PREFIX/albums/get_batch")
+    fun getAlbumsForIds(
+        @Query("ids") ids: String
+    ) : LiveData<ApiResponse<List<Album>>>
+
     /**
      * 关键词搜索专辑
      */

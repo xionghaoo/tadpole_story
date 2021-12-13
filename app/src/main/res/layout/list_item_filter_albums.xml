@@ -40,7 +40,7 @@
             android:id="@+id/textView20"
             android:layout_width="@dimen/_18dp"
             android:layout_height="@dimen/_18dp"
-            android:background="@color/color_0A1A2A"
+            android:src="@mipmap/ic_album_play_count"
             app:layout_constraintBottom_toBottomOf="@+id/iv_album_cover"
             app:layout_constraintStart_toStartOf="@+id/tv_album_title" />
 
@@ -61,7 +61,7 @@
             android:layout_width="@dimen/_18dp"
             android:layout_height="@dimen/_18dp"
             android:layout_marginStart="@dimen/_24dp"
-            android:background="@color/color_0A1A2A"
+            android:src="@mipmap/ic_album_count"
             app:layout_constraintBottom_toBottomOf="@+id/textView20"
             app:layout_constraintStart_toEndOf="@+id/tv_album_subscribe"
             app:layout_constraintTop_toTopOf="@+id/textView20" />
@@ -124,7 +124,7 @@
             android:id="@+id/textView20_2"
             android:layout_width="@dimen/_18dp"
             android:layout_height="@dimen/_18dp"
-            android:background="@color/color_0A1A2A"
+            android:src="@mipmap/ic_album_play_count"
             app:layout_constraintBottom_toBottomOf="@+id/iv_album_cover_2"
             app:layout_constraintStart_toStartOf="@+id/tv_album_title_2" />
 
@@ -145,7 +145,7 @@
             android:layout_width="@dimen/_18dp"
             android:layout_height="@dimen/_18dp"
             android:layout_marginStart="@dimen/_24dp"
-            android:background="@color/color_0A1A2A"
+            android:src="@mipmap/ic_album_count"
             app:layout_constraintBottom_toBottomOf="@+id/textView20_2"
             app:layout_constraintStart_toEndOf="@+id/tv_album_subscribe_2"
             app:layout_constraintTop_toTopOf="@+id/textView20_2" />
