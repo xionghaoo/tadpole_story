@@ -120,7 +120,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: Track, total: Long): MediaMetada
     // m4a: play_url_64_m4a,
     // amr: play_url_amr
     mediaUri = jsonMusic.play_url_32
-    albumArtUri = jsonMusic.cover_url_middle
+    albumArtUri = jsonMusic.cover_url_large
     trackNumber = jsonMusic.order_num
     trackCount = total
     flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE

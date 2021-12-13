@@ -145,6 +145,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 //            }
         }
 
+        // TODO 更多相关专辑
+        binding.layoutRelativeAlbums.tvMediaRelativeMore.setOnClickListener {
+            ToastUtil.show(context, "显示更多相关专辑")
+        }
+        binding.topTvMediaRelativeMore.setOnClickListener {
+            ToastUtil.show(context, "显示更多相关专辑")
+        }
+
         // 上一曲，下一曲按钮状态
         viewModel.switchState.observe(viewLifecycleOwner) {
             binding.btnMediaPre.setImageResource(
@@ -261,7 +269,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
                     v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro
                     Glide.with(v.context)
-                        .load(item.cover_url_large)
+                        .load(item.cover_url_middle)
                         .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._18dp).roundToInt())))
                         .into(v.findViewById<ImageView>(R.id.iv_album_icon))
 

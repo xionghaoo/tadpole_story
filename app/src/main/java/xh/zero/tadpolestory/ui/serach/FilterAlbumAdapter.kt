@@ -31,11 +31,7 @@ class FilterAlbumAdapter(
             v.findViewById<TextView>(R.id.tv_album_subscribe).text = "$subscribe_count"
             v.findViewById<TextView>(R.id.tv_album_total).text = "${include_track_count}集"
 
-//            Glide.with(v.context)
-//                .load(cover_url_large)
-//                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
-//                .into(v.findViewById<ImageView>(R.id.iv_album_cover))
-            TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover), item.cover_url_large.orEmpty())
+            TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover), item.cover_url_middle.orEmpty())
 
             v.findViewById<View>(R.id.v_first).setOnClickListener { onItemClick(this) }
         }
@@ -52,11 +48,7 @@ class FilterAlbumAdapter(
         v.findViewById<TextView>(R.id.tv_album_subscribe_2).text = "${item.subscribe_count}"
         v.findViewById<TextView>(R.id.tv_album_total_2).text = "${item.include_track_count}集"
 
-//        Glide.with(v.context)
-//            .load(item.cover_url_large)
-//            .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
-//            .into(v.findViewById<ImageView>(R.id.iv_album_cover_2))
-        TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover_2), item.cover_url_large.orEmpty())
+        TadpoleUtil.loadAvatar(v.context, v.findViewById(R.id.iv_album_cover_2), item.cover_url_middle.orEmpty())
 
 
         v.findViewById<View>(R.id.v_second).setOnClickListener { onItemClick(item) }
