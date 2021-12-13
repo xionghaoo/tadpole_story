@@ -85,11 +85,11 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         )
         binding.rcAlbumList.adapter = adapter
 
-        viewModel.itemList.observe(viewLifecycleOwner) {
+        viewModel.itemList.observe(this) {
             adapter.submitList(it)
         }
 
-        viewModel.networkState.observe(viewLifecycleOwner) {
+        viewModel.networkState.observe(this) {
             adapter.setNetworkState(it)
 //            when (it.status) {
 //                Status.LOADING -> {
@@ -103,7 +103,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
 //                }
 //            }
         }
-        viewModel.refreshState.observe(viewLifecycleOwner) {
+        viewModel.refreshState.observe(this) {
 
         }
 

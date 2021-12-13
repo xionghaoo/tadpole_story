@@ -86,7 +86,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     }
 
     private fun loadData() {
-        viewModel.getTagList().observe(viewLifecycleOwner) {
+        viewModel.getTagList().observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
                     val tags = r.first().attributes?.toMutableList()
@@ -99,7 +99,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             }
         }
 
-        viewModel.getTemporaryToken().observe(viewLifecycleOwner) {
+        viewModel.getTemporaryToken().observe(this) {
             handleResponse(it) { r ->
                 binding.llContentList.removeAllViews()
                 loadRecommend(r.access_token!!)
@@ -108,7 +108,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     }
 
     private fun loadRecommend(token: String) {
-        viewModel.getDailyRecommendAlbums(token, 1).observe(viewLifecycleOwner) {
+        viewModel.getDailyRecommendAlbums(token, 1).observe(this) {
             handleResponse(it) { r ->
                 loadGuessLike()
                 // TODO 数据筛选
@@ -119,7 +119,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     }
 
     private fun loadGuessLike() {
-        viewModel.getGuessLikeAlbums().observe(viewLifecycleOwner) {
+        viewModel.getGuessLikeAlbums().observe(this) {
             handleResponse(it) { r ->
                 // TODO 数据筛选
 //                val items = r.filter { album -> album.category_id == 6 || album.category_id == 92 }.filterIndexed { index, _ -> index < 4 }

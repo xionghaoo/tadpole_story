@@ -107,13 +107,13 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         )
         binding.rcAlbumList.adapter = adapter
 
-        viewModel.itemList.observe(viewLifecycleOwner) {
+        viewModel.itemList.observe(this) {
             adapter.submitList(it)
         }
-        viewModel.networkState.observe(viewLifecycleOwner) {
+        viewModel.networkState.observe(this) {
             adapter.setNetworkState(it)
         }
-        viewModel.refreshState.observe(viewLifecycleOwner) {
+        viewModel.refreshState.observe(this) {
 
         }
 
@@ -125,7 +125,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
         }
         binding.rcSearchWords.adapter = searchWordAdapter
 
-        viewModel.loadSearchRecords().observe(viewLifecycleOwner) {
+        viewModel.loadSearchRecords().observe(this) {
             val records = it.map { record -> record.keyword }
             if (records.isNotEmpty()) {
                 binding.containerHistoryRecords.visibility = View.VISIBLE
@@ -163,7 +163,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getHotKeyword() {
-        viewModel.getHotKeyword().observe(viewLifecycleOwner) {
+        viewModel.getHotKeyword().observe(this) {
             handleResponse(it) { tags ->
                 bindTagsView(binding.llHotTags, tags.map { word -> word.search_word ?: "" }) { tag ->
                     binding.edtSearch.setText(tag)
@@ -201,7 +201,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getSearchWords(q: String) {
-        viewModel.getSearchWords(q).observe(viewLifecycleOwner) {
+        viewModel.getSearchWords(q).observe(this) {
             handleResponse(it) { r ->
                 searchWordAdapter.currentSearchWord = q
                 searchWordAdapter.updateData(r.keywords ?: emptyList())
@@ -210,7 +210,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getHotAlbums() {
-        viewModel.getHotAlbumsList().observe(viewLifecycleOwner) {
+        viewModel.getHotAlbumsList().observe(this) {
             handleResponse(it) { r ->
                 bindHotAlbumsView(r.albums ?: emptyList())
             }

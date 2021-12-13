@@ -126,7 +126,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             binding.vScrollCoverTrackList.visibility = if (scrollY > 0) View.VISIBLE else View.INVISIBLE
         }
 
-        viewModel.loadMediaItems.observe(viewLifecycleOwner) { items ->
+        viewModel.loadMediaItems.observe(this) { items ->
             Timber.d("加载的音频数量：${items.size}")
             // 加载结束
             if (items.isNotEmpty()) {
@@ -134,9 +134,9 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 
                 if (isInit) {
                     isInit = false
-                    binding.rcTrackList.post {
+                    binding.rcTrackList.postDelayed({
                         binding.rcTrackList.scrollToPosition(0)
-                    }
+                    }, 100)
                 }
 
                 // 音轨分段
@@ -152,7 +152,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             }
         }
 
-        viewModel.networkState.observe(viewLifecycleOwner) {
+        viewModel.networkState.observe(this) {
             adapter.setNetworkState(it)
         }
 
