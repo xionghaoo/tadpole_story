@@ -56,6 +56,9 @@
         <argument
             android:name="tagName"
             app:argType="string" />
+        <argument
+            android:name="categoryId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/rankFragment"
@@ -67,6 +70,9 @@
             app:destination="@id/albumDetailFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+        <argument
+            android:name="categoryId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -78,6 +84,8 @@
             app:destination="@id/albumDetailFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+        <argument android:name="categoryId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/albumRichIntroFragment"

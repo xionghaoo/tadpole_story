@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.core.utils.ToastUtil
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildStoryBinding
 import xh.zero.tadpolestory.handleResponse
@@ -68,7 +69,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.btnFilter.setOnClickListener {
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(TAG_NAME_ALL))
+            toFilterPage(TAG_NAME_ALL)
         }
 
         loadData()
@@ -80,13 +81,13 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         }
 
         binding.vSearch.setOnClickListener {
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment())
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID))
         }
 
     }
 
     private fun loadData() {
-        viewModel.getTagList().observe(this) {
+        viewModel.getTagList(Configs.CATEGORY_ID).observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
                     val tags = r.first().attributes?.toMutableList()
@@ -99,11 +100,16 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             }
         }
 
-        viewModel.getTemporaryToken().observe(this) {
-            handleResponse(it) { r ->
-                binding.llContentList.removeAllViews()
-                loadRecommend(r.access_token!!)
+        if (viewModel.repo.prefs.accessToken == null) {
+            viewModel.getTemporaryToken().observe(this) {
+                handleResponse(it) { r ->
+                    viewModel.repo.prefs.accessToken = r.access_token
+                    binding.llContentList.removeAllViews()
+                    loadRecommend(r.access_token!!)
+                }
             }
+        } else {
+            loadRecommend(viewModel.repo.prefs.accessToken!!)
         }
     }
 
@@ -193,9 +199,9 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             tv.setOnClickListener { v ->
                 val viewIndex = v.tag as Int
                 if (viewIndex == 0) {
-                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment())
+                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment(Configs.CATEGORY_ID))
                 } else {
-                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(tag?.display_name ?: TAG_NAME_ALL))
+                    toFilterPage(tag?.display_name ?: TAG_NAME_ALL)
                 }
             }
         }
@@ -212,6 +218,13 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 setTextColor(resources.getColor(R.color.color_42444B))
             }
         }
+    }
+
+    private fun toFilterPage(tag: String) {
+        findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(
+            tagName = tag,
+            categoryId = Configs.CATEGORY_ID
+        ))
     }
 
     interface OnFragmentActionListener {

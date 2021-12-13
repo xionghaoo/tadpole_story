@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.flexbox.FlexboxLayout
@@ -30,6 +31,7 @@ import xh.zero.tadpolestory.utils.TadpoleUtil
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
+    private val args: SearchFragmentArgs by navArgs()
     private val viewModel: SearchViewModel by viewModels()
     private var job: Job? = null
 
@@ -163,7 +165,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getHotKeyword() {
-        viewModel.getHotKeyword().observe(this) {
+        viewModel.getHotKeyword(args.categoryId).observe(this) {
             handleResponse(it) { tags ->
                 bindTagsView(binding.llHotTags, tags.map { word -> word.search_word ?: "" }) { tag ->
                     binding.edtSearch.setText(tag)
@@ -210,7 +212,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     }
 
     private fun getHotAlbums() {
-        viewModel.getHotAlbumsList().observe(this) {
+        viewModel.getHotAlbumsList(categoryId = args.categoryId).observe(this) {
             handleResponse(it) { r ->
                 bindHotAlbumsView(r.albums ?: emptyList())
             }

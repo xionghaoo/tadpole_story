@@ -44,6 +44,7 @@ class AlbumRepository @Inject constructor(
                 count = Configs.PAGE_SIZE,
                 metadata_attributes = params[0],
                 calc_dimension = params[1].toInt(),
+                categoryId = params[2].toInt()
             )
         }
 
@@ -53,6 +54,7 @@ class AlbumRepository @Inject constructor(
                 count = Configs.PAGE_SIZE,
                 metadata_attributes = params[0],
                 calc_dimension = params[1].toInt(),
+                categoryId = params[2].toInt()
             )
         }
 

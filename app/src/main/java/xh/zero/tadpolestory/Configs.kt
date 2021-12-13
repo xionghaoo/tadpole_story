@@ -16,6 +16,7 @@ class Configs {
 
         // 6: 儿童，92: 少儿教育
         const val CATEGORY_ID = 6
+        const val CATEGORY_ID_EDU = 92
 
         const val DB_VERSION = BuildConfig.VERSION_CODE
 //        const val CATEGORY_ID = 92

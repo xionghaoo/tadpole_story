@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentFilterBinding
 import xh.zero.tadpolestory.handleResponse
@@ -132,7 +133,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     }
 
     private fun loadMeta() {
-        viewModel.getMetadataList().observe(this, Observer {
+        viewModel.getMetadataList(args.categoryId).observe(this, Observer {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
                     val topTags = ArrayList<AlbumMetaData.Attributes>()
@@ -182,7 +183,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
         Timber.d("loadMetaAlbums: ${attrsQuery}, ${calcDimen}")
 
-        viewModel.showList(listOf(attrsQuery.toString(), calcDimen.toString()))
+        viewModel.showList(listOf(attrsQuery.toString(), calcDimen.toString(), args.categoryId.toString()))
     }
 
 //    private fun filterLoad(filterIndex: Int, attrs: AlbumMetaData.Attributes) {

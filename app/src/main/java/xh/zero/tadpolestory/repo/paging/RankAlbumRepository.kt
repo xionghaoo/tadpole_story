@@ -43,6 +43,7 @@ class RankAlbumRepository @Inject constructor(
                 page = pageNo.toInt(),
                 count = Configs.PAGE_SIZE,
                 calcDimension = params[0].toInt(),
+                categoryId = params[1].toInt()
             )
         }
 
@@ -51,6 +52,7 @@ class RankAlbumRepository @Inject constructor(
                 page = 1,
                 count = Configs.PAGE_SIZE,
                 calcDimension = params[0].toInt(),
+                categoryId = params[1].toInt()
             )
         }
 

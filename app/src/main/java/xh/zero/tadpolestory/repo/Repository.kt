@@ -39,8 +39,8 @@ class Repository @Inject constructor(
         apiService.getCategoriesList()
     }
 
-    fun getAlbumsList(page: Int = 1, calcDimension: Int, pageSize: Int = Configs.PAGE_SIZE) = remoteRequestStrategy {
-        apiService.getAlbumsList(page = page, calcDimension = calcDimension, count = pageSize)
+    fun getAlbumsList(page: Int = 1, calcDimension: Int, categoryId: Int, pageSize: Int = Configs.PAGE_SIZE) = remoteRequestStrategy {
+        apiService.getAlbumsList(page = page, calcDimension = calcDimension, count = pageSize, categoryId = categoryId)
     }
 
     fun searchAlbums(page: Int, tags: String) = remoteRequestStrategy {
@@ -51,20 +51,20 @@ class Repository @Inject constructor(
         apiService.getAlbumsForIds(ids)
     }
 
-    fun getHotKeyword(top: Int) = remoteRequestStrategy {
-        apiService.getHotKeyword(top = top)
+    fun getHotKeyword(top: Int, categoryId: Int) = remoteRequestStrategy {
+        apiService.getHotKeyword(top = top, category_id = categoryId)
     }
 
     fun getSearchWords(q: String) = remoteRequestStrategy {
         apiService.getSearchWords(q)
     }
 
-    fun getTagList() = remoteRequestStrategy {
-        apiService.getTagList()
-    }
+//    fun getTagList() = remoteRequestStrategy {
+//        apiService.getTagList()
+//    }
 
-    fun getMetadataList() = remoteRequestStrategy {
-        apiService.getMetadataList()
+    fun getMetadataList(categoryId: Int) = remoteRequestStrategy {
+        apiService.getMetadataList(category_id = categoryId)
     }
 
     fun getDailyRecommendAlbums(token: String, page: Int) = remoteRequestStrategy {

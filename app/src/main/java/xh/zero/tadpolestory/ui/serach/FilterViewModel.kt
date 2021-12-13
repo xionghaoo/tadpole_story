@@ -15,5 +15,5 @@ class FilterViewModel @Inject constructor(
     private val albumRepo: AlbumRepository
 ) : PagingViewModel<AlbumResponse, Album>(albumRepo) {
 
-    fun getMetadataList() = repo.getMetadataList()
+    fun getMetadataList(id: Int) = repo.getMetadataList(id)
 }

@@ -44,7 +44,7 @@ interface ApiService {
      */
     @GET("$PREFIX/v2/albums/list")
     fun getAlbumsList(
-        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        @Query("category_id") categoryId: Int,
         @Query("tag_name") tagName: String? = null,
         // 返回结果排序维度：1-最火，2-最新，3-最多播放
         @Query("calc_dimension") calcDimension: Int = 1,
@@ -59,7 +59,7 @@ interface ApiService {
      */
     @GET("$PREFIX/v2/albums/list")
     fun getAlbumPagingList(
-        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        @Query("category_id") categoryId: Int,
         @Query("tag_name") tagName: String? = null,
         // 返回结果排序维度：1-最火，2-最新，3-最多播放
         @Query("calc_dimension") calcDimension: Int = 1,
@@ -111,7 +111,7 @@ interface ApiService {
     @GET("$PREFIX/search/hot_words")
     fun getHotKeyword(
         @Query("top") top: Int,
-        @Query("category_id") category_id: Int = Configs.CATEGORY_ID
+        @Query("category_id") category_id: Int
     ) : LiveData<ApiResponse<List<HotKeyword>>>
 
     @GET("$PREFIX/search/suggest_words")
@@ -124,7 +124,7 @@ interface ApiService {
      */
     @GET("$PREFIX/metadata/list")
     fun getMetadataList(
-        @Query("category_id") category_id: Int = Configs.CATEGORY_ID
+        @Query("category_id") category_id: Int
     ) : LiveData<ApiResponse<List<AlbumMetaData>>>
 
     /**
@@ -133,7 +133,7 @@ interface ApiService {
     @GET("$PREFIX/metadata/albums")
     fun getMetadataAlbums(
         // 分类 ID。分类数据可以通过 /categories/list 获取
-        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        @Query("category_id") categoryId: Int,
         // 元数据属性列表:在/metadata/list 接口得到的结果中，取不同元 数据属性的 attrkey 和 atrrvalue 组成任意个数的 key-value 键值， 格式
         // 如: attr_key1:attr_value1;attr_key2:attr_value2;attr_key3 :attr_value3。注意: 此字段可为空，为空表示获取此分类下全部
         @Query("metadata_attributes") metadata_attributes: String? = null,
@@ -152,7 +152,7 @@ interface ApiService {
      */
     @GET("$PREFIX/v2/tags/list")
     fun getTagList(
-        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        @Query("category_id") categoryId: Int,
         @Query("type") type: Int = 0
     ) : LiveData<ApiResponse<List<AlbumTag>>>
 

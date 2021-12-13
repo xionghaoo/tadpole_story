@@ -17,13 +17,13 @@ class SearchViewModel @Inject constructor(
 ) : PagingViewModel<AlbumResponse, Album>(searchRepo) {
 
 //    fun searchAlbums(q: String) = repo.searchAlbums(q)
-    fun getHotKeyword() = repo.getHotKeyword(20)
+    fun getHotKeyword(categoryId: Int) = repo.getHotKeyword(20, categoryId)
 
     fun getSearchWords(q: String) = repo.getSearchWords(q)
 
     fun saveSearchRecord(txt: String) = repo.saveSearchHistory(txt)
 
-    fun getHotAlbumsList() = repo.getAlbumsList(calcDimension = 1, pageSize = 10)
+    fun getHotAlbumsList(categoryId: Int) = repo.getAlbumsList(calcDimension = 1, pageSize = 10, categoryId = categoryId)
 
     fun loadSearchRecords() = repo.loadAllSearchHistory()
     fun clearSearchHistory() = repo.clearSearchHistory()

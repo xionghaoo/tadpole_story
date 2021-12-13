@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,6 +17,7 @@ import xh.zero.tadpolestory.ui.BaseFragment
 @AndroidEntryPoint
 class RankFragment : BaseFragment<FragmentRankBinding>() {
 
+    private val args: RankFragmentArgs by navArgs()
     private val viewModel: RankViewModel by viewModels()
     private lateinit var adapter: RankAdapter
 
@@ -94,6 +96,6 @@ class RankFragment : BaseFragment<FragmentRankBinding>() {
     }
 
     private fun loadData(calDimen: Int) {
-        viewModel.showList(listOf(calDimen.toString()))
+        viewModel.showList(listOf(calDimen.toString(), args.categoryId.toString()))
     }
 }
