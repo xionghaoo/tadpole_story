@@ -55,9 +55,13 @@
     </fragment>
     <fragment
         android:id="@+id/rankFragment"
-        android:name="xh.zero.tadpolestory.ui.RankFragment"
+        android:name="xh.zero.tadpolestory.ui.rank.RankFragment"
         android:label="fragment_rank"
-        tools:layout="@layout/fragment_rank" />
+        tools:layout="@layout/fragment_rank" >
+        <action
+            android:id="@+id/action_rankFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="xh.zero.tadpolestory.ui.serach.SearchFragment"

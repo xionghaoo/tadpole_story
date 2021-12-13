@@ -1,3 +1,8 @@
-kd／1通用／功能按钮／搜索.png;ic_search_34.png
-kd／1通用／二级按钮／删除.png;ic_clear_34.png
-kd／1通用／功能按钮／删除记录.png;ic_clear_history_34.png
+kd／1通用／iocn排名.png;ic_rank.png
+kd／1通用／iocn排名1.png;ic_rank_first.png
+kd／1通用／iocn排名2.png;ic_rank_second.png
+kd／1通用／iocn排名3.png;ic_rank_third.png
+kd／1通用／功能按钮／iocn-热播深.png;ic_rank_top_new_normal.png
+kd／1通用／功能按钮／iocn-热播深(1).png;ic_rank_top_evaluate_normal.png
+kd／1通用／功能按钮／iocn-热播.png;ic_rank_top_hot_selected.png
+kd／1通用／ioc-hot(4).png;ic_rank_play_count.png

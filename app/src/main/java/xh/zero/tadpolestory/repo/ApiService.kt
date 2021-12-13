@@ -54,6 +54,21 @@ interface ApiService {
         @Query("contains_paid") isPaid: Boolean = false,
     ) : LiveData<ApiResponse<AlbumResponse>>
 
+    /**
+     * 专辑列表
+     */
+    @GET("$PREFIX/v2/albums/list")
+    fun getAlbumPagingList(
+        @Query("category_id") categoryId: Int = Configs.CATEGORY_ID,
+        @Query("tag_name") tagName: String? = null,
+        // 返回结果排序维度：1-最火，2-最新，3-最多播放
+        @Query("calc_dimension") calcDimension: Int = 1,
+        @Query("page") page: Int,
+        @Query("count") count: Int,
+        // 是否输出付费内容（即返回值是否包含付费内容）：true-是； false-否；默认不填为 false
+        @Query("contains_paid") isPaid: Boolean = false,
+    ) : Call<AlbumResponse>
+
     @GET("$PREFIX/v2/search/albums")
     fun searchAlbums(
         @Query("industry_id") industry_id: Int? = null,

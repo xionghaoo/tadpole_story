@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_16dp"
+    android:layout_marginBottom="@dimen/_16dp"
+    android:orientation="horizontal">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/v_first"
+        android:layout_width="@dimen/_470dp"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/_40dp">
+
+        <FrameLayout
+            android:id="@+id/iv_rank_index_container"
+            android:layout_width="@dimen/_33dp"
+            android:layout_height="@dimen/_42dp"
+            android:layout_marginTop="@dimen/_16dp"
+            tools:src="@mipmap/ic_rank_first"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_rank_index"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/tv_rank_index_number"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:background="@drawable/shape_rank_index_bg"
+                android:layout_height="@dimen/_33dp" />
+        </FrameLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_rank_album_cover"
+            android:layout_width="@dimen/_140dp"
+            android:layout_height="@dimen/_140dp"
+            android:layout_marginStart="@dimen/_4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_rank_index_container"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginEnd="@dimen/_14dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btn_rank_album_detail"
+            app:layout_constraintStart_toEndOf="@+id/iv_rank_album_cover"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="宝宝巴士：好习惯宝宝" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/color_5E5F62"
+            android:textSize="@dimen/_18sp"
+            app:layout_constraintEnd_toEndOf="@+id/btn_rank_album_detail"
+            app:layout_constraintStart_toStartOf="@+id/tv_rank_album_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_rank_album_title"
+            tools:text="上学趣事一箩筐轻松搞定写日记！" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView28"
+            android:layout_width="@dimen/_18dp"
+            android:layout_height="@dimen/_18dp"
+            android:layout_marginBottom="@dimen/_11dp"
+            android:src="@mipmap/ic_rank_play_count"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_rank_album_cover"
+            app:layout_constraintStart_toStartOf="@+id/tv_rank_album_title" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_play_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="231231"
+            android:textSize="@dimen/_18sp"
+            android:textColor="@color/color_98999A"
+            android:layout_marginStart="@dimen/_7dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView28"
+            app:layout_constraintStart_toEndOf="@+id/textView28"
+            app:layout_constraintTop_toTopOf="@+id/textView28" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_rank_album_detail"
+            android:layout_width="@dimen/_36dp"
+            android:layout_height="@dimen/_36dp"
+            android:layout_marginEnd="@dimen/_6dp"
+            android:src="@mipmap/ic_more_16"
+            android:padding="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_11dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/v_second"
+        android:layout_width="@dimen/_470dp"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/_40dp"
+        android:layout_gravity="end">
+
+        <FrameLayout
+            android:id="@+id/iv_rank_index_container_2"
+            android:layout_width="@dimen/_33dp"
+            android:layout_height="@dimen/_42dp"
+            android:layout_marginTop="@dimen/_16dp"
+            tools:src="@mipmap/ic_rank_first"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_rank_index_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/tv_rank_index_number_2"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:background="@drawable/shape_rank_index_bg"
+                android:layout_height="@dimen/_33dp" />
+        </FrameLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_rank_album_cover_2"
+            android:layout_width="@dimen/_140dp"
+            android:layout_height="@dimen/_140dp"
+            android:layout_marginStart="@dimen/_4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_rank_index_container_2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_title_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginEnd="@dimen/_14dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/color_0A1A2A"
+            android:textSize="@dimen/_20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btn_rank_album_detail_2"
+            app:layout_constraintStart_toEndOf="@+id/iv_rank_album_cover_2"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="宝宝巴士：好习惯宝宝" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_desc_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/color_5E5F62"
+            android:textSize="@dimen/_18sp"
+            app:layout_constraintEnd_toEndOf="@+id/btn_rank_album_detail_2"
+            app:layout_constraintStart_toStartOf="@+id/tv_rank_album_title_2"
+            app:layout_constraintTop_toBottomOf="@+id/tv_rank_album_title_2"
+            tools:text="上学趣事一箩筐轻松搞定写日记！" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/textView28_2"
+            android:layout_width="@dimen/_18dp"
+            android:layout_height="@dimen/_18dp"
+            android:layout_marginBottom="@dimen/_11dp"
+            android:src="@mipmap/ic_rank_play_count"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_rank_album_cover_2"
+            app:layout_constraintStart_toStartOf="@+id/tv_rank_album_title_2" />
+
+        <TextView
+            android:id="@+id/tv_rank_album_play_count_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="231231"
+            android:textSize="@dimen/_18sp"
+            android:textColor="@color/color_98999A"
+            android:layout_marginStart="@dimen/_7dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView28_2"
+            app:layout_constraintStart_toEndOf="@+id/textView28_2"
+            app:layout_constraintTop_toTopOf="@+id/textView28_2" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_rank_album_detail_2"
+            android:layout_width="@dimen/_36dp"
+            android:layout_height="@dimen/_36dp"
+            android:layout_marginEnd="@dimen/_6dp"
+            android:src="@mipmap/ic_more_16"
+            android:padding="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_11dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

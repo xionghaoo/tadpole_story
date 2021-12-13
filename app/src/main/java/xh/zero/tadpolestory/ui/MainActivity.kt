@@ -139,10 +139,6 @@ class MainActivity : BaseActivity(),
         val expandProgressBar = view.findViewById<CircularProgressBar>(R.id.expand_progress_bar)
         val collapseProgressBar = view.findViewById<CircularProgressBar>(R.id.collapse_progress_bar)
 
-//        Timber.d("initialFloatWindow: ${viewModel.repo.prefs.nowPlayingAlbumId}")
-//        floatRoot.post {
-//            floatRoot.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
-//        }
         EasyFloat.getFloatView("float_window")?.visibility = View.GONE
         viewModel.mediaMetadata.observe(this) { mediaItem ->
             EasyFloat.getFloatView("float_window")?.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
@@ -256,24 +252,6 @@ class MainActivity : BaseActivity(),
                 MotionEvent.ACTION_UP -> {
                     if (e.x - expandStartX < 20) {
                         NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
-
-//                        val pendingIntent = NavDeepLinkBuilder(this)
-//                            .setGraph(R.navigation.nav_graph)
-//                            .setDestination(R.id.nowPlayingFragment)
-////                            .setArguments(Bundle().apply {
-////                                putString("albumTitle", viewModel.repo.prefs.nowPlayingAlbumTitle)
-////                            })
-//                            .createPendingIntent()
-//                        startActivity()
-
-//                        val navHostFragment =
-//                            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//                        val navController = navHostFragment.navController
-//                        navController.navigate(R.id.nowPlayingFragment, Bundle().apply {
-//                            putString(NowPlayingFragment.ARG_ALBUM_TITLE, viewModel.repo.prefs.nowPlayingAlbumTitle)
-//                        })
-
-
                     }
                 }
             }

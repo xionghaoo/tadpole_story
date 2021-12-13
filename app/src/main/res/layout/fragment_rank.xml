@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_main_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.RankFragment">
+    tools:context=".ui.rank.RankFragment">
 
     <TextView
         android:id="@+id/textView4"
@@ -25,5 +25,117 @@
         android:layout_marginTop="@dimen/_48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_back"
+        app:layout_constraintTop_toTopOf="@+id/btn_back" >
+        <ImageView
+            android:layout_width="@dimen/_64dp"
+            android:layout_height="@dimen/_64dp"
+            android:src="@mipmap/ic_rank"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:text="排行榜"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/_42sp"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_rank_hot"
+        android:layout_width="@dimen/_154dp"
+        android:layout_height="@dimen/_58dp"
+        android:layout_marginStart="@dimen/_31dp"
+        android:layout_marginTop="@dimen/_24dp"
+        android:gravity="center"
+        android:background="@drawable/shape_album_tag_selected"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" >
+        <ImageView
+            android:id="@+id/btn_rank_hot_icon"
+            android:layout_width="@dimen/_30dp"
+            android:layout_height="@dimen/_30dp"
+            android:src="@mipmap/ic_rank_top_hot_selected"/>
+        <TextView
+            android:id="@+id/btn_rank_hot_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:text="热播榜"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_rank_new"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_58dp"
+        android:layout_marginTop="@dimen/_24dp"
+        android:gravity="center"
+        android:background="@drawable/shape_rank_tag"
+        app:layout_constraintEnd_toEndOf="@+id/btn_rank_hot"
+        app:layout_constraintStart_toStartOf="@+id/btn_rank_hot"
+        app:layout_constraintTop_toBottomOf="@+id/btn_rank_hot" >
+        <ImageView
+            android:id="@+id/btn_rank_new_icon"
+            android:layout_width="@dimen/_30dp"
+            android:layout_height="@dimen/_30dp"
+            android:src="@mipmap/ic_rank_top_new_normal"/>
+        <TextView
+            android:id="@+id/btn_rank_new_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8dp"
+            android:textColor="@color/color_6F6F72"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:text="新品榜"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_rank_evaluate"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_58dp"
+        android:layout_marginTop="@dimen/_24dp"
+        android:gravity="center"
+        android:background="@drawable/shape_rank_tag"
+        app:layout_constraintEnd_toEndOf="@+id/btn_rank_new"
+        app:layout_constraintStart_toStartOf="@+id/btn_rank_new"
+        app:layout_constraintTop_toBottomOf="@+id/btn_rank_new" >
+        <ImageView
+            android:id="@+id/btn_rank_evaluate_icon"
+            android:layout_width="@dimen/_30dp"
+            android:layout_height="@dimen/_30dp"
+            android:src="@mipmap/ic_rank_top_evaluate_normal"/>
+        <TextView
+            android:id="@+id/btn_rank_evaluate_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8dp"
+            android:textColor="@color/color_6F6F72"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:text="口碑榜"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rc_album_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_36dp"
+        android:layout_marginEnd="@dimen/_40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_rank_hot"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
