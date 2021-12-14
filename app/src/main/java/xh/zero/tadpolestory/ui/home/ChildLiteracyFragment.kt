@@ -3,7 +3,6 @@ package xh.zero.tadpolestory.ui.home
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +10,23 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
+import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildLiteracyBinding
 import xh.zero.tadpolestory.handleResponse
+import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.AlbumMetaData
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainFragmentDirections
 import xh.zero.tadpolestory.ui.MainViewModel
 import xh.zero.tadpolestory.ui.serach.FilterFragment
+import kotlin.math.roundToInt
 
 /**
  * 少儿素养
@@ -55,12 +61,12 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
         }
 
         binding.vSearch.setOnClickListener {
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID_EDU))
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID_LITERACY))
         }
     }
 
     private fun loadData() {
-        viewModel.getTagList(Configs.CATEGORY_ID_EDU).observe(this) {
+        viewModel.getTagList(Configs.CATEGORY_ID_LITERACY).observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
                     val tags = r.first().attributes?.toMutableList()
@@ -70,6 +76,48 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
                     })
                     bindTagList(tags)
                 }
+            }
+        }
+
+//        if (viewModel.repo.prefs.accessToken == null) {
+//            viewModel.getTemporaryToken().observe(this) {
+//                handleResponse(it) { r ->
+//                    viewModel.repo.prefs.accessToken = r.access_token
+//                    binding.llContentList.removeAllViews()
+//                    loadRecommend(r.access_token!!)
+//                }
+//            }
+//        } else {
+//            loadRecommend(viewModel.repo.prefs.accessToken!!)
+//        }
+
+        viewModel.getTemporaryToken().observe(this) {
+            handleResponse(it) { r ->
+                viewModel.repo.prefs.accessToken = r.access_token
+                binding.llContentList.removeAllViews()
+                loadRecommend(r.access_token!!)
+            }
+        }
+    }
+
+    private fun loadRecommend(token: String) {
+        viewModel.getDailyRecommendAlbums(token, 1).observe(this) {
+            handleResponse(it) { r ->
+                loadGuessLike()
+                // TODO 数据筛选
+                val items = r.albums?.filter { album -> album.category_id == Configs.CATEGORY_ID_LITERACY }?.filterIndexed { index, _ -> index < 4 }
+                addContentItemView("每日推荐", items ?: emptyList())
+            }
+        }
+    }
+
+    private fun loadGuessLike() {
+        viewModel.getGuessLikeAlbums().observe(this) {
+            handleResponse(it) { r ->
+                // TODO 数据筛选
+//                val items = r.filter { album -> album.category_id == 6 || album.category_id == 92 }.filterIndexed { index, _ -> index < 4 }
+                val items = r.filterIndexed { index, _ -> index < 4 }
+                addContentItemView("猜你喜欢", items, resources.getDimension(R.dimen._30dp).toInt())
             }
         }
     }
@@ -104,7 +152,7 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
             tv.setOnClickListener { v ->
                 val viewIndex = v.tag as Int
                 if (viewIndex == 0) {
-                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment(Configs.CATEGORY_ID_EDU))
+                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment(Configs.CATEGORY_ID_LITERACY))
                 } else {
                     toFilterPage(tag?.display_name ?: FilterFragment.TAG_NAME_ALL)
                 }
@@ -125,11 +173,45 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
         }
     }
 
+    private fun addContentItemView(title: String, albums: List<Album>, marginBottom: Int = 0) {
+        val layout = layoutInflater.inflate(R.layout.item_home_content, null)
+        layout.findViewById<TextView>(R.id.tv_album_container_title).text = title
+        val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
+        layout.findViewById<View>(R.id.btn_more).setOnClickListener {
+            // TODO 每日推荐，猜你喜欢 - 更多
+            ToastUtil.show(requireContext(), "更多")
+        }
+        rcAlbumList.removeAllViews()
+        albums.forEach { item ->
+            val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
+            rcAlbumList.addView(v)
+            val lp = v.layoutParams as FlexboxLayout.LayoutParams
+            lp.width = resources.getDimension(R.dimen._216dp).toInt()
+            lp.height = resources.getDimension(R.dimen._292dp).toInt()
+
+            v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
+            v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro
+            Glide.with(v.context)
+                .load(item.cover_url_large)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
+                .into(v.findViewById(R.id.iv_album_icon))
+
+            v.setOnClickListener {
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
+                    album = item
+                ))
+            }
+        }
+        binding.llContentList.addView(layout)
+        val layoutLp = layout.layoutParams as LinearLayout.LayoutParams
+        layoutLp.bottomMargin = marginBottom
+    }
+
     private fun toFilterPage(tag: String) {
         findNavController().navigate(
             MainFragmentDirections.actionMainFragmentToFilterFragment(
                 tag,
-                Configs.CATEGORY_ID_EDU
+                Configs.CATEGORY_ID_LITERACY
             ))
     }
 

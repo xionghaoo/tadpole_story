@@ -7,7 +7,9 @@ abstract class BaseData {
 
     /**
      * 203: 认证码过期
+     * 206: token失效
      */
     val error_no: Int = -1
     val error_desc: String? = null
+    val error_code: String? = null
 }

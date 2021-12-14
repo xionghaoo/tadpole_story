@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -81,13 +80,13 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         }
 
         binding.vSearch.setOnClickListener {
-            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID))
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID_STORY))
         }
 
     }
 
     private fun loadData() {
-        viewModel.getTagList(Configs.CATEGORY_ID).observe(this) {
+        viewModel.getTagList(Configs.CATEGORY_ID_STORY).observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
                     val tags = r.first().attributes?.toMutableList()
@@ -100,17 +99,25 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             }
         }
 
-        if (viewModel.repo.prefs.accessToken == null) {
-            viewModel.getTemporaryToken().observe(this) {
-                handleResponse(it) { r ->
-                    viewModel.repo.prefs.accessToken = r.access_token
-                    binding.llContentList.removeAllViews()
-                    loadRecommend(r.access_token!!)
-                }
+        viewModel.getTemporaryToken().observe(this) {
+            handleResponse(it) { r ->
+                viewModel.repo.prefs.accessToken = r.access_token
+                binding.llContentList.removeAllViews()
+                loadRecommend(r.access_token!!)
             }
-        } else {
-            loadRecommend(viewModel.repo.prefs.accessToken!!)
         }
+
+//        if (viewModel.repo.prefs.accessToken == null) {
+//            viewModel.getTemporaryToken().observe(this) {
+//                handleResponse(it) { r ->
+//                    viewModel.repo.prefs.accessToken = r.access_token
+//                    binding.llContentList.removeAllViews()
+//                    loadRecommend(r.access_token!!)
+//                }
+//            }
+//        } else {
+//            loadRecommend(viewModel.repo.prefs.accessToken!!)
+//        }
     }
 
     private fun loadRecommend(token: String) {
@@ -118,7 +125,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             handleResponse(it) { r ->
                 loadGuessLike()
                 // TODO 数据筛选
-                val items = r.albums?.filter { album -> album.category_id == 6 || album.category_id == 92 }?.filterIndexed { index, _ -> index < 4 }
+                val items = r.albums?.filter { album -> album.category_id == Configs.CATEGORY_ID_STORY }?.filterIndexed { index, _ -> index < 4 }
                 addContentItemView("每日推荐", items ?: emptyList())
             }
         }
@@ -199,7 +206,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             tv.setOnClickListener { v ->
                 val viewIndex = v.tag as Int
                 if (viewIndex == 0) {
-                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment(Configs.CATEGORY_ID))
+                    findNavController().navigate(MainFragmentDirections.actionMainFragmentToRankFragment(Configs.CATEGORY_ID_STORY))
                 } else {
                     toFilterPage(tag?.display_name ?: TAG_NAME_ALL)
                 }
@@ -223,7 +230,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     private fun toFilterPage(tag: String) {
         findNavController().navigate(MainFragmentDirections.actionMainFragmentToFilterFragment(
             tagName = tag,
-            categoryId = Configs.CATEGORY_ID
+            categoryId = Configs.CATEGORY_ID_STORY
         ))
     }
 

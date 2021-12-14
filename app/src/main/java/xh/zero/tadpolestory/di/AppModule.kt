@@ -29,6 +29,7 @@ import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.BuildConfig
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.repo.*
+import xh.zero.tadpolestory.repo.data.PlainData
 import java.io.UnsupportedEncodingException
 import java.lang.StringBuilder
 import java.security.InvalidKeyException
@@ -96,6 +97,18 @@ object AppModule {
                 val contentType = response.body?.contentType()
                 val body = (responseString ?: "").toResponseBody(contentType)
                 return@addInterceptor response.newBuilder().body(body).build()
+            } else if (responseCode == 401) {
+                val responseString = response.body?.string()
+                val gson = Gson()
+                val res = gson.fromJson<PlainData>(responseString, PlainData::class.java)
+                CoroutineScope(Dispatchers.Main).launch {
+                    when (res.error_no) {
+                        206 -> {
+                            ToastUtil.show(context, res.error_desc)
+                        }
+                    }
+                }
+
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ToastUtil.show(context, "服务器请求错误")
