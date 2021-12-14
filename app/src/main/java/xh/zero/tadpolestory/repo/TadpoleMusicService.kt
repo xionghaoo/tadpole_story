@@ -3,12 +3,17 @@ package xh.zero.tadpolestory.repo
 import android.app.Activity
 import android.app.PendingIntent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.ResultReceiver
 import com.example.android.uamp.media.MusicService
+import com.example.android.uamp.media.extensions.isPlaying
 import com.example.android.uamp.media.library.MusicSource
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import timber.log.Timber
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.ui.MainActivity
 import javax.inject.Inject
@@ -23,6 +28,9 @@ const val EXTRA_MEDIA_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.EXTRA_MEDIA_PO
 const val LOAD_SONG_FOR_PAGE = "${Configs.PACKAGE_NAME}.COMMAND.LOAD_SONG_FOR_PAGE"
 const val SET_PLAY_SPEED = "${Configs.PACKAGE_NAME}.COMMAND.SET_PLAY_SPEED"
 const val PLAY_SEEK = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_SEEK"
+const val AUTO_STOP = "${Configs.PACKAGE_NAME}.COMMAND.AUTO_STOP"
+const val STOP_AFTER_TIME = "${Configs.PACKAGE_NAME}.COMMAND.STOP_AFTER_TIME"
+const val RESET_TIMING_CONFIG = "${Configs.PACKAGE_NAME}.COMMAND.RESET_TIMING_CONFIG"
 
 typealias CommandHandler = (parameters: Bundle, callback: ResultReceiver?) -> Boolean
 
@@ -31,6 +39,12 @@ class TadpoleMusicService : MusicService() {
 
     @Inject
     lateinit var repo: Repository
+    private val handler = Handler(Looper.myLooper()!!)
+
+    private var autoStopCountIndex = 0
+    private var autoStopCount = 0
+    private var stopAfterTimeJob: Job? = null
+    private var isTiming = false
 
     override fun onCreate() {
         super.onCreate()
@@ -43,6 +57,78 @@ class TadpoleMusicService : MusicService() {
         repo.prefs.nowPlayingAlbumId = null
         repo.prefs.nowPlayingAlbumTitle = null
         super.onDestroy()
+    }
+
+    override fun onPlayStateChange(playWhenReady: Boolean, playbackState: Int) {
+        if (playbackState == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
+            // 曲目自动切换监听
+            if (autoStopCountIndex == 2) autoStopCount = 2
+        }
+    }
+
+    private fun checkPlayPosition() {
+        handler.postDelayed({
+            if (isPlayEnd() && autoStopCount == autoStopCountIndex) {
+                pause()
+                Timber.d("停止播放")
+                resetTimingConfig()
+
+                repo.prefs.selectedTimingIndex = 0
+            }
+            if (isTiming) checkPlayPosition()
+        }, 200)
+    }
+
+    /**
+     * 播放完当前曲目自动停止
+     */
+    private fun stopOnThisEnd() {
+        resetTimingConfig()
+        isTiming = true
+        autoStopCount = 1
+        autoStopCountIndex = 1
+
+        checkPlayPosition()
+    }
+
+    /**
+     * 播放完下一曲目自动停止
+     */
+    private fun stopOnNextEnd() {
+        resetTimingConfig()
+        isTiming = true
+        autoStopCount = 1
+        autoStopCountIndex = 2
+
+        checkPlayPosition()
+    }
+
+    private fun resetTimingConfig() {
+        isTiming = false
+        autoStopCount = 0
+        autoStopCountIndex = 0
+        stopAfterTimeJob?.cancel()
+        stopAfterTimeJob = null
+    }
+
+    /**
+     * 定时停止播放
+     */
+    private fun stopAfterTime(minute: Int) {
+        resetTimingConfig()
+        if (stopAfterTimeJob == null) {
+            stopAfterTimeJob = CoroutineScope(Dispatchers.Default).launch {
+                delay(minute * 60 * 1000L)
+                Timber.d("停止曲目")
+                withContext(Dispatchers.Main) {
+                    pause()
+                    stopAfterTimeJob?.cancel()
+                    stopAfterTimeJob = null
+                    resetTimingConfig()
+                    repo.prefs.selectedTimingIndex = 0
+                }
+            }
+        }
     }
 
     override fun createMusicSource(): MusicSource {
@@ -71,6 +157,9 @@ class TadpoleMusicService : MusicService() {
             LOAD_SONG_FOR_PAGE -> loadSongForPageCommand(extras ?: Bundle.EMPTY, cb)
             SET_PLAY_SPEED -> setPlaySpeedCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_SEEK -> playSeekCommand(extras ?: Bundle.EMPTY, cb)
+            AUTO_STOP -> autoStopCommand(extras ?: Bundle.EMPTY, cb)
+            STOP_AFTER_TIME -> stopAfterTimeCommand(extras ?: Bundle.EMPTY, cb)
+            RESET_TIMING_CONFIG -> resetTimingConfigCommand(extras ?: Bundle.EMPTY, cb)
             else -> false
         }
     }
@@ -95,6 +184,8 @@ class TadpoleMusicService : MusicService() {
         callback?.send(Activity.RESULT_OK, Bundle().apply {
             putBoolean(HAS_NEXT, hasNext)
         })
+        // 曲目手动切换监听
+        if (autoStopCountIndex == 2) autoStopCount = 2
         callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true
     }
@@ -123,6 +214,30 @@ class TadpoleMusicService : MusicService() {
         } else {
             playBackward15s()
         }
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
+        true
+    }
+
+    private val autoStopCommand: CommandHandler = { extras, callback ->
+        val stopCount = extras.getInt("stop_count")
+        if (stopCount == 1) {
+            stopOnThisEnd()
+        } else {
+            stopOnNextEnd()
+        }
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
+        true
+    }
+
+    private val stopAfterTimeCommand: CommandHandler = { extras, callback ->
+        val minute = extras.getInt("minute")
+        stopAfterTime(minute)
+        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
+        true
+    }
+
+    private val resetTimingConfigCommand: CommandHandler = { extras, callback ->
+        resetTimingConfig()
         callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true
     }

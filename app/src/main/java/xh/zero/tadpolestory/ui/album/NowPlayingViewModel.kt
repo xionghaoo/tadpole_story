@@ -77,12 +77,8 @@ class NowPlayingViewModel @Inject constructor(
     val switchState = MutableLiveData<Pair<Boolean, Boolean>>().apply {
         postValue(Pair(first = false, second = true))
     }
-    private var stopAfterTimeJob: Job? = null
 
     var isPlaying: Boolean = false
-
-    private var autoStopCountIndex = 0
-    private var autoStopCount = 0
 
     fun getRelativeAlbum(trackId: Int) = repo.getRelativeAlbum(trackId)
 
@@ -108,17 +104,16 @@ class NowPlayingViewModel @Inject constructor(
         updateState(playbackState, it)
     }
 
-    private val trackSwitchStateObserver = Observer<Int?> { state ->
-        if (playbackState.isPlaying && state == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
-            // 曲目自动切换监听
-            if (autoStopCountIndex == 2) autoStopCount = 2
-        }
-    }
+//    private val trackSwitchStateObserver = Observer<Int?> { state ->
+//        if (playbackState.isPlaying && state == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
+//            // 曲目自动切换监听
+//            if (autoStopCountIndex == 2) autoStopCount = 2
+//        }
+//    }
 
     private val musicServiceConnection = musicServiceConnection.also {
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
-        it.trackSwitchState.observeForever(trackSwitchStateObserver)
         checkPlaybackPosition()
     }
 
@@ -130,13 +125,6 @@ class NowPlayingViewModel @Inject constructor(
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
         val totalDuration = mediaMetadata.value?.duration ?: 0L
-
-        // 播放到结尾，自动停止
-        if (totalDuration in 1..currPosition && playbackState.isPlaying && autoStopCountIndex > 0) {
-            if (autoStopCount == autoStopCountIndex) {
-                musicServiceConnection.transportControls.pause()
-            }
-        }
 
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
@@ -196,8 +184,6 @@ class NowPlayingViewModel @Inject constructor(
     fun next() {
         musicServiceConnection.sendCommand(PLAY_NEXT, Bundle.EMPTY) { code, bundle ->
             rePlay()
-            // 曲目手动切换监听
-            if (autoStopCountIndex == 2) autoStopCount = 2
         }
     }
 
@@ -235,41 +221,35 @@ class NowPlayingViewModel @Inject constructor(
      * 播放完当前曲目自动停止
      */
     fun stopOnThisEnd() {
-        resetTimingConfig()
-        autoStopCount = 1
-        autoStopCountIndex = 1
+        musicServiceConnection.sendCommand(AUTO_STOP, Bundle().apply {
+            putInt("stop_count", 1)
+        }) { code, bundle ->
+        }
     }
 
     /**
      * 播放完下一曲目自动停止
      */
     fun stopOnNextEnd() {
-        resetTimingConfig()
-        autoStopCount = 1
-        autoStopCountIndex = 2
+        musicServiceConnection.sendCommand(AUTO_STOP, Bundle().apply {
+            putInt("stop_count", 2)
+        }) { code, bundle ->
+        }
     }
 
     /**
      * 定时停止播放
      */
     fun stopAfterTime(minute: Int) {
-        resetTimingConfig()
-        if (stopAfterTimeJob == null) {
-            stopAfterTimeJob = CoroutineScope(Dispatchers.Default).launch {
-                delay(minute * 60 * 1000L)
-                Timber.d("停止曲目")
-                musicServiceConnection.transportControls.pause()
-                stopAfterTimeJob?.cancel()
-                stopAfterTimeJob = null
-            }
+        musicServiceConnection.sendCommand(STOP_AFTER_TIME, Bundle().apply {
+            putInt("minute", minute)
+        }) { code, bundle ->
         }
     }
 
     fun resetTimingConfig() {
-        autoStopCount = 0
-        autoStopCountIndex = 0
-        stopAfterTimeJob?.cancel()
-        stopAfterTimeJob = null
+        musicServiceConnection.sendCommand(RESET_TIMING_CONFIG, Bundle.EMPTY) { code, bundle ->
+        }
     }
 
     private fun checkSwitchState(orderNum: Long, totalNum: Long) {
@@ -292,7 +272,7 @@ class NowPlayingViewModel @Inject constructor(
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
-        musicServiceConnection.trackSwitchState.removeObserver(trackSwitchStateObserver)
+//        musicServiceConnection.trackSwitchState.removeObserver(trackSwitchStateObserver)
 
         // Stop updating the position
         updatePosition = false

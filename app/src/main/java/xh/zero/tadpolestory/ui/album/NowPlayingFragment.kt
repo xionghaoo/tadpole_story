@@ -88,9 +88,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         activity?.sendBroadcast(Intent(AlbumDetailFragment.ACTION_RECORD_ALBUM))
 
-        selectedMultipleIndex = viewModel.repo.prefs.selectedMultipleIndex
-        selectedTimingIndex = viewModel.repo.prefs.selectedTimingIndex
-
         viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
@@ -610,6 +607,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
      * 倍数播放
      */
     private fun showMultiplePlayDialog() {
+        selectedMultipleIndex = viewModel.repo.prefs.selectedMultipleIndex
         PromptDialog.Builder(requireContext())
             .setViewId(R.layout.dialog_multiple_play)
             .isTransparent(true)
@@ -626,9 +624,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     lp.width = resources.getDimension(R.dimen._162dp).toInt()
                     lp.height = resources.getDimension(R.dimen._52dp).toInt()
                     lp.topMargin = resources.getDimension(R.dimen._48dp).toInt()
-//                    if (index > 0) {
-//                        lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
-//                    }
+
                     tv.text = item
                     tv.setBackgroundResource(R.drawable.shape_album_tag)
                     tv.gravity = Gravity.CENTER
@@ -668,6 +664,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
      * 定时播放
      */
     private fun showTimingPlay() {
+        selectedTimingIndex = viewModel.repo.prefs.selectedTimingIndex
         PromptDialog.Builder(requireContext())
             .setViewId(R.layout.dialog_multiple_play)
             .isTransparent(true)

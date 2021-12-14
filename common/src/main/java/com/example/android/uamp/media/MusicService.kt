@@ -525,6 +525,20 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         currentPlayer.seekTo(backPos)
     }
 
+    fun pause() {
+        currentPlayer.pause()
+    }
+
+    fun isPlayEnd() : Boolean {
+        if (currentPlayer.duration > 0) {
+            return currentPlayer.duration - currentPlayer.currentPosition < 500
+        } else {
+            return false
+        }
+    }
+
+    abstract fun onPlayStateChange(playWhenReady: Boolean, playbackState: Int)
+
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
 
         /**
@@ -686,7 +700,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     private inner class PlayerEventListener : Player.Listener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playWhenReady $playbackState,")
-
+            onPlayStateChange(playWhenReady, playbackState)
             when (playbackState) {
                 Player.STATE_BUFFERING,
                 Player.STATE_READY -> {
@@ -714,6 +728,12 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             }
         }
 
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            // 播放停止时 - 通知栏状态变更
+            notificationManager.hideNotification()
+            notificationManager.showNotificationForPlayer(currentPlayer)
+        }
+
         override fun onPlayerError(error: PlaybackException) {
             Log.d(TAG, "PlayerEventListener::onPlayerError ${error.errorCodeName}")
             Toast.makeText(
@@ -721,6 +741,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
                 error.message,
                 Toast.LENGTH_LONG
             ).show()
+            notificationManager.hideNotification()
         }
 
         override fun onPositionDiscontinuity(
@@ -728,6 +749,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             newPosition: Player.PositionInfo,
             reason: Int
         ) {
+            Log.d(TAG, "onPositionDiscontinuity: ${oldPosition.positionMs}, ${newPosition.positionMs}")
+            notificationManager.hideNotification()
+            notificationManager.showNotificationForPlayer(currentPlayer)
+
             mediaSession.sendSessionEvent(PLAYER_TRACK_CHANGE, Bundle().apply {
                 putInt("reason", reason)
             })
