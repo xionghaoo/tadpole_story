@@ -126,7 +126,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 loadGuessLike()
                 // TODO 数据筛选
                 val items = r.albums?.filter { album -> album.category_id == Configs.CATEGORY_ID_STORY }?.filterIndexed { index, _ -> index < 4 }
-                addContentItemView("每日推荐", items ?: emptyList())
+                addContentItemView(0, items ?: emptyList())
             }
         }
     }
@@ -137,17 +137,17 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 // TODO 数据筛选
 //                val items = r.filter { album -> album.category_id == 6 || album.category_id == 92 }.filterIndexed { index, _ -> index < 4 }
                 val items = r.filterIndexed { index, _ -> index < 4 }
-                addContentItemView("猜你喜欢", items, resources.getDimension(R.dimen._30dp).toInt())
+                addContentItemView(1, items, resources.getDimension(R.dimen._30dp).toInt())
             }
         }
     }
 
-    private fun addContentItemView(title: String, albums: List<Album>, marginBottom: Int = 0) {
+    private fun addContentItemView(type: Int, albums: List<Album>, marginBottom: Int = 0) {
         val layout = layoutInflater.inflate(R.layout.item_home_content, null)
-        layout.findViewById<TextView>(R.id.tv_album_container_title).text = title
+        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (type == 0) "每日推荐" else "猜你喜欢"
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
-            if (title == "每日推荐") {
+            if (type == 0) {
                 findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment())
             }
         }
