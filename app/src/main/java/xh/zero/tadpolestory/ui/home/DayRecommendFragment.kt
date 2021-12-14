@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentDayRecommendBinding
@@ -16,6 +17,7 @@ import xh.zero.tadpolestory.ui.BaseFragment
 class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
     private val viewModel: DayRecommendViewModel by viewModels()
+    private lateinit var adapter: RecommendAlbumAdapter
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -32,10 +34,28 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
             activity?.onBackPressed()
         }
 
-//        viewModel.uploadPlayRecords().observe(this) {
-//            handleResponse(it) { r ->
-//
-//            }
-//        }
+        adapter = RecommendAlbumAdapter(
+            onItemClick = { album ->
+
+            },
+            retry = {
+
+            }
+        )
+        binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
+        binding.rcAlbumList.isSaveEnabled = true
+        binding.rcAlbumList.adapter = adapter
+        viewModel.itemList.observe(this) {
+            adapter.submitList(it)
+        }
+        viewModel.networkState.observe(this) {
+            adapter.setNetworkState(it)
+        }
+        viewModel.refreshState.observe(this) {
+
+        }
+
+        viewModel.showList()
+
     }
 }
