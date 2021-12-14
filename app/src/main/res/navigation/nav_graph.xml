@@ -29,6 +29,11 @@
             app:destination="@id/searchFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+        <action
+            android:id="@+id/action_mainFragment_to_dayRecommendFragment"
+            app:destination="@id/dayRecommendFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
     </fragment>
     <fragment
         android:id="@+id/albumDetailFragment"
@@ -96,4 +101,9 @@
             android:name="albumRichInfo"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/dayRecommendFragment"
+        android:name="xh.zero.tadpolestory.ui.home.DayRecommendFragment"
+        android:label="fragment_day_recommend"
+        tools:layout="@layout/fragment_day_recommend" />
 </navigation>

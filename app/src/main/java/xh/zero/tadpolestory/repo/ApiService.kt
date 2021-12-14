@@ -2,10 +2,7 @@ package xh.zero.tadpolestory.repo
 
 import androidx.lifecycle.LiveData
 import retrofit2.Call
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 import xh.zero.core.vo.ApiResponse
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.repo.data.*
@@ -176,6 +173,26 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("count") count: Int = 200
     ) : LiveData<ApiResponse<AlbumResponse>>
+
+    /**
+     * 每日推荐
+     */
+    @GET("$PREFIX/operation/recommend_albums")
+    fun getPagingDailyRecommendAlbums(
+        @Query("access_token") access_token: String,
+        @Query("page") page: Int,
+        @Query("count") count: Int = 200
+    ) : Call<AlbumResponse>
+
+    /**
+     * 播放记录上报
+     */
+    @FormUrlEncoded
+    @POST("$PREFIX/openapi-collector-app/track_batch_records")
+    fun uploadPlayRecords(
+        @Field("track_records") track_records: String,
+        @Field("access_token") access_token: String?
+    ) : Call<PlainData>
 
     /**
      * 猜你喜欢

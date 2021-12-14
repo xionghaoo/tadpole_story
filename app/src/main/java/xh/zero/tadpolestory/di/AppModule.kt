@@ -109,6 +109,17 @@ object AppModule {
                     }
                 }
 
+            } else if (responseCode == 202) {
+                val responseString = response.body?.string()
+                val gson = Gson()
+                val res = gson.fromJson<PlainData>(responseString, PlainData::class.java)
+                CoroutineScope(Dispatchers.Main).launch {
+                    when (res.error_no) {
+                        100 -> {
+                            ToastUtil.show(context, res.error_desc)
+                        }
+                    }
+                }
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ToastUtil.show(context, "服务器请求错误")
@@ -137,6 +148,12 @@ object AppModule {
         request.url.queryParameterNames.forEachIndexed { index, key ->
             val queryValue = request.url.queryParameterValue(index)
             paramMap[key] = queryValue
+        }
+        if (request.body != null && request.body is FormBody) {
+            val form: FormBody = request.body as FormBody
+            for (i in 0.until(form.size)) {
+                paramMap[form.name(i)] = form.value(i)
+            }
         }
         paramMap["app_key"] = appKey
         paramMap["client_os_type"] = 2

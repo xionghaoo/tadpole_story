@@ -1,9 +1,13 @@
 package xh.zero.tadpolestory.ui
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -20,11 +24,18 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
+import com.example.android.uamp.media.extensions.duration
+import com.example.android.uamp.media.extensions.id
+import com.example.android.uamp.media.extensions.isPlaying
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import timber.log.Timber
 import xh.zero.core.startPlainActivity
+import xh.zero.core.vo.ApiResponse
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
@@ -33,6 +44,8 @@ import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.Repository
 import xh.zero.tadpolestory.repo.TadpoleMusicService
 import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.repo.data.PlainData
+import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import xh.zero.tadpolestory.ui.album.*
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
@@ -46,6 +59,7 @@ class MainActivity : BaseActivity(),
     companion object {
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"
         const val ACTION_ALBUM_DETAIL = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_ALBUM_DETAIL"
+        const val ACTION_UPLOAD_PLAY_RECORD = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_UPLOAD_PLAY_RECORD"
 
         fun startToAlbumDetail(context: Context?, item: Album) {
             context?.startActivity(Intent(context, MainActivity::class.java).apply {
@@ -60,8 +74,19 @@ class MainActivity : BaseActivity(),
     private var expandStartX: Float = 0f
 
     private val viewModel: NowPlayingViewModel by viewModels()
+    @Inject
+    lateinit var repo: Repository
 
     private var isCollapse: Boolean? = null
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_UPLOAD_PLAY_RECORD -> {
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +115,9 @@ class MainActivity : BaseActivity(),
             .show()
 
         attachKeyboardListeners()
+
+        val filter = IntentFilter(ACTION_UPLOAD_PLAY_RECORD)
+        registerReceiver(receiver, filter)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -114,6 +142,7 @@ class MainActivity : BaseActivity(),
     }
 
     override fun onDestroy() {
+        unregisterReceiver(receiver)
         EasyFloat.dismiss("float_window")
         super.onDestroy()
     }
@@ -138,6 +167,8 @@ class MainActivity : BaseActivity(),
         val expandDesc = view.findViewById<TextView>(R.id.expand_tv_desc)
         val expandProgressBar = view.findViewById<CircularProgressBar>(R.id.expand_progress_bar)
         val collapseProgressBar = view.findViewById<CircularProgressBar>(R.id.collapse_progress_bar)
+        expandProgressBar.progressMax = NowPlayingFragment.MAX_PROGRESS.toFloat()
+        collapseProgressBar.progressMax = NowPlayingFragment.MAX_PROGRESS.toFloat()
 
         EasyFloat.getFloatView("float_window")?.visibility = View.GONE
         viewModel.mediaMetadata.observe(this) { mediaItem ->
@@ -154,6 +185,11 @@ class MainActivity : BaseActivity(),
                 .load(mediaItem.albumArtUri)
                 .circleCrop()
                 .into(ivCoverStep2)
+
+            // 上报播放记录
+            if (!viewModel.isPlaying) {
+                viewModel.uploadRecords(mediaItem)
+            }
         }
 
         // 播放按钮

@@ -35,6 +35,8 @@ class TadpoleMusicService : MusicService() {
     override fun onCreate() {
         super.onCreate()
         mediaSessionConnector.registerCustomCommandReceiver(TadpoleCommandReceiver())
+
+        // TODO 上传播放记录
     }
 
     override fun onDestroy() {

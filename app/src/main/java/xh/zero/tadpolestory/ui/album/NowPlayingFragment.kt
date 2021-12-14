@@ -88,10 +88,15 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         activity?.sendBroadcast(Intent(AlbumDetailFragment.ACTION_RECORD_ALBUM))
 
+        selectedMultipleIndex = viewModel.repo.prefs.selectedMultipleIndex
+        selectedTimingIndex = viewModel.repo.prefs.selectedTimingIndex
+
         viewModel.repo.prefs.nowPlayingAlbumTitle = albumTitle
 
         viewModel.mediaMetadata.observe(viewLifecycleOwner) { mediaItem ->
             updateUI(mediaItem)
+
+            viewModel.uploadRecords(mediaItem)
         }
 
         viewModel.mediaPosition.observe(viewLifecycleOwner) { pos ->
@@ -635,6 +640,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     tv.setOnClickListener { v ->
                         val vIndex = v.tag as Int
                         selectedMultipleIndex = vIndex
+                        viewModel.repo.prefs.selectedMultipleIndex = selectedMultipleIndex
                         viewModel.setPlaySpeed(
                             when(vIndex) {
                                 0 -> 0.5f
@@ -693,6 +699,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     tv.setOnClickListener { v ->
                         val vIndex = v.tag as Int
                         selectedTimingIndex = vIndex
+                        viewModel.repo.prefs.selectedTimingIndex = selectedTimingIndex
                         when (vIndex) {
                             0 -> viewModel.resetTimingConfig()
                             1 -> viewModel.stopOnThisEnd()

@@ -16,10 +16,16 @@ import com.example.android.uamp.media.extensions.*
 import com.google.android.exoplayer2.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import timber.log.Timber
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.repo.*
+import xh.zero.tadpolestory.repo.data.PlainData
+import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.roundToInt
 
 @HiltViewModel
@@ -86,6 +92,7 @@ class NowPlayingViewModel @Inject constructor(
      * (i.e.: play/pause button or blank)
      */
     private val playbackStateObserver = Observer<PlaybackStateCompat> {
+        Timber.d("playbackStateObserver: ${it.playbackState}")
         playbackState = it ?: EMPTY_PLAYBACK_STATE
         val metadata = musicServiceConnection.nowPlaying.value ?: NOTHING_PLAYING
         updateState(playbackState, metadata)
@@ -123,9 +130,10 @@ class NowPlayingViewModel @Inject constructor(
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
         val totalDuration = mediaMetadata.value?.duration ?: 0L
+
+        // 播放到结尾，自动停止
         if (totalDuration in 1..currPosition && playbackState.isPlaying && autoStopCountIndex > 0) {
             if (autoStopCount == autoStopCountIndex) {
-                // 播放到结尾，自动停止
                 musicServiceConnection.transportControls.pause()
             }
         }
@@ -319,6 +327,41 @@ class NowPlayingViewModel @Inject constructor(
             }
         )
         isPlaying = playbackState.isPlaying
+    }
+
+    /**
+     * 上传播放记录
+     */
+    fun uploadRecords(mediaMetadata: NowPlayingMetadata) {
+        if (repo.prefs.nowPlayingAlbumId?.isNotEmpty() == true
+            && mediaMetadata.id.isNotEmpty()
+        ) {
+            Timber.d("上传播放记录")
+            val tracks = ArrayList<TrackPlayRecord>().apply {
+                add(
+                    TrackPlayRecord(
+                        track_id = mediaMetadata.id.toInt(),
+                        album_id = repo.prefs.nowPlayingAlbumId!!.toInt(),
+                        duration = Math.floor(mediaMetadata.duration.toInt() / 1E3).toInt(),
+                        started_at = (System.currentTimeMillis() / 1000 - (mediaPosition.value ?: 0) / 1000).toInt(),
+                        played_secs = Math.floor((mediaPosition.value ?: 0) / 1E3).toInt()
+                    )
+                )
+            }
+            repo.uploadPlayRecords(tracks).enqueue(object : Callback<PlainData> {
+                override fun onResponse(
+                    call: Call<PlainData>,
+                    response: Response<PlainData>
+                ) {
+                    if (response.isSuccessful) {
+                        Timber.d("上传播放记录成功")
+                    }
+                }
+
+                override fun onFailure(call: Call<PlainData>, t: Throwable) {
+                }
+            })
+        }
     }
 
 }

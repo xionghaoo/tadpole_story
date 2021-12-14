@@ -2,6 +2,8 @@ package xh.zero.tadpolestory.repo
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +13,7 @@ import xh.zero.core.utils.SystemUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.remoteRequestStrategy
 import xh.zero.tadpolestory.repo.data.Album
+import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import xh.zero.tadpolestory.repo.tables.SearchHistory
 import java.io.IOException
 import javax.inject.Inject
@@ -71,6 +74,10 @@ class Repository @Inject constructor(
         apiService.getDailyRecommendAlbums(access_token = token, page = page)
     }
 
+    fun uploadPlayRecords(tracks: List<TrackPlayRecord>) = apiService.uploadPlayRecords(
+        track_records = Gson().toJson(tracks),
+        access_token = prefs.accessToken
+    )
 
     fun getGuessLikeAlbums() = remoteRequestStrategy {
         apiService.getGuessLikeAlbums()

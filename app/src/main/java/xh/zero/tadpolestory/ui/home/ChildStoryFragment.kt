@@ -147,8 +147,9 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         layout.findViewById<TextView>(R.id.tv_album_container_title).text = title
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
-            // TODO 每日推荐，猜你喜欢 - 更多
-            ToastUtil.show(requireContext(), "更多")
+            if (title == "每日推荐") {
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment())
+            }
         }
         rcAlbumList.removeAllViews()
         albums.forEach { item ->

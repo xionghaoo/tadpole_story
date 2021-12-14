@@ -685,7 +685,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
      */
     private inner class PlayerEventListener : Player.Listener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playbackState,")
+            Log.d(TAG, "PlayerEventListener::onPlayerStateChanged, playbackState: $playWhenReady $playbackState,")
 
             when (playbackState) {
                 Player.STATE_BUFFERING,

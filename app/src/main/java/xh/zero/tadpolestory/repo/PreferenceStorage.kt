@@ -18,7 +18,8 @@ interface PreferenceStorage {
     var serialNumber: String?
     var nowPlayingAlbumId: String?
     var nowPlayingAlbumTitle: String?
-//    var nowPlayingAlbum: String?
+    var selectedMultipleIndex: Int
+    var selectedTimingIndex: Int
 
     fun clearCache()
 }
@@ -37,7 +38,8 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
     override var serialNumber: String? by StringPreference(prefs, PREF_SERIAL_NUMBER, null)
     override var nowPlayingAlbumId: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_ID, null)
     override var nowPlayingAlbumTitle: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
-//    override var nowPlayingAlbum: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
+    override var selectedMultipleIndex: Int by IntPreference(prefs, PREF_SELECTED_MULTIPLE_INDEX, 2)
+    override var selectedTimingIndex: Int by IntPreference(prefs, PREF_SELECTED_TIMING_INDEX, 0)
 
     init {
 //        deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -56,7 +58,8 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
         const val PREF_SERIAL_NUMBER = "pref_serial_number"
         const val PREF_NOW_PLAYING_ALBUM_ID = "pref_now_playing_album_id"
         const val PREF_NOW_PLAYING_ALBUM_TITLE = "pref_now_playing_album_title"
-//        const val PREF_NOW_PLAYING_ALBUM = "pref_now_playing_album"
+        const val PREF_SELECTED_MULTIPLE_INDEX = "pref_selected_multiple_index"
+        const val PREF_SELECTED_TIMING_INDEX = "pref_selected_timing_index"
     }
 }
 
