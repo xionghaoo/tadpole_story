@@ -41,7 +41,7 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
     }
 
     private fun loadData() {
-        viewModel.getRecentAlbums().observe(this) {
+        viewModel.getSubscribeAlbumsIds().observe(this) {
             handleResponse(it) { r ->
 
             }

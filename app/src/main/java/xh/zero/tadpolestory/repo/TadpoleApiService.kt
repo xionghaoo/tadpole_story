@@ -19,7 +19,7 @@ interface TadpoleApiService {
     fun subscribeAlbum(@Path("albumId") albumId: Int) : LiveData<ApiResponse<PlainData>>
 
     @GET("$PREFIX/common/recent/page")
-    fun getRecentAlbums(
+    fun getSubscribeAlbumsIds(
         @Query("limit") limit: Int,
         @Query("page") page: Int = Configs.PAGE_SIZE
     ) : LiveData<ApiResponse<PlainData>>

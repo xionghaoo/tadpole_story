@@ -3,19 +3,16 @@ package xh.zero.tadpolestory.repo
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import xh.zero.core.utils.SystemUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.remoteRequestStrategy
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import xh.zero.tadpolestory.repo.tables.SearchHistory
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -99,8 +96,8 @@ class Repository @Inject constructor(
         tadpoleApiService.subscribeAlbum(albumId)
     }
 
-    fun getRecentAlbums() = remoteRequestStrategy {
-        tadpoleApiService.getRecentAlbums(limit = 1)
+    fun getSubscribeAlbumsIds() = remoteRequestStrategy {
+        tadpoleApiService.getSubscribeAlbumsIds(limit = 1)
     }
 
     fun saveSearchHistory(txt: String) {
