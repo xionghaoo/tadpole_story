@@ -1,22 +1,21 @@
 package xh.zero.tadpolestory.ui.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import xh.zero.tadpolestory.R
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.databinding.FragmentDayRecommendBinding
-import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.ui.BaseFragment
 
 @AndroidEntryPoint
-class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
+class RecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
-    private val viewModel: DayRecommendViewModel by viewModels()
+    private val viewModel: RecommendViewModel by viewModels()
     private lateinit var adapter: RecommendAlbumAdapter
 
     override fun onCreateBindLayout(
@@ -36,10 +35,10 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
         adapter = RecommendAlbumAdapter(
             onItemClick = { album ->
-
+                findNavController().navigate(RecommendFragmentDirections.actionDayRecommendFragmentToAlbumDetailFragment(album))
             },
             retry = {
-
+                viewModel.retry()
             }
         )
         binding.rcAlbumList.layoutManager = LinearLayoutManager(context)
@@ -55,7 +54,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
         }
 
-        viewModel.showList()
+        viewModel.showList(listOf(Configs.CATEGORY_ID_STORY.toString()))
 
     }
 }

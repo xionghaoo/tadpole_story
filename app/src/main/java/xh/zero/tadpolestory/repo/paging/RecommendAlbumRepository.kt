@@ -18,10 +18,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * 筛选分页
+ * 推荐分页
  */
 @Singleton
-class DayRecommendAlbumRepository @Inject constructor(
+class RecommendAlbumRepository @Inject constructor(
     appExecutors: AppExecutors,
     private val apiService: ApiService,
     private val prefs: PreferenceStorage
@@ -31,10 +31,11 @@ class DayRecommendAlbumRepository @Inject constructor(
         params: List<String>
     ): PagingDataFactory<AlbumResponse, Album> = object : PagingDataFactory<AlbumResponse, Album>(appExecutors) {
         override fun convertToListData(r: AlbumResponse?): List<Album> {
-            return r?.albums
-                ?.mapIndexed { index, item ->
+            val category = params[0].toInt()
+            val albums = r?.albums?.filter { album -> album.category_id == category }
+            return albums?.mapIndexed { index, item ->
                     if (index % 2 == 0) {
-                        item.extraAlbum = if (index + 1 < r.albums.size) r.albums[index + 1] else null
+                        item.extraAlbum = if (index + 1 < albums.size) albums[index + 1] else null
                     }
                     item
                 }?.filterIndexed { index, _ -> index % 2 == 0 } ?: emptyList()

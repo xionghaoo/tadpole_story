@@ -48,4 +48,28 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_refresh"
+        android:layout_width="@dimen/_100dp"
+        android:layout_height="@dimen/_40dp"
+        android:orientation="horizontal"
+        android:background="@drawable/shape_btn_random"
+        android:layout_marginStart="@dimen/_24dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_album_container_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_album_container_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_album_container_title" >
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/_16dp"
+            android:layout_height="@dimen/_16dp"
+            android:src="@mipmap/ic_refresh_16"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_98999A"
+            android:textSize="@dimen/_16sp"
+            android:text="换一批"
+            android:layout_marginStart="@dimen/_8dp"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>

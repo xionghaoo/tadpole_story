@@ -1,3 +1,1 @@
-kd／1通用／ioc-播放(4).png;ic_album_play_count.png
-kd／1通用／ioc-集数(3).png;ic_album_count.png
-kd／1通用／功能按钮／删除记录.png;ic_history_delete.png
+kd／1通用／二级按钮／iocn-换一批.png;ic_refresh_16.png

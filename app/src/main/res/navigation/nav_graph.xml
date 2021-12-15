@@ -103,7 +103,11 @@
     </fragment>
     <fragment
         android:id="@+id/dayRecommendFragment"
-        android:name="xh.zero.tadpolestory.ui.home.DayRecommendFragment"
+        android:name="xh.zero.tadpolestory.ui.home.RecommendFragment"
         android:label="fragment_day_recommend"
-        tools:layout="@layout/fragment_day_recommend" />
+        tools:layout="@layout/fragment_day_recommend" >
+        <action
+            android:id="@+id/action_dayRecommendFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment" />
+    </fragment>
 </navigation>

@@ -151,6 +151,9 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment())
             }
         }
+        layout.findViewById<View>(R.id.btn_refresh).setOnClickListener {
+            // TODO 换一批
+        }
         rcAlbumList.removeAllViews()
         albums.forEach { item ->
             val v = layoutInflater.inflate(R.layout.list_item_home_album, null)

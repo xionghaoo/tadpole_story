@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * 筛选分页
+ * 排行榜分页
  */
 @Singleton
 class RankAlbumRepository @Inject constructor(

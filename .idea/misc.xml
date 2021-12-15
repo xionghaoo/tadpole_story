@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/drawable/shape_album_tag_selected.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/shape_btn_cancel.xml" value="0.25277777777777777" />
         <entry key="app/src/main/res/drawable/shape_btn_confirm.xml" value="0.25277777777777777" />
+        <entry key="app/src/main/res/drawable/shape_btn_random.xml" value="0.2361111111111111" />
         <entry key="app/src/main/res/drawable/shape_dialog_bg.xml" value="0.25277777777777777" />
         <entry key="app/src/main/res/drawable/shape_dialog_cancel.xml" value="0.25092592592592594" />
         <entry key="app/src/main/res/drawable/shape_filter_expand.xml" value="0.2740740740740741" />
