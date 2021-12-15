@@ -38,6 +38,7 @@ import java.security.NoSuchAlgorithmException
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.Comparator
 import kotlin.random.Random
@@ -213,6 +214,109 @@ object AppModule {
             .addCallAdapterFactory(LiveDataCallAdapterFactory())
             .build()
             .create(ApiService::class.java)
+
+    // -------------------------------- 蝌蚪桌面API start -----------------------------------
+    @Provides
+    @Singleton
+    @Named("TadpoleOkHttpClient")
+    fun provideTadpoleOkHttpClient(
+        @ApplicationContext context: Context,
+        prefs: PreferenceStorage
+    ): OkHttpClient {
+        val logInterceptor = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        val client = OkHttpClient.Builder()
+            .addNetworkInterceptor(logInterceptor)
+//        if (BuildConfig.DEBUG) {
+//            client.addInterceptor(mockInterceptor)
+//        }
+        client.addInterceptor { chain: Interceptor.Chain ->
+            // 发起请求
+            val request = chain.request()
+            val newRequestBuilder = request.newBuilder()
+                .addHeader("Content-Type", "application/json")
+                .addHeader("X-UBT-AppId", Configs.ubtAppId)
+                .addHeader("product", Configs.ubtProduct)
+            refreshSign(newRequestBuilder, prefs.serialNumber)
+            val newRequest = newRequestBuilder.build()
+            val response = chain.proceed(newRequest)
+
+            // 接收响应
+            val responseCode = response.code
+            if (responseCode == 200) {
+                val responseString = response.body?.string()
+                var content: String? = responseString
+                try {
+//                    val gson = Gson()
+//                    val res = gson.fromJson<PlainData>(content, PlainData::class.java)
+//                    if (!ignoreRequestError && (res.code == 2042
+//                                || res.code == 2044
+//                                || res.code == 2031)) {
+//                        CoroutineScope(Dispatchers.Main).launch {
+//                            prefs.clearCache()
+//                            ToastUtil.showToast(context, res.msg ?: "")
+//                            LoginActivity.startWithNewTask(context)
+//                        }
+//                    }
+//                    ignoreRequestError = false
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    val contentType = response.body?.contentType()
+                    val body = (responseString ?: "").toResponseBody(contentType)
+                    return@addInterceptor response.newBuilder().body(body).build()
+                }
+            }
+
+//            if (responseCode == 403) {
+//                CoroutineScope(Dispatchers.Main).launch {
+//                    prefs.clearCache()
+//                    ToastUtil.showToast(context, "无法确认设备ID")
+//                    LoginActivity.startWithNewTask(context)
+//                }
+//            }
+
+            if (responseCode >= 500) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ToastUtil.show(context, "服务器请求错误")
+                }
+            }
+
+            if (responseCode >= 300) {
+                val failureUrl = newRequest.url.toString()
+                if (failureUrl.isNotEmpty()) {
+                    Timber.d("request failure: " + responseCode.toString() + ", " + failureUrl)
+                }
+            }
+            return@addInterceptor response
+        }
+        return client.build()
+    }
+
+    // 生成随机签名
+    private fun refreshSign(builder: Request.Builder, deviceId: String?) {
+        Timber.d("设备序列号 = $deviceId")
+        if (deviceId == null) return
+        val randStr = "${Random(System.currentTimeMillis()).nextInt(10)}${
+            Random(System.currentTimeMillis()).nextLong(900000000) + 100000000
+        }"
+        val now = System.currentTimeMillis() / 1000
+        val md5Str = CryptoUtil.encryptToMD5("$now${Configs.ubtAppKey}$randStr$deviceId")
+//        val sign = DeviceShadowUtil.signRand(Configs.ubtAppKey, deviceId)
+        builder.addHeader("X-UBT-Sign", "$md5Str $now $randStr v2")
+        builder.addHeader("X-UBT-DeviceId", deviceId)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTadpoleApiService(@Named("TadpoleOkHttpClient") client: OkHttpClient): TadpoleApiService =
+        Retrofit.Builder()
+            .baseUrl(Configs.TADPOLE_HOST)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .build()
+            .create(TadpoleApiService::class.java)
+    // -------------------------------- 蝌蚪桌面API end -----------------------------------
 
     @Provides
     @Singleton

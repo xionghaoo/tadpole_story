@@ -1,5 +1,6 @@
 package xh.zero.tadpolestory.ui
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -30,6 +31,8 @@ import com.example.android.uamp.media.extensions.isPlaying
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,6 +63,7 @@ class MainActivity : BaseActivity(),
         const val ACTION_NOTIFICATION_PLAYER = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_NOTIFICATION_PLAYER"
         const val ACTION_ALBUM_DETAIL = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_ALBUM_DETAIL"
         const val ACTION_UPLOAD_PLAY_RECORD = "${Configs.PACKAGE_NAME}.MainActivity.ACTION_UPLOAD_PLAY_RECORD"
+        private const val RC_READ_PHONE_STATE_PERMISSION = 1
 
         fun startToAlbumDetail(context: Context?, item: Album) {
             context?.startActivity(Intent(context, MainActivity::class.java).apply {
@@ -118,6 +122,8 @@ class MainActivity : BaseActivity(),
 
         val filter = IntentFilter(ACTION_UPLOAD_PLAY_RECORD)
         registerReceiver(receiver, filter)
+
+        getSerialNumberTask()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -368,5 +374,56 @@ class MainActivity : BaseActivity(),
         }
 
     }
+
+    // ------------------- 获取本机序列号 ------------------------
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    @AfterPermissionGranted(RC_READ_PHONE_STATE_PERMISSION)
+    fun getSerialNumberTask() {
+        if (repo.prefs.serialNumber == null) {
+            repo.prefs.serialNumber = Build.ID ?: "tadpole_${(0..100).random()}"
+        }
+        if (hasReadPhoneStatePermission()) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                val serialNo = Build.getSerial()
+                Timber.d("本机序列号：${serialNo}")
+                // 设备序列必须大于8位
+                repo.prefs.serialNumber = if (serialNo.length <= 7) "${serialNo}00000000" else serialNo
+            } else {
+//                ToastUtil.showToast(this, "获取序列号失败")
+                Timber.e("获取序列号失败")
+            }
+            Timber.d("perfs.serialNumber = ${repo.prefs.serialNumber}")
+
+//            handler.postDelayed({
+//                if (perfs.userID != -1) {
+//                    startPlainActivity(MainActivity::class.java)
+//                } else {
+//                    startPlainActivity(LoginActivity::class.java)
+//                }
+//                finish()
+//            }, 200)
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "App需要读取本机序列号，请授予权限",
+                RC_READ_PHONE_STATE_PERMISSION,
+                Manifest.permission.READ_PHONE_STATE
+            )
+        }
+    }
+
+    private fun hasReadPhoneStatePermission() : Boolean {
+        return EasyPermissions.hasPermissions(this, Manifest.permission.READ_PHONE_STATE)
+    }
+
+    // ------------------- 获取本机序列号 ------------------------
 
 }

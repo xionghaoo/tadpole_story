@@ -152,6 +152,12 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 //                if (album != null) MainActivity.startToAlbumDetail(context, album)
 //            }
         }
+        binding.btnSubscribe.setOnClickListener {
+            subscribe()
+        }
+        binding.topBtnSubscribe.setOnClickListener {
+            subscribe()
+        }
 
         // TODO 更多相关专辑
         binding.layoutRelativeAlbums.tvMediaRelativeMore.setOnClickListener {
@@ -729,6 +735,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             // 未选中
             view.setBackgroundResource(R.drawable.shape_album_tag)
             view.setTextColor(resources.getColor(R.color.color_42444B))
+        }
+    }
+
+    fun subscribe() {
+        viewModel.subscribeAlbum(-1).observe(viewLifecycleOwner) {
+            handleResponse(it) {
+
+            }
         }
     }
 

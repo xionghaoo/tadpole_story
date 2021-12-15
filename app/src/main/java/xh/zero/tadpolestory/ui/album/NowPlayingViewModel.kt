@@ -309,6 +309,8 @@ class NowPlayingViewModel @Inject constructor(
         isPlaying = playbackState.isPlaying
     }
 
+    fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)
+
     /**
      * 上传播放记录
      */

@@ -23,6 +23,7 @@ import javax.inject.Singleton
 class Repository @Inject constructor(
     @ApplicationContext val context: Context,
     private val apiService: ApiService,
+    private val tadpoleApiService: TadpoleApiService,
     val prefs: SharedPreferenceStorage,
     private val db: CacheDatabase
 ) {
@@ -94,6 +95,10 @@ class Repository @Inject constructor(
     fun getVoiceListFormAlbum(albumId: String, page: Int, pageSize: Int? = null) =
         apiService.getVoiceListFormAlbum(album_id = albumId, page = page, count = pageSize)
 
+    fun subscribeAlbum(albumId: Int) = remoteRequestStrategy {
+        tadpoleApiService.subscribeAlbum(albumId)
+    }
+
     fun saveSearchHistory(txt: String) {
         CoroutineScope(Dispatchers.Default).launch {
             db.searchHistoryDao().insert(SearchHistory().apply {
@@ -128,4 +133,5 @@ class Repository @Inject constructor(
             }
         }
     }
+
 }

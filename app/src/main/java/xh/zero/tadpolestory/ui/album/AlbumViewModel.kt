@@ -174,7 +174,7 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
-    fun loadAlbumInfo() = repo.getAlbumsForIds("$mediaId")
+    fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)
 
     /**
      * Since we use [LiveData.observeForever] above (in [musicServiceConnection]), we want

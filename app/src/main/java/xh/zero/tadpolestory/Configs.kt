@@ -1,10 +1,12 @@
 package xh.zero.tadpolestory
 
+
 class Configs {
     companion object {
         const val MQTT_SERVER_URI = "tcp://broker.emqx.io:1883"
 
         const val HOST = BuildConfig.DOMAIN_RELEASE
+        const val TADPOLE_HOST = BuildConfig.TADPOLE_HOST
 
         const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
 
@@ -21,6 +23,9 @@ class Configs {
         const val DB_VERSION = BuildConfig.VERSION_CODE
 //        const val CATEGORY_ID = 92
 
+        const val ubtAppId = "980010196" // 980010196 940010010
+        const val ubtProduct = "90101"
+        const val ubtAppKey = "7c992a8097874cfdacbe71feda7cb8b8"
     }
 
 }

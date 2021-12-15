@@ -49,16 +49,19 @@ android {
                 abiFilters 'armeabi-v7a', 'arm64-v8a'
             }
             buildConfigField('String', 'DOMAIN_RELEASE', domain.prod)
+            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_prod)
         }
         uat {
             // 测试版本
             versionName uatVersionName
             buildConfigField('String', 'DOMAIN_RELEASE', domain.uat)
+            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_uat)
         }
         pre {
             // 预发布环境
             versionName preVersionName
             buildConfigField('String', 'DOMAIN_RELEASE', domain.pre)
+            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_pre)
         }
     }
 }

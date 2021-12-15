@@ -105,7 +105,7 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
         }
 
         binding.btnSubscribe.setOnClickListener {
-            ToastUtil.show(context, "订阅")
+            subscribe()
         }
 
         binding.vpAlbumDetail.adapter = AlbumDetailAdapter()
@@ -120,6 +120,14 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 //                }
 //            }
 //        }
+    }
+
+    private fun subscribe() {
+        viewModel.subscribeAlbum(album.id).observe(this) {
+            handleResponse(it) {
+
+            }
+        }
     }
 
     inner class AlbumDetailAdapter : FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

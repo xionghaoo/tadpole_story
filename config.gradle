@@ -14,6 +14,11 @@ ext {
     domain.pre = '\"https://api.ximalaya.com\"'
     domain.prod = '\"https://api.ximalaya.com\"'
 
+    // 桌面端接口
+    domain.tadpole_uat = '\"http://10.10.18.95:8081\"'
+    domain.tadpole_pre = '\"https://testjimu.ubtrobot.com:8443\"'
+    domain.tadpole_prod = '\"https://xxx.ubtrobot.com\"'
+
     tecentStorageHostUat = '\"https://cdn-vesta-dev.pgyscm.com\"'
     tecentStorageHost = '\"https://cdn-vesta-pro.pgyscm.com\"'
     // ----------- 项目环境配置 end -----------
