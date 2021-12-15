@@ -9,5 +9,5 @@ import javax.inject.Inject
 class MoreViewModel @Inject constructor(
     val repo: Repository
 ) : ViewModel() {
-
+    fun getRecentAlbums() = repo.getRecentAlbums()
 }

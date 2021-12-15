@@ -738,10 +738,15 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
-    fun subscribe() {
-        viewModel.subscribeAlbum(-1).observe(viewLifecycleOwner) {
-            handleResponse(it) {
-
+    private fun subscribe() {
+        val id = viewModel.repo.prefs.nowPlayingAlbumId
+        if (id?.isNotEmpty() == true) {
+            viewModel.subscribeAlbum(id.toInt()).observe(viewLifecycleOwner) {
+                handleResponse(it) { r ->
+                    if (r.code == 200) {
+                        ToastUtil.show(context, "订阅成功")
+                    }
+                }
             }
         }
     }

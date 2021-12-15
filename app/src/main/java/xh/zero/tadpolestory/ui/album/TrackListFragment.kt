@@ -89,8 +89,6 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         isInit = true
         selectedIndex = null
 
-        viewModel.repo.prefs.nowPlayingAlbumId = albumId
-
         binding.tvTotalAlbum.text = "共${total}集"
         binding.rcTrackList.layoutManager = LinearLayoutManager(context)
         adapter = TrackAdapter(total.toInt()) { item ->

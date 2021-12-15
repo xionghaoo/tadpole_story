@@ -9,12 +9,17 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
+import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMoreSubscribeBinding
+import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.ui.BaseFragment
 
+@AndroidEntryPoint
 class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
+    private val viewModel: MoreViewModel by viewModels()
     private var selectedIndex = 0
 
     private val position: Int by lazy {
@@ -33,6 +38,14 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         bindTagList(arrayListOf("最近常听", "最近更新", "最新订阅"))
+    }
+
+    private fun loadData() {
+        viewModel.getRecentAlbums().observe(this) {
+            handleResponse(it) { r ->
+
+            }
+        }
     }
 
     private fun bindTagList(tags: List<String?>) {
@@ -63,7 +76,7 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
             tv.setOnClickListener { v ->
                 selectedIndex = v.tag as Int
-
+                loadData()
                 binding.llTagList.children.forEach { child ->
                     selectTagView(child as TextView)
                 }

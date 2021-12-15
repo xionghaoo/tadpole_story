@@ -75,6 +75,9 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         album = args.album
+
+        viewModel.repo.prefs.nowPlayingAlbumId = album.id.toString()
+
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -124,8 +127,10 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 
     private fun subscribe() {
         viewModel.subscribeAlbum(album.id).observe(this) {
-            handleResponse(it) {
-
+            handleResponse(it) { r ->
+                if (r.code == 200) {
+                    ToastUtil.show(context, "订阅成功")
+                }
             }
         }
     }
