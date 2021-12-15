@@ -263,21 +263,20 @@ inline var MediaMetadataCompat.Builder.flag: Int
  *
  * For convenience, place the [MediaDescriptionCompat] into the tag so it can be retrieved later.
  */
-fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory, extractorsFactory: DefaultExtractorsFactory) =
-    ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory).createMediaSource(mediaUri)
+fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory) =
+    ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaUri)
 
 /**
  * Extension method for building a [ConcatenatingMediaSource] given a [List]
  * of [MediaMetadataCompat] objects.
  */
 fun List<MediaMetadataCompat>.toMediaSource(
-    dataSourceFactory: DataSource.Factory,
-    extractorsFactory: DefaultExtractorsFactory
+    dataSourceFactory: DataSource.Factory
 ): ConcatenatingMediaSource {
 
     val concatenatingMediaSource = ConcatenatingMediaSource()
     forEach {
-        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory, extractorsFactory))
+        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory))
     }
     return concatenatingMediaSource
 }

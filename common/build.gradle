@@ -97,6 +97,7 @@ dependencies {
         api "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
         api "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
         api "com.google.android.exoplayer:extension-cast:$exoplayer_version"
+        api "com.google.android.exoplayer:extension-okhttp:$exoplayer_version"
     }
 
     // Glide dependencies

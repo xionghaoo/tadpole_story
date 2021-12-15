@@ -270,28 +270,29 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .into(binding.topIvMediaCoverImg)
         loadRelativeAlbum(mediaItem.id.toInt())
 
-        // 加载背景
-        CoroutineScope(Dispatchers.IO).launch {
-            val img: Bitmap = GlideApp.with(requireContext()).asBitmap().load(mediaItem.albumArtUri).submit().get()
-            // 给背景加上白色
-            val paint = Paint()
-            val filter: ColorFilter = PorterDuffColorFilter(
-                ContextCompat.getColor(requireContext(), R.color.white_62),
-                PorterDuff.Mode.SRC_IN
-            )
-            paint.colorFilter = filter
-            val canvas = Canvas(img)
-            canvas.drawBitmap(img, 0f, 0f, paint)
+        if (mediaItem.albumArtUri.toString().isNotEmpty()) {
+            // 加载背景
+            CoroutineScope(Dispatchers.IO).launch {
+                val img: Bitmap = GlideApp.with(requireContext()).asBitmap().load(mediaItem.albumArtUri).submit().get()
+                // 给背景加上白色
+                val paint = Paint()
+                val filter: ColorFilter = PorterDuffColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.white_62),
+                    PorterDuff.Mode.SRC_IN
+                )
+                paint.colorFilter = filter
+                val canvas = Canvas(img)
+                canvas.drawBitmap(img, 0f, 0f, paint)
 
-            withContext(Dispatchers.Main) {
-                GlideApp.with(requireContext())
-                    .load(img)
-                    // 背景虚化
-                    .apply(RequestOptions.bitmapTransform(BlurTransformation(50)))
-                    .into(binding.ivBackground)
+                withContext(Dispatchers.Main) {
+                    GlideApp.with(requireContext())
+                        .load(img)
+                        // 背景虚化
+                        .apply(RequestOptions.bitmapTransform(BlurTransformation(50)))
+                        .into(binding.ivBackground)
+                }
             }
         }
-
 
     }
 

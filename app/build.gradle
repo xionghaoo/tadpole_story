@@ -120,11 +120,11 @@ dependencies {
     implementation dpes.flexbox
 
     // exo player
-    def exoplayer_version = '2.16.1'
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
-    implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
-    implementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
+//    def exoplayer_version = '2.16.1'
+//    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+//    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+//    implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
+//    implementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
 
     implementation "androidx.media:media:1.4.3"
 

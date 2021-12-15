@@ -41,9 +41,8 @@ import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastContext
@@ -53,12 +52,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultAllocator
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import okhttp3.OkHttpClient
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -116,7 +118,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     }
 
     private lateinit var cacheDataSourceFactory: CacheDataSourceFactory
-    private val extractorsFactory = DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true)
+    private val extractorsFactory = DefaultExtractorsFactory()
+        .setConstantBitrateSeekingEnabled(true)
+//        .setConstantBitrateSeekingAlwaysEnabled(true)
+
 
     private var isForegroundService = false
 
@@ -137,6 +142,36 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             setHandleAudioBecomingNoisy(true)
             addListener(playerListener)
         }
+    }
+
+    /**
+     * 自定义http请求，解决音频加载报416错误的问题
+     */
+    private val okhttpDataSourceFactory: DefaultDataSource.Factory by lazy {
+        DefaultDataSource.Factory(
+            this,
+            OkHttpDataSource.Factory(
+                OkHttpClient.Builder()
+                    .connectTimeout(30L, TimeUnit.SECONDS)
+                    .readTimeout(30L, TimeUnit.SECONDS)
+                    .addInterceptor { chain ->
+                        val request = chain.request()
+                        val newRequestBuilder = request.newBuilder()
+                            // 缓存加载时请求头出现range，服务器有可能会报416
+                            .removeHeader("Range")
+                        val newRequest = newRequestBuilder.build()
+//                        Log.d("CacheDataSourceFactory", "------> ${newRequest.url}")
+//                        Log.d("CacheDataSourceFactory", "${newRequest.headers}")
+                        val response = chain.proceed(newRequest)
+//                        Log.d("CacheDataSourceFactory", "<------${response.code}")
+//                        Log.d("CacheDataSourceFactory", "${response.headers}")
+                        return@addInterceptor response
+                    }
+                    .build()
+            ).apply {
+                setUserAgent(Util.getUserAgent(this@MusicService, packageName))
+            }
+        )
     }
 
     /**
@@ -411,23 +446,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         currentPlayer.playWhenReady = playWhenReady
         currentPlayer.stop(/* reset= */ true)
         if (currentPlayer == exoPlayer) {
-
-            // Specify cache folder, my cache folder named media which is inside getCacheDir.
-//            val cacheFolder = File(cacheDir, "media")
-//
-//            // Specify cache size and removing policies
-//            val cacheEvictor = LeastRecentlyUsedCacheEvictor(1 * 1024 * 1024) // My cache size will be 1MB and it will automatically remove least recently used files if the size is reached out.
-//
-//            // Build cache
-//            val cache = SimpleCache(cacheFolder, cacheEvictor)
-
-            // Build data source factory with cache enabled, if data is available in cache it will return immediately, otherwise it will open a new connection to get the data.
-
-
-//            val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
-
-            val mediaSource = metadataList.toMediaSource(cacheDataSourceFactory, extractorsFactory)
-            exoPlayer.prepare(mediaSource)
+            metadataList.forEach {
+                exoPlayer.addMediaSource(it.toMediaSource(okhttpDataSourceFactory))
+            }
+            exoPlayer.prepare()
             exoPlayer.seekTo(initialWindowIndex, playbackStartPositionMs)
         } else /* currentPlayer == castPlayer */ {
             val items: Array<MediaQueueItem> = metadataList.map {
@@ -735,7 +757,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            Log.d(TAG, "PlayerEventListener::onPlayerError ${error.errorCodeName}")
+            Log.d(TAG, "PlayerEventListener::onPlayerError ${error.errorCodeName}, ${error.errorCode}")
             Toast.makeText(
                 applicationContext,
                 error.message,
