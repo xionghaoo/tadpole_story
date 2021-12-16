@@ -13,7 +13,7 @@ import xh.zero.tadpolestory.repo.data.SubscribeIdsResult
 
 interface TadpoleApiService {
     companion object {
-        const val PREFIX = "/v1/smartlamp-api/"
+        const val PREFIX = "/v1/smartlamp-api"
     }
 
     /**

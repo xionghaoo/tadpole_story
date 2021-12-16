@@ -109,35 +109,14 @@
                     app:layout_constraintBottom_toBottomOf="@+id/iv_media_cover_img"
                     app:layout_constraintStart_toStartOf="@+id/tv_media_title" />
 
-                <LinearLayout
+                <xh.zero.tadpolestory.widgets.SubscribeButton
                     android:id="@+id/btn_subscribe"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_180dp"
                     android:layout_height="@dimen/_58dp"
                     android:layout_marginTop="@dimen/_57dp"
                     android:layout_marginEnd="@dimen/_182dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/_22dp"
-                    android:paddingEnd="@dimen/_22dp"
-                    android:background="@drawable/shape_btn_subscribe"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
-                    <ImageView
-                        android:id="@+id/iv_subscribe_icon"
-                        android:layout_width="@dimen/_30dp"
-                        android:layout_height="@dimen/_30dp"
-                        android:src="@mipmap/ic_subscribe_30"/>
-                    <TextView
-                        android:id="@+id/tv_subscribe_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_8dp"
-                        android:textSize="@dimen/_24sp"
-                        android:textColor="@color/white"
-                        android:paddingStart="@dimen/_10dp"
-                        android:paddingEnd="@dimen/_10dp"
-                        android:text="订阅"/>
-                </LinearLayout>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_meida_play_position"
@@ -380,38 +359,15 @@
             app:layout_constraintStart_toStartOf="@+id/top_tv_media_album_title"
             tools:text="pony妈妈讲猴子警长探案集" />
 
-        <LinearLayout
+        <xh.zero.tadpolestory.widgets.SubscribeButton
             android:id="@+id/top_btn_subscribe"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/_180dp"
             android:layout_height="@dimen/_58dp"
             android:layout_marginBottom="@dimen/_21dp"
-            android:background="@drawable/shape_btn_subscribe"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/_22dp"
-            android:paddingEnd="@dimen/_22dp"
             android:layout_marginEnd="@dimen/_129dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/top_iv_media_cover_img"
-            app:layout_constraintEnd_toStartOf="@+id/top_btn_media_play">
-
-            <ImageView
-                android:id="@+id/top_iv_subscribe_icon"
-                android:layout_width="@dimen/_30dp"
-                android:layout_height="@dimen/_30dp"
-                android:src="@mipmap/ic_subscribe_30" />
-
-            <TextView
-                android:id="@+id/top_tv_subscribe_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_8dp"
-                android:paddingStart="@dimen/_10dp"
-                android:paddingEnd="@dimen/_10dp"
-                android:text="订阅"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_24sp" />
-        </LinearLayout>
+            app:layout_constraintEnd_toStartOf="@+id/top_btn_media_play"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/top_btn_media_multiple"
