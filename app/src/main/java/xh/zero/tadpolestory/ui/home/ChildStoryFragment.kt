@@ -279,15 +279,17 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             lp.height = LinearLayout.LayoutParams.MATCH_PARENT
             lp.marginEnd = resources.getDimension(R.dimen._16dp).toInt()
 
-            if (index == selectedIndex) {
-                tv.setBackgroundResource(R.drawable.shape_album_tag_selected)
-                tv.setTextColor(resources.getColor(R.color.white))
-            } else {
-                tv.setBackgroundResource(R.drawable.shape_album_tag)
-                tv.setTextColor(resources.getColor(R.color.color_42444B))
-            }
+            tv.setBackgroundResource(R.drawable.shape_album_tag)
+            tv.setTextColor(resources.getColor(R.color.color_42444B))
 
-            selectTagView(tv)
+//            if (index == selectedIndex) {
+//                tv.setBackgroundResource(R.drawable.shape_album_tag_selected)
+//                tv.setTextColor(resources.getColor(R.color.white))
+//            } else {
+
+//            }
+
+//            selectTagView(tv)
 
             tv.setOnClickListener { v ->
                 val viewIndex = v.tag as Int

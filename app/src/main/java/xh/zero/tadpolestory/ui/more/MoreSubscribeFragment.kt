@@ -64,6 +64,8 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
         viewModel.refreshState.observe(this) {
 
         }
+
+        loadRecent()
     }
 
     /**
