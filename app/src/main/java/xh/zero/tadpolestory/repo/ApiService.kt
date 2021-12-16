@@ -89,6 +89,11 @@ interface ApiService {
         @Query("ids") ids: String
     ) : LiveData<ApiResponse<List<Album>>>
 
+    @GET("$PREFIX/albums/get_batch")
+    fun getPagingAlbumsForIds(
+        @Query("ids") ids: String
+    ) : Call<List<Album>>
+
     /**
      * 关键词搜索专辑
      */

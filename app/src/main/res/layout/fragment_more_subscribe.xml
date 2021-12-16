@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/_50dp"
-    android:paddingEnd="@dimen/_108dp"
     android:orientation="vertical"
     tools:context=".ui.more.MoreSubscribeFragment">
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="@dimen/_52dp"
+        android:layout_marginStart="@dimen/_52dp"
         android:layout_marginTop="@dimen/_20dp">
         <LinearLayout
             android:id="@+id/ll_tag_list"

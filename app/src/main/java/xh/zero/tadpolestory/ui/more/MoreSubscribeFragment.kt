@@ -10,17 +10,21 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMoreSubscribeBinding
 import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.ui.BaseFragment
+import xh.zero.tadpolestory.ui.MainFragmentDirections
 
 @AndroidEntryPoint
 class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
     private val viewModel: MoreViewModel by viewModels()
     private var selectedIndex = 0
+    private lateinit var adapter: SubscribeAlbumAdapter
 
     private val position: Int by lazy {
         arguments?.getInt(ARG_POSITION, 0) ?: 0
@@ -38,18 +42,33 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
         bindTagList(arrayListOf("最近常听", "最近更新", "最新订阅"))
+
+        adapter = SubscribeAlbumAdapter(
+            onItemClick = { item ->
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(item))
+            },
+            retry = viewModel::retry
+        )
+        binding.rcSubscribeAlbums.layoutManager = LinearLayoutManager(context)
+        binding.rcSubscribeAlbums.adapter = adapter
+        binding.rcSubscribeAlbums.isSaveEnabled = true
+        viewModel.itemList.observe(this) {
+            adapter.submitList(it)
+        }
+        viewModel.networkState.observe(this) {
+            adapter.setNetworkState(it)
+        }
+        viewModel.refreshState.observe(this) {
+
+        }
     }
 
     private fun loadSubscribe() {
         viewModel.getSubscribeAlbumsIds().observe(this) {
             handleResponse(it) { r ->
-                val ids = StringBuilder()
-                r.data?.forEach { id ->
-                    id?.toString()?.also { idStr ->
-                        ids.append(idStr).append(",")
-                    }
+                if (r.data != null && r.data.isNotEmpty()) {
+                    loadAlbums(r.data)
                 }
-                loadAlbums(ids.toString())
             }
         }
     }
@@ -57,23 +76,23 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
     private fun loadRecent() {
         viewModel.getRecentAlbumsIds().observe(this) {
             handleResponse(it) { r ->
-                val ids = StringBuilder()
-                r.data?.forEach { id ->
-                    id?.toString()?.also { idStr ->
-                        ids.append(idStr).append(",")
-                    }
+                if (r.data != null && r.data.isNotEmpty()) {
+                    loadAlbums(r.data)
+                } else {
+                    // TODO 显示结果为空
                 }
-                loadAlbums(ids.toString())
             }
         }
     }
 
-    private fun loadAlbums(ids: String) {
-        viewModel.getAlbumsForIds(ids).observe(this) {
-            handleResponse(it) { r ->
-
+    private fun loadAlbums(ids: List<Int?>) {
+        val str = StringBuilder()
+        ids.forEach { id ->
+            id?.toString()?.also { idStr ->
+                str.append(idStr).append(",")
             }
         }
+        viewModel.showList(listOf(str.toString()))
     }
 
     private fun bindTagList(tags: List<String?>) {
