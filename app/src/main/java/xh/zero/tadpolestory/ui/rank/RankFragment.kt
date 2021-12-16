@@ -78,9 +78,7 @@ class RankFragment : BaseFragment<FragmentRankBinding>() {
             onItemClick = { album ->
                 findNavController().navigate(RankFragmentDirections.actionRankFragmentToAlbumDetailFragment(album))
             },
-            retry = {
-
-            }
+            retry = viewModel::retry
         )
         binding.rcAlbumList.adapter = adapter
 

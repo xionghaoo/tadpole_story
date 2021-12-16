@@ -103,9 +103,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
             onItemClick = { album ->
                 toAlbumDetailPage(album)
             },
-            retry = {
-
-            }
+            retry = viewModel::retry
         )
         binding.rcAlbumList.adapter = adapter
 
