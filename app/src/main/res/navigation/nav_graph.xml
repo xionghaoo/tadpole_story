@@ -109,5 +109,7 @@
         <action
             android:id="@+id/action_dayRecommendFragment_to_albumDetailFragment"
             app:destination="@id/albumDetailFragment" />
+        <argument android:name="categoryId"
+            app:argType="integer" />
     </fragment>
 </navigation>

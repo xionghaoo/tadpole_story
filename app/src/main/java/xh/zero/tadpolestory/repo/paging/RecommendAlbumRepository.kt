@@ -44,7 +44,7 @@ class RecommendAlbumRepository @Inject constructor(
         override fun createAfterCall(pageNo: String): Call<AlbumResponse> {
             return apiService.getPagingDailyRecommendAlbums(
                 page = pageNo.toInt(),
-                count = Configs.PAGE_SIZE,
+                count = 200,
                 access_token = prefs.accessToken.orEmpty()
             )
         }
@@ -52,7 +52,7 @@ class RecommendAlbumRepository @Inject constructor(
         override fun createInitialCall(): Call<AlbumResponse> {
             return apiService.getPagingDailyRecommendAlbums(
                 page = 1,
-                count = Configs.PAGE_SIZE,
+                count = 200,
                 access_token = prefs.accessToken.orEmpty()
             )
         }

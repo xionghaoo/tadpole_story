@@ -16,7 +16,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
-import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildStoryBinding
@@ -120,22 +119,50 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
 //        }
     }
 
+    /**
+     * 每日推荐
+     */
     private fun loadRecommend(token: String) {
         viewModel.getDailyRecommendAlbums(token, 1).observe(this) {
             handleResponse(it) { r ->
-                loadGuessLike()
-                // TODO 数据筛选
-                val items = r.albums?.filter { album -> album.category_id == Configs.CATEGORY_ID_STORY }?.filterIndexed { index, _ -> index < 4 }
-                addContentItemView(0, items ?: emptyList())
+                val items = r.albums
+                    ?.filter { album -> album.category_id == Configs.CATEGORY_ID_STORY }
+                    ?.filterIndexed { index, _ -> index < 4 }
+                    ?: emptyList()
+                if (items.size < 4) {
+                    loadSupplementAlbums(items.toMutableList())
+                } else {
+                    loadGuessLike()
+                    addContentItemView(0, items)
+                }
             }
         }
     }
 
+    /**
+     * 每日推荐不够四个时的补充专辑
+     */
+    private fun loadSupplementAlbums(items: MutableList<Album>) {
+        viewModel.getAlbumList(1, Configs.CATEGORY_ID_STORY, "科普").observe(this) {
+            handleResponse(it) { r ->
+                if (r.albums?.isNotEmpty() == true) {
+                    for (i in items.size.until(4)) {
+                        items.add(r.albums[i - items.size])
+                    }
+                }
+                loadGuessLike()
+                addContentItemView(0, items)
+            }
+        }
+    }
+
+    /**
+     * 猜你喜欢
+     */
     private fun loadGuessLike() {
         viewModel.getGuessLikeAlbums().observe(this) {
             handleResponse(it) { r ->
                 // TODO 数据筛选
-//                val items = r.filter { album -> album.category_id == 6 || album.category_id == 92 }.filterIndexed { index, _ -> index < 4 }
                 val items = r.filterIndexed { index, _ -> index < 4 }
                 addContentItemView(1, items, resources.getDimension(R.dimen._30dp).toInt())
             }
@@ -148,19 +175,22 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
             if (type == 0) {
-                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment())
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_STORY))
             }
         }
         layout.findViewById<View>(R.id.btn_refresh).setOnClickListener {
             // TODO 换一批
         }
         rcAlbumList.removeAllViews()
-        albums.forEach { item ->
+        albums.forEachIndexed { index, item ->
             val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
             rcAlbumList.addView(v)
             val lp = v.layoutParams as FlexboxLayout.LayoutParams
             lp.width = resources.getDimension(R.dimen._216dp).toInt()
             lp.height = resources.getDimension(R.dimen._292dp).toInt()
+            if (index > 0) {
+                lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
+            }
 
             v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
             v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro

@@ -41,6 +41,13 @@ class MainViewModel @Inject constructor(
     fun getTemporaryToken() = repo.getTemporaryToken()
     fun getDailyRecommendAlbums(token: String, page: Int) = repo.getDailyRecommendAlbums(token, page)
     fun getGuessLikeAlbums() = repo.getGuessLikeAlbums()
+
+    fun getAlbumList(page: Int, categoryId: Int, tagName: String) = repo.getAlbumsList(
+        page = page,
+        categoryId = categoryId,
+        calcDimension = 1,
+        tagName = tagName
+    )
 }
 
 private const val POSITION_UPDATE_INTERVAL_MILLIS = 100L

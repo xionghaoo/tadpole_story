@@ -171,6 +171,7 @@ interface ApiService {
     fun getDailyRecommendAlbums(
         @Query("access_token") access_token: String,
         @Query("page") page: Int,
+        // 最大是200
         @Query("count") count: Int = 200
     ) : LiveData<ApiResponse<AlbumResponse>>
 
@@ -181,7 +182,7 @@ interface ApiService {
     fun getPagingDailyRecommendAlbums(
         @Query("access_token") access_token: String,
         @Query("page") page: Int,
-        @Query("count") count: Int = 200
+        @Query("count") count: Int = Configs.PAGE_SIZE
     ) : Call<AlbumResponse>
 
     /**

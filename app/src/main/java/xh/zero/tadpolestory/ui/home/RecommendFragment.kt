@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.Configs
@@ -17,6 +18,7 @@ class RecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
     private val viewModel: RecommendViewModel by viewModels()
     private lateinit var adapter: RecommendAlbumAdapter
+    private val args: RecommendFragmentArgs by navArgs()
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -54,7 +56,7 @@ class RecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
 
         }
 
-        viewModel.showList(listOf(Configs.CATEGORY_ID_STORY.toString()))
+        viewModel.showList(listOf(args.categoryId.toString()))
 
     }
 }
