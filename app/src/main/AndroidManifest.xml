@@ -26,10 +26,6 @@
             android:screenOrientation="userLandscape"
             android:exported="false" />
         <activity
-            android:name=".ui.DailyRecommendActivity"
-            android:screenOrientation="userLandscape"
-            android:exported="false" />
-        <activity
             android:name=".test.TestActivity"
             android:exported="true"
             android:screenOrientation="userLandscape">
