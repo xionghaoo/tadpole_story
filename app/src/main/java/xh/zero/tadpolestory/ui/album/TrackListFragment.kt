@@ -59,6 +59,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 //    private var networkState = MediatorLiveData<NetworkState>()
     private var isInit = true
     private var listener: OnFragmentActionListener? = null
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -90,19 +91,25 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         selectedIndex = null
 
         binding.tvTotalAlbum.text = "共${total}集"
-        binding.rcTrackList.layoutManager = LinearLayoutManager(context)
-        adapter = TrackAdapter(total.toInt()) { item ->
-            viewModel.playMedia(item, pauseAllowed = false)
-            // 显示正在播放页面
-            NowPlayingActivity.start(context, albumTitle)
-        }
+        layoutManager = LinearLayoutManager(context)
+        binding.rcTrackList.layoutManager = layoutManager
+        adapter = TrackAdapter(
+            totalCount = total.toInt(),
+            onItemClick = { item ->
+                viewModel.playMedia(item, pauseAllowed = false)
+                // 显示正在播放页面
+                NowPlayingActivity.start(context, albumTitle)
+            },
+            retry = {}
+        )
         binding.rcTrackList.adapter = adapter
+        binding.rcTrackList.isSaveEnabled = true
         binding.rcTrackList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 totalScrollY += dy
                 binding.vScrollCover.visibility = if (totalScrollY > 0) View.VISIBLE else View.INVISIBLE
-
-                if (!binding.rcTrackList.canScrollVertically(RecyclerView.VERTICAL)
+                // 加载更多
+                if (layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
                     && selectedIndex == null
                     && viewModel.networkState.value != NetworkState.LOADING) {
                     if (!isInit) {

@@ -14,6 +14,7 @@ import com.example.android.uamp.media.extensions.isPlaying
 import com.example.android.uamp.media.extensions.isPrepared
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.*
 import timber.log.Timber
 import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
@@ -34,8 +35,6 @@ class AlbumViewModel @AssistedInject constructor(
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
-            networkState.postValue(NetworkState.LOADED)
-
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong("duration")
@@ -62,6 +61,8 @@ class AlbumViewModel @AssistedInject constructor(
 
             _mediaItems.postValue(result)
             loadMediaItems.postValue(result)
+
+            networkState.postValue(NetworkState.LOADED)
         }
     }
 
@@ -172,6 +173,12 @@ class AlbumViewModel @AssistedInject constructor(
         }) { code, bundle ->
 
         }
+//        CoroutineScope(Dispatchers.Default).launch {
+//            delay(100)
+//            withContext(Dispatchers.Main) {
+//
+//            }
+//        }
     }
 
     fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)

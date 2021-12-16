@@ -1,5 +1,6 @@
 package xh.zero.tadpolestory.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -15,7 +16,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.flexbox.FlexboxLayout
 import dagger.hilt.android.AndroidEntryPoint
-import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentChildLiteracyBinding
@@ -36,6 +36,21 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
 
     private val viewModel: MainViewModel by viewModels()
     private var selectedIndex = 0
+    private var listener: OnFragmentActionListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentActionListener) {
+            listener = context
+        } else {
+            throw IllegalArgumentException("Activity must implement OnFragmentActionListener")
+        }
+    }
+
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
+    }
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -52,11 +67,11 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
             toFilterPage(FilterFragment.TAG_NAME_ALL)
         }
 
-        loadData()
+//        loadData()
 
         binding.scrollViewContent.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (scrollY - oldScrollY > 10) {
-//                listener?.hideFloatWindow()
+                listener?.hideFloatWindow()
             }
         }
 
@@ -65,7 +80,7 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
         }
     }
 
-    private fun loadData() {
+    fun initial() {
         viewModel.getTagList(Configs.CATEGORY_ID_LITERACY).observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
@@ -94,7 +109,7 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
         viewModel.getTemporaryToken().observe(this) {
             handleResponse(it) { r ->
                 viewModel.repo.prefs.accessToken = r.access_token
-                binding.llContentList.removeAllViews()
+//                binding.llContentList.removeAllViews()
                 loadRecommend(r.access_token!!)
             }
         }
@@ -202,21 +217,36 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
         }
     }
 
-    private fun addContentItemView(type: Int, albums: List<Album>, marginBottom: Int = 0) {
-        val layout = layoutInflater.inflate(R.layout.item_home_content, null)
-        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (type == 0) "每日推荐" else "猜你喜欢"
+    private fun addContentItemView(contentIndex: Int, albums: List<Album>, marginBottom: Int = 0) {
+        val layout = if (binding.llContentList.childCount < 2) {
+            val contentLayout = layoutInflater.inflate(R.layout.item_home_content, null)
+            binding.llContentList.addView(contentLayout)
+            contentLayout
+        } else {
+            binding.llContentList.getChildAt(contentIndex)
+        }
+        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (contentIndex == 0) "每日推荐" else "猜你喜欢"
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
-            if (type == 0) {
+            if (contentIndex == 0) {
                 findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_LITERACY))
             } else {
 
             }
         }
-        rcAlbumList.removeAllViews()
+        layout.findViewById<View>(R.id.btn_refresh).setOnClickListener {
+            if (contentIndex == 1) {
+                loadGuessLike()
+            }
+        }
         albums.forEachIndexed { index, item ->
-            val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
-            rcAlbumList.addView(v)
+            val v: View = if (rcAlbumList.childCount < 4) {
+                val view = layoutInflater.inflate(R.layout.list_item_home_album, null)
+                rcAlbumList.addView(view)
+                view
+            } else {
+                rcAlbumList.getChildAt(index)
+            }
             val lp = v.layoutParams as FlexboxLayout.LayoutParams
             lp.width = resources.getDimension(R.dimen._216dp).toInt()
             lp.height = resources.getDimension(R.dimen._292dp).toInt()
@@ -237,7 +267,6 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
                 ))
             }
         }
-        binding.llContentList.addView(layout)
         val layoutLp = layout.layoutParams as LinearLayout.LayoutParams
         layoutLp.bottomMargin = marginBottom
     }
@@ -248,6 +277,10 @@ class ChildLiteracyFragment : BaseFragment<FragmentChildLiteracyBinding>() {
                 tag,
                 Configs.CATEGORY_ID_LITERACY
             ))
+    }
+
+    interface OnFragmentActionListener {
+        fun hideFloatWindow()
     }
 
     companion object {

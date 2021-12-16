@@ -752,8 +752,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             // 播放停止时 - 通知栏状态变更
-            notificationManager.hideNotification()
-            notificationManager.showNotificationForPlayer(currentPlayer)
+//            notificationManager.hideNotification()
+//            notificationManager.showNotificationForPlayer(currentPlayer)
         }
 
         override fun onPlayerError(error: PlaybackException) {

@@ -65,12 +65,9 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-
         binding.btnFilter.setOnClickListener {
             toFilterPage(TAG_NAME_ALL)
         }
-
-        loadData()
 
         binding.scrollViewContent.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (scrollY - oldScrollY > 10) {
@@ -82,9 +79,10 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
             findNavController().navigate(MainFragmentDirections.actionMainFragmentToSearchFragment(Configs.CATEGORY_ID_STORY))
         }
 
+        initial()
     }
 
-    private fun loadData() {
+    fun initial() {
         viewModel.getTagList(Configs.CATEGORY_ID_STORY).observe(this) {
             handleResponse(it) { r ->
                 if (r.isNotEmpty()) {
@@ -101,7 +99,7 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         viewModel.getTemporaryToken().observe(this) {
             handleResponse(it) { r ->
                 viewModel.repo.prefs.accessToken = r.access_token
-                binding.llContentList.removeAllViews()
+//                binding.llContentList.removeAllViews()
                 loadRecommend(r.access_token!!)
             }
         }
@@ -169,22 +167,77 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         }
     }
 
-    private fun addContentItemView(type: Int, albums: List<Album>, marginBottom: Int = 0) {
-        val layout = layoutInflater.inflate(R.layout.item_home_content, null)
-        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (type == 0) "每日推荐" else "猜你喜欢"
+//    private fun addContentItemView(type: Int, albums: List<Album>, marginBottom: Int = 0) {
+//        val layout = layoutInflater.inflate(R.layout.item_home_content, null)
+//        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (type == 0) "每日推荐" else "猜你喜欢"
+//        val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
+//        layout.findViewById<View>(R.id.btn_more).setOnClickListener {
+//            if (type == 0) {
+//                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_STORY))
+//            }
+//        }
+//        layout.findViewById<View>(R.id.btn_refresh).setOnClickListener {
+//            // TODO 换一批
+//        }
+//        rcAlbumList.removeAllViews()
+//        albums.forEachIndexed { index, item ->
+//            val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
+//            rcAlbumList.addView(v)
+//            val lp = v.layoutParams as FlexboxLayout.LayoutParams
+//            lp.width = resources.getDimension(R.dimen._216dp).toInt()
+//            lp.height = resources.getDimension(R.dimen._292dp).toInt()
+//            if (index > 0) {
+//                lp.leftMargin = resources.getDimension(R.dimen._24dp).toInt()
+//            }
+//
+//            v.findViewById<TextView>(R.id.tv_album_title).text = item.album_title
+//            v.findViewById<TextView>(R.id.tv_album_desc).text = item.album_intro
+//            Glide.with(v.context)
+//                .load(item.cover_url_large)
+//                .apply(RequestOptions.bitmapTransform(RoundedCorners(v.context.resources.getDimension(R.dimen._24dp).roundToInt())))
+//                .into(v.findViewById(R.id.iv_album_icon))
+//
+//            v.setOnClickListener {
+//                findNavController().navigate(MainFragmentDirections.actionMainFragmentToAlbumDetailFragment(
+//                    album = item
+//                ))
+//            }
+//        }
+//        binding.llContentList.addView(layout)
+//        val layoutLp = layout.layoutParams as LinearLayout.LayoutParams
+//        layoutLp.bottomMargin = marginBottom
+//    }
+    private fun addContentItemView(contentIndex: Int, albums: List<Album>, marginBottom: Int = 0) {
+        val layout = if (binding.llContentList.childCount < 2) {
+            val contentLayout = layoutInflater.inflate(R.layout.item_home_content, null)
+            binding.llContentList.addView(contentLayout)
+            contentLayout
+        } else {
+            binding.llContentList.getChildAt(contentIndex)
+        }
+        layout.findViewById<TextView>(R.id.tv_album_container_title).text = if (contentIndex == 0) "每日推荐" else "猜你喜欢"
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
-            if (type == 0) {
-                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_STORY))
+            if (contentIndex == 0) {
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_LITERACY))
+            } else {
+
             }
         }
+        // 换一批
         layout.findViewById<View>(R.id.btn_refresh).setOnClickListener {
-            // TODO 换一批
+            if (contentIndex == 1) {
+                loadGuessLike()
+            }
         }
-        rcAlbumList.removeAllViews()
         albums.forEachIndexed { index, item ->
-            val v = layoutInflater.inflate(R.layout.list_item_home_album, null)
-            rcAlbumList.addView(v)
+            val v: View = if (rcAlbumList.childCount < 4) {
+                val view = layoutInflater.inflate(R.layout.list_item_home_album, null)
+                rcAlbumList.addView(view)
+                view
+            } else {
+                rcAlbumList.getChildAt(index)
+            }
             val lp = v.layoutParams as FlexboxLayout.LayoutParams
             lp.width = resources.getDimension(R.dimen._216dp).toInt()
             lp.height = resources.getDimension(R.dimen._292dp).toInt()
@@ -205,7 +258,6 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
                 ))
             }
         }
-        binding.llContentList.addView(layout)
         val layoutLp = layout.layoutParams as LinearLayout.LayoutParams
         layoutLp.bottomMargin = marginBottom
     }

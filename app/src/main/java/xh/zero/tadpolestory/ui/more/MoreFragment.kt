@@ -38,6 +38,10 @@ class MoreFragment : BaseFragment<FragmentMoreBinding>() {
         binding.vpMore.isSaveEnabled = false
     }
 
+    fun initial() {
+
+    }
+
 //    private inner class MoreAdapter : FragmentPagerAdapter(childFragmentManager,  BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 //
 //        override fun getCount(): Int = titles.size

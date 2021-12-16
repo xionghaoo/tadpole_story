@@ -1,1 +1,1 @@
-kd／1通用／二级按钮／iocn-换一批.png;ic_refresh_16.png
+kd／2icon／加载图文.png;ic_loading_more.png

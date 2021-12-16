@@ -16,7 +16,8 @@ import xh.zero.tadpolestory.utils.TimeUtil
 
 class TrackAdapter(
     private val totalCount: Int,
-    private val onItemClick: (MediaItemData) -> Unit
+    private val onItemClick: (MediaItemData) -> Unit,
+    private val retry: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var networkState: NetworkState? = null
@@ -33,7 +34,7 @@ class TrackAdapter(
                 return ViewHolder(inflater.inflate(R.layout.list_item_tracks, parent, false))
             }
             TYPE_LOAD_MORE -> {
-                return TadpoleNetworkStateViewHolder.create(parent, {})
+                return TadpoleNetworkStateViewHolder.create(parent, retry)
             }
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -46,7 +47,7 @@ class TrackAdapter(
             }
             TYPE_LOAD_MORE -> {
                 val itemLines = if (totalCount % 2 == 0) totalCount / 2 else totalCount / 2 + 1
-                (holder as TadpoleNetworkStateViewHolder).bindTo(networkState, itemCount >= itemLines + 1)
+                (holder as TadpoleNetworkStateViewHolder).bindTo(networkState, /*itemCount >= itemLines + 1*/)
             }
         }
     }

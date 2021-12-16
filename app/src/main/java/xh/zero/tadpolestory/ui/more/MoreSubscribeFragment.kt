@@ -19,6 +19,9 @@ import xh.zero.tadpolestory.handleResponse
 import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.ui.MainFragmentDirections
 
+/**
+ * 订阅管理
+ */
 @AndroidEntryPoint
 class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
@@ -63,6 +66,9 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
         }
     }
 
+    /**
+     * 最新订阅
+     */
     private fun loadSubscribe() {
         viewModel.getSubscribeAlbumsIds().observe(this) {
             handleResponse(it) { r ->
@@ -73,6 +79,9 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
         }
     }
 
+    /**
+     * 最近常听
+     */
     private fun loadRecent() {
         viewModel.getRecentAlbumsIds().observe(this) {
             handleResponse(it) { r ->
@@ -85,6 +94,9 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
         }
     }
 
+    /**
+     * 根据蝌蚪的订阅id查询喜马拉雅的专辑
+     */
     private fun loadAlbums(ids: List<Int?>) {
         val str = StringBuilder()
         ids.forEach { id ->

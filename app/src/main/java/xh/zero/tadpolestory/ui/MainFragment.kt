@@ -10,13 +10,17 @@ import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMainBinding
-import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.ui.home.ChildLiteracyFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import xh.zero.tadpolestory.ui.more.MoreFragment
+import java.lang.IllegalArgumentException
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding>() {
+
+    private lateinit var storyFragment: ChildStoryFragment
+    private lateinit var literacyFragment: ChildLiteracyFragment
+    private lateinit var moreFragment: MoreFragment
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -31,36 +35,54 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
+        storyFragment = ChildStoryFragment.newInstance()
+        literacyFragment = ChildLiteracyFragment.newInstance()
+        moreFragment = MoreFragment.newInstance()
+
         binding.btnHome.setOnClickListener {
             activity?.onBackPressed()
         }
 
         binding.btnHomeMenu1.setOnClickListener {
+            if (binding.viewPager.currentItem == 0) return@setOnClickListener
             binding.btnHomeMenu1.setImageResource(R.mipmap.ic_home_menu_1_selected)
             binding.btnHomeMenu2.setImageResource(R.mipmap.ic_home_menu_2)
             binding.btnHomeMenu3.setImageResource(R.mipmap.ic_home_menu_3)
             binding.viewPager.setCurrentItem(0, false)
+            if (storyFragment.isAdded) {
+                storyFragment.initial()
+            }
         }
         binding.btnHomeMenu2.setOnClickListener {
+            if (binding.viewPager.currentItem == 1) return@setOnClickListener
             binding.btnHomeMenu1.setImageResource(R.mipmap.ic_home_menu_1)
             binding.btnHomeMenu2.setImageResource(R.mipmap.ic_home_menu_2_selected)
             binding.btnHomeMenu3.setImageResource(R.mipmap.ic_home_menu_3)
             binding.viewPager.setCurrentItem(1, false)
+
+            if (literacyFragment.isAdded) {
+                literacyFragment.initial()
+            }
         }
         binding.btnHomeMenu3.setOnClickListener {
+            if (binding.viewPager.currentItem == 2) return@setOnClickListener
             binding.btnHomeMenu1.setImageResource(R.mipmap.ic_home_menu_1)
             binding.btnHomeMenu2.setImageResource(R.mipmap.ic_home_menu_2)
             binding.btnHomeMenu3.setImageResource(R.mipmap.ic_home_menu_3_selected)
             binding.viewPager.setCurrentItem(2, false)
+
+            if (moreFragment.isAdded) {
+                moreFragment.initial()
+            }
         }
-
-        binding.btnHomeMenu1.performClick()
-
         binding.viewPager.adapter = MainPageAdapter()
         binding.viewPager.isUserInputEnabled = false
         binding.viewPager.offscreenPageLimit = 3
         binding.viewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.viewPager.isSaveEnabled = false
+
+        binding.btnHomeMenu1.performClick()
+
     }
 
     private inner class MainPageAdapter : FragmentStateAdapter(childFragmentManager, lifecycle) {
@@ -68,10 +90,10 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> ChildStoryFragment.newInstance()
-                1 -> ChildLiteracyFragment.newInstance()
-                2 -> MoreFragment.newInstance()
-                else -> ChildLiteracyFragment.newInstance()
+                0 -> storyFragment
+                1 -> literacyFragment
+                2 -> moreFragment
+                else -> throw IllegalArgumentException("非法位置")
             }
         }
 

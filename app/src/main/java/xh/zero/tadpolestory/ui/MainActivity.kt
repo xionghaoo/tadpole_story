@@ -50,12 +50,14 @@ import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.repo.data.PlainData
 import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import xh.zero.tadpolestory.ui.album.*
+import xh.zero.tadpolestory.ui.home.ChildLiteracyFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(),
     ChildStoryFragment.OnFragmentActionListener,
+    ChildLiteracyFragment.OnFragmentActionListener,
     TrackListFragment.OnFragmentActionListener
 {
 

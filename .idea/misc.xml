@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/drawable/shape_filter_tag_selected.xml" value="0.24351851851851852" />
         <entry key="app/src/main/res/drawable/shape_float_view.xml" value="0.2601851851851852" />
         <entry key="app/src/main/res/drawable/shape_home_album.xml" value="0.31574074074074077" />
+        <entry key="app/src/main/res/drawable/shape_no_more_data.xml" value="0.20462962962962963" />
         <entry key="app/src/main/res/drawable/shape_rank_index_bg.xml" value="0.24259259259259258" />
         <entry key="app/src/main/res/drawable/shape_rank_tag.xml" value="0.24259259259259258" />
         <entry key="app/src/main/res/drawable/shape_rank_toolbar.xml" value="0.25092592592592594" />
@@ -75,6 +76,7 @@
         <entry key="app/src/main/res/layout/list_item_track.xml" value="0.5291245722222317" />
         <entry key="app/src/main/res/layout/list_item_tracks.xml" value="0.5365746213142947" />
         <entry key="app/src/main/res/layout/network_state_item_tadpole.xml" value="0.25364583333333335" />
+        <entry key="app/src/main/res/layout/network_state_view.xml" value="0.5179704016913319" />
         <entry key="app/src/main/res/layout/tab_item_view.xml" value="0.2765625" />
       </map>
     </option>

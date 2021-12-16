@@ -13,6 +13,9 @@ import xh.zero.tadpolestory.ui.BaseFragment
 import xh.zero.tadpolestory.utils.OperationType
 import xh.zero.tadpolestory.utils.PromptDialog
 
+/**
+ * App更新管理
+ */
 class MoreUpdateFragment : BaseFragment<FragmentMoreUpdateBinding>() {
 
     override fun onCreateBindLayout(
