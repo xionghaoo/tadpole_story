@@ -3,6 +3,7 @@ package xh.zero.tadpolestory.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,7 +15,7 @@ import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 
 class TadpoleNetworkStateViewHolder(
-    view: View,
+    private val view: View,
     private val retryCallback: () -> Unit
 ) : RecyclerView.ViewHolder(view) {
     private val progressBar = view.findViewById<View>(R.id.progress_bar)
@@ -22,6 +23,7 @@ class TadpoleNetworkStateViewHolder(
     private val errorMsg = view.findViewById<TextView>(R.id.error_msg)
     private val noMoreData = view.findViewById<View>(R.id.no_more_data)
     private val ivLoading = view.findViewById<ImageView>(R.id.iv_loading)
+    private val anim = AnimationUtils.loadAnimation(view.context, R.anim.rotate)
 
     init {
         errorMsg.setOnClickListener {
@@ -32,12 +34,9 @@ class TadpoleNetworkStateViewHolder(
     fun bindTo(networkState: NetworkState?, isNoMoreData: Boolean = true) {
         progressBar.visibility = toVisibility(networkState?.status == Status.LOADING)
         if (progressBar.isVisible) {
-            ivLoading.animate()
-                .rotationBy(60f)
-                .setDuration(100)
-                .start()
+            ivLoading.startAnimation(anim)
         } else {
-            ivLoading.animate().cancel()
+            anim.cancel()
         }
 //        retry.visibility = toVisibility(networkState?.status == Status.ERROR)
         errorMsg.visibility = toVisibility(networkState?.msg != null)
