@@ -65,7 +65,7 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
         }
 
-        loadRecent()
+        loadRecentListen()
     }
 
     /**
@@ -84,7 +84,7 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
     /**
      * 最近常听
      */
-    private fun loadRecent() {
+    private fun loadRecentListen() {
         viewModel.getRecentAlbumsIds().observe(this) {
             handleResponse(it) { r ->
                 if (r.data != null && r.data.isNotEmpty()) {
@@ -94,6 +94,13 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
                 }
             }
         }
+    }
+
+    /**
+     * TODO 最近更新
+     */
+    private fun loadRecentUpdate() {
+
     }
 
     /**
@@ -138,8 +145,8 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
             tv.setOnClickListener { v ->
                 selectedIndex = v.tag as Int
                 when (selectedIndex) {
-                    0 -> loadRecent()
-                    1 -> {}
+                    0 -> loadRecentListen()
+                    1 -> loadRecentUpdate()
                     2 -> loadSubscribe()
                 }
                 binding.llTagList.children.forEach { child ->
