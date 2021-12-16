@@ -4,23 +4,35 @@ import androidx.lifecycle.LiveData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
 import xh.zero.core.vo.ApiResponse
-import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.repo.data.PlainData
+import xh.zero.tadpolestory.repo.data.SubscribeIdsResult
 
 interface TadpoleApiService {
     companion object {
         const val PREFIX = "/v1/smartlamp-api/"
     }
 
-    @POST("$PREFIX/common/collect/{albumId}")
-    fun subscribeAlbum(@Path("albumId") albumId: Int) : LiveData<ApiResponse<PlainData>>
-
-    @GET("$PREFIX/common/recent/page")
-    fun getSubscribeAlbumsIds(
-        @Query("limit") limit: Int,
-        @Query("page") page: Int = Configs.PAGE_SIZE
+    /**
+     * 订阅专辑
+     */
+    @POST("$PREFIX/common/collect/1")
+    fun subscribeAlbum(
+        @Query("albumId") albumId: Int
     ) : LiveData<ApiResponse<PlainData>>
+
+    /**
+     * 上报听故事记录
+     */
+    @POST("$PREFIX/common/collect/2")
+    fun uploadListenRecord(
+        @Query("albumId") albumId: Int
+    ) : Call<PlainData>
+
+    @GET("$PREFIX/common/recent/list")
+    fun getRecentAlbumsIds() : LiveData<ApiResponse<SubscribeIdsResult>>
+
+    @GET("$PREFIX/common/collect/list")
+    fun getSubscribeAlbumsIds() : LiveData<ApiResponse<SubscribeIdsResult>>
 }

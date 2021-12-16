@@ -40,8 +40,36 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
         bindTagList(arrayListOf("最近常听", "最近更新", "最新订阅"))
     }
 
-    private fun loadData() {
+    private fun loadSubscribe() {
         viewModel.getSubscribeAlbumsIds().observe(this) {
+            handleResponse(it) { r ->
+                val ids = StringBuilder()
+                r.data?.forEach { id ->
+                    id?.toString()?.also { idStr ->
+                        ids.append(idStr).append(",")
+                    }
+                }
+                loadAlbums(ids.toString())
+            }
+        }
+    }
+
+    private fun loadRecent() {
+        viewModel.getRecentAlbumsIds().observe(this) {
+            handleResponse(it) { r ->
+                val ids = StringBuilder()
+                r.data?.forEach { id ->
+                    id?.toString()?.also { idStr ->
+                        ids.append(idStr).append(",")
+                    }
+                }
+                loadAlbums(ids.toString())
+            }
+        }
+    }
+
+    private fun loadAlbums(ids: String) {
+        viewModel.getAlbumsForIds(ids).observe(this) {
             handleResponse(it) { r ->
 
             }
@@ -76,7 +104,11 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
 
             tv.setOnClickListener { v ->
                 selectedIndex = v.tag as Int
-                loadData()
+                when (selectedIndex) {
+                    0 -> loadRecent()
+                    1 -> {}
+                    2 -> loadSubscribe()
+                }
                 binding.llTagList.children.forEach { child ->
                     selectTagView(child as TextView)
                 }

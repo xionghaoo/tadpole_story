@@ -336,11 +336,23 @@ class NowPlayingViewModel @Inject constructor(
                     response: Response<PlainData>
                 ) {
                     if (response.isSuccessful) {
-                        Timber.d("上传播放记录成功")
+                        Timber.d("uploadPlayRecords: 上传播放记录成功")
                     }
                 }
 
                 override fun onFailure(call: Call<PlainData>, t: Throwable) {
+                }
+            })
+
+            repo.uploadListenRecord(repo.prefs.nowPlayingAlbumId!!.toInt()).enqueue(object : Callback<PlainData> {
+                override fun onResponse(call: Call<PlainData>, response: Response<PlainData>) {
+                    if (response.isSuccessful) {
+                        Timber.d("uploadListenRecord: 上传播放记录成功")
+                    }
+                }
+
+                override fun onFailure(call: Call<PlainData>, t: Throwable) {
+
                 }
             })
         }

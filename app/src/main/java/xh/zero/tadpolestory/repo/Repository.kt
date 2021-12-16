@@ -66,10 +66,6 @@ class Repository @Inject constructor(
         apiService.getSearchWords(q)
     }
 
-//    fun getTagList() = remoteRequestStrategy {
-//        apiService.getTagList()
-//    }
-
     fun getMetadataList(categoryId: Int) = remoteRequestStrategy {
         apiService.getMetadataList(category_id = categoryId)
     }
@@ -99,11 +95,17 @@ class Repository @Inject constructor(
         apiService.getVoiceListFormAlbum(album_id = albumId, page = page, count = pageSize)
 
     fun subscribeAlbum(albumId: Int) = remoteRequestStrategy {
-        tadpoleApiService.subscribeAlbum(albumId)
+        tadpoleApiService.subscribeAlbum(albumId = albumId)
     }
 
+    fun uploadListenRecord(albumId: Int) = tadpoleApiService.uploadListenRecord(albumId = albumId)
+
     fun getSubscribeAlbumsIds() = remoteRequestStrategy {
-        tadpoleApiService.getSubscribeAlbumsIds(limit = 1)
+        tadpoleApiService.getSubscribeAlbumsIds()
+    }
+
+    fun getRecentAlbumsIds() = remoteRequestStrategy {
+        tadpoleApiService.getRecentAlbumsIds()
     }
 
     fun saveSearchHistory(txt: String) {
