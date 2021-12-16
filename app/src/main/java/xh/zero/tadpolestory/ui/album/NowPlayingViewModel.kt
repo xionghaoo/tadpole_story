@@ -310,6 +310,8 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)
+    fun unsubscribe(id: Int) = repo.unsubscribe(id)
+    fun isSubscribe(id: Int) = repo.isSubscribe(id)
 
     /**
      * 上传播放记录

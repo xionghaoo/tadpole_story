@@ -123,10 +123,12 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" >
                     <ImageView
+                        android:id="@+id/iv_subscribe_icon"
                         android:layout_width="@dimen/_30dp"
                         android:layout_height="@dimen/_30dp"
                         android:src="@mipmap/ic_subscribe_30"/>
                     <TextView
+                        android:id="@+id/tv_subscribe_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_8dp"
@@ -394,11 +396,13 @@
             app:layout_constraintEnd_toStartOf="@+id/top_btn_media_play">
 
             <ImageView
+                android:id="@+id/top_iv_subscribe_icon"
                 android:layout_width="@dimen/_30dp"
                 android:layout_height="@dimen/_30dp"
                 android:src="@mipmap/ic_subscribe_30" />
 
             <TextView
+                android:id="@+id/top_tv_subscribe_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8dp"

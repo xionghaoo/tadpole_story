@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -16,21 +17,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
-import xh.zero.core.replaceFragment
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentAlbumDetailBinding
 import xh.zero.tadpolestory.handleResponse
-import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.data.Album
 import xh.zero.tadpolestory.ui.BaseFragment
-import xh.zero.tadpolestory.ui.MainFragmentDirections
 import xh.zero.tadpolestory.utils.TadpoleUtil
 import javax.inject.Inject
 
@@ -107,22 +102,10 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
             lp.rightMargin = resources.getDimension(R.dimen._16sp).toInt()
         }
 
-        binding.btnSubscribe.setOnClickListener {
-            subscribe()
-        }
-
         binding.vpAlbumDetail.adapter = AlbumDetailAdapter()
         binding.tlAlbumDetail.setViewPager(binding.vpAlbumDetail)
 
-//        viewModel.loadAlbumInfo().observe(this) {
-//            handleResponse(it) { r ->
-//                if (r.isNotEmpty()) {
-//                    val item = r.first()
-//                    album.cover_url_large = item.cover_url_large
-//                    album.cover_url_middle = item.cover_url_middle
-//                }
-//            }
-//        }
+        loadIsSubscribe()
     }
 
     private fun subscribe() {
@@ -130,6 +113,42 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
             handleResponse(it) { r ->
                 if (r.code == 200) {
                     ToastUtil.show(context, "订阅成功")
+                    loadIsSubscribe()
+                }
+            }
+        }
+    }
+
+    private fun unsubscribe() {
+        viewModel.unsubscribe(album.id).observe(this) {
+            handleResponse(it) { r ->
+                if (r.code == 200) {
+                    ToastUtil.show(context, "取消订阅")
+                    loadIsSubscribe()
+                }
+            }
+        }
+    }
+
+    private fun loadIsSubscribe() {
+        viewModel.isSubscribe(album.id).observe(this) {
+            handleResponse(it) { r ->
+                if (r.data == true) {
+                    binding.tvSubscribeTitle.text = "已订阅"
+                    binding.tvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
+                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
+                    binding.btnSubscribe.setOnClickListener {
+                        unsubscribe()
+                    }
+                } else if (r.data == false) {
+                    binding.tvSubscribeTitle.text = "订阅"
+                    binding.tvSubscribeTitle.setTextColor(Color.WHITE)
+//                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
+                    binding.btnSubscribe.setOnClickListener {
+                        subscribe()
+                    }
                 }
             }
         }

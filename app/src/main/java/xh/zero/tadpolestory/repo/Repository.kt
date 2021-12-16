@@ -108,6 +108,14 @@ class Repository @Inject constructor(
         tadpoleApiService.getRecentAlbumsIds()
     }
 
+    fun unsubscribe(id: Int) = remoteRequestStrategy {
+        tadpoleApiService.unsubscribe(id)
+    }
+
+    fun isSubscribe(id: Int) = remoteRequestStrategy {
+        tadpoleApiService.isSubscribe(id)
+    }
+
     fun saveSearchHistory(txt: String) {
         CoroutineScope(Dispatchers.Default).launch {
             db.searchHistoryDao().insert(SearchHistory().apply {

@@ -66,8 +66,6 @@ class AlbumViewModel @AssistedInject constructor(
         }
     }
 
-
-
     /**
      * When the session's [PlaybackStateCompat] changes, the [mediaItems] need to be updated
      * so the correct [MediaItemData.playbackRes] is displayed on the active item.
@@ -182,6 +180,9 @@ class AlbumViewModel @AssistedInject constructor(
     }
 
     fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)
+
+    fun unsubscribe(id: Int) = repo.unsubscribe(id)
+    fun isSubscribe(id: Int) = repo.isSubscribe(id)
 
     /**
      * Since we use [LiveData.observeForever] above (in [musicServiceConnection]), we want

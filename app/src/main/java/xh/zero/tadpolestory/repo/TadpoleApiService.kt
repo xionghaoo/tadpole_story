@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 import xh.zero.core.vo.ApiResponse
+import xh.zero.tadpolestory.repo.data.IsSubscribe
 import xh.zero.tadpolestory.repo.data.PlainData
 import xh.zero.tadpolestory.repo.data.SubscribeIdsResult
 
@@ -35,4 +37,16 @@ interface TadpoleApiService {
 
     @GET("$PREFIX/common/collect/list")
     fun getSubscribeAlbumsIds() : LiveData<ApiResponse<SubscribeIdsResult>>
+
+    /**
+     * 取消订阅
+     */
+    @POST("$PREFIX/common/cancel/collect/{albumId}")
+    fun unsubscribe(@Path("albumId") albumId: Int) : LiveData<ApiResponse<PlainData>>
+
+    /**
+     * 查询是否订阅
+     */
+    @GET("$PREFIX/common/query/collect/{albumId}")
+    fun isSubscribe(@Path("albumId") albumId: Int) : LiveData<ApiResponse<IsSubscribe>>
 }

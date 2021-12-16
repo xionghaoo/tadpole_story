@@ -152,12 +152,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 //                if (album != null) MainActivity.startToAlbumDetail(context, album)
 //            }
         }
-        binding.btnSubscribe.setOnClickListener {
-            subscribe()
-        }
-        binding.topBtnSubscribe.setOnClickListener {
-            subscribe()
-        }
+        loadIsSubscribe()
 
         // TODO 更多相关专辑
         binding.layoutRelativeAlbums.tvMediaRelativeMore.setOnClickListener {
@@ -746,6 +741,64 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 handleResponse(it) { r ->
                     if (r.code == 200) {
                         ToastUtil.show(context, "订阅成功")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun unsubscribe() {
+        val id = viewModel.repo.prefs.nowPlayingAlbumId
+        if (id == null || id.isEmpty()) return
+        viewModel.unsubscribe(id.toInt()).observe(this) {
+            handleResponse(it) { r ->
+                if (r.code == 200) {
+                    ToastUtil.show(context, "取消订阅")
+                    loadIsSubscribe()
+                }
+            }
+        }
+    }
+
+    /**
+     * 判断是否订阅
+     */
+    private fun loadIsSubscribe() {
+        val id = viewModel.repo.prefs.nowPlayingAlbumId
+        if (id == null || id.isEmpty()) return
+        viewModel.isSubscribe(id.toInt()).observe(this) {
+            handleResponse(it) { r ->
+                if (r.data == true) {
+                    binding.tvSubscribeTitle.text = "已订阅"
+                    binding.tvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
+                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
+                    binding.btnSubscribe.setOnClickListener {
+                        unsubscribe()
+                    }
+
+                    binding.topTvSubscribeTitle.text = "已订阅"
+                    binding.topTvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
+                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.topBtnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
+                    binding.topBtnSubscribe.setOnClickListener {
+                        unsubscribe()
+                    }
+                } else if (r.data == false) {
+                    binding.tvSubscribeTitle.text = "订阅"
+                    binding.tvSubscribeTitle.setTextColor(Color.WHITE)
+//                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
+                    binding.btnSubscribe.setOnClickListener {
+                        subscribe()
+                    }
+
+                    binding.topTvSubscribeTitle.text = "订阅"
+                    binding.topTvSubscribeTitle.setTextColor(Color.WHITE)
+//                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+                    binding.topBtnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
+                    binding.topBtnSubscribe.setOnClickListener {
+                        subscribe()
                     }
                 }
             }
