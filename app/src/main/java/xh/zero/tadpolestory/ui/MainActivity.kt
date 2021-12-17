@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -17,47 +15,27 @@ import androidx.activity.viewModels
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.MediatorLiveData
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.example.android.uamp.media.extensions.duration
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.isPlaying
 import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import timber.log.Timber
-import xh.zero.core.startPlainActivity
-import xh.zero.core.vo.ApiResponse
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityMainBinding
-import xh.zero.tadpolestory.replaceFragment
 import xh.zero.tadpolestory.repo.Repository
-import xh.zero.tadpolestory.repo.TadpoleMusicService
 import xh.zero.tadpolestory.repo.data.Album
-import xh.zero.tadpolestory.repo.data.PlainData
-import xh.zero.tadpolestory.repo.data.TrackPlayRecord
 import xh.zero.tadpolestory.ui.album.*
-import xh.zero.tadpolestory.ui.home.ChildLiteracyFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(),
     ChildStoryFragment.OnFragmentActionListener,
-    ChildLiteracyFragment.OnFragmentActionListener,
     TrackListFragment.OnFragmentActionListener
 {
 

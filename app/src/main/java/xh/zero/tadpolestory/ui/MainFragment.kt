@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
+import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMainBinding
-import xh.zero.tadpolestory.ui.home.ChildLiteracyFragment
 import xh.zero.tadpolestory.ui.home.ChildStoryFragment
 import xh.zero.tadpolestory.ui.more.MoreFragment
 import java.lang.IllegalArgumentException
@@ -19,7 +19,7 @@ import java.lang.IllegalArgumentException
 class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private lateinit var storyFragment: ChildStoryFragment
-    private lateinit var literacyFragment: ChildLiteracyFragment
+    private lateinit var literacyFragment: ChildStoryFragment
     private lateinit var moreFragment: MoreFragment
 
     override fun onCreateBindLayout(
@@ -35,8 +35,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
     }
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-        storyFragment = ChildStoryFragment.newInstance()
-        literacyFragment = ChildLiteracyFragment.newInstance()
+        storyFragment = ChildStoryFragment.newInstance(Configs.CATEGORY_ID_STORY)
+        literacyFragment = ChildStoryFragment.newInstance(Configs.CATEGORY_ID_LITERACY)
         moreFragment = MoreFragment.newInstance()
 
         binding.btnHome.setOnClickListener {

@@ -32,7 +32,6 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private val viewModel: FilterViewModel by viewModels()
     private lateinit var adapter: FilterAlbumAdapter
     private var selectedTagIndexMap = HashMap<Int, FilterItem>()
-//    private var filterMap = HashMap<Int, AlbumMetaData.Attributes>()
     private var panelIsShow = true
     private val args: FilterFragmentArgs by navArgs()
 
@@ -50,7 +49,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
-        binding.tvPageTitle.text = "儿童故事"
+        binding.tvPageTitle.text = if (args.categoryId == Configs.CATEGORY_ID_STORY) "儿童故事" else "少儿素养"
 
         binding.rcAlbumList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
