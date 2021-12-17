@@ -34,11 +34,7 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
 
     private val args: AlbumDetailFragmentArgs by navArgs()
 
-    @Inject
-    lateinit var albumViewModelFactory: AlbumViewModel.AssistedFactory
-    private val viewModel: AlbumViewModel by viewModels {
-        AlbumViewModel.provideFactory(albumViewModelFactory, album.id.toString())
-    }
+    private val viewModel: AlbumDetailViewModel by viewModels()
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -148,23 +144,6 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding>() {
                         }
                     )
                 }
-//                if (r.data == true) {
-//                    binding.tvSubscribeTitle.text = "已订阅"
-//                    binding.tvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
-//                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
-//                    binding.btnSubscribe.setOnClickListener {
-//                        unsubscribe()
-//                    }
-//                } else if (r.data == false) {
-//                    binding.tvSubscribeTitle.text = "订阅"
-//                    binding.tvSubscribeTitle.setTextColor(Color.WHITE)
-////                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
-//                    binding.btnSubscribe.setOnClickListener {
-//                        subscribe()
-//                    }
-//                }
             }
         }
     }

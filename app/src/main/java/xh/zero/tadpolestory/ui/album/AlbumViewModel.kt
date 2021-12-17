@@ -179,11 +179,6 @@ class AlbumViewModel @AssistedInject constructor(
 //        }
     }
 
-    fun subscribeAlbum(id: Int) = repo.subscribeAlbum(id)
-
-    fun unsubscribe(id: Int) = repo.unsubscribe(id)
-    fun isSubscribe(id: Int) = repo.isSubscribe(id)
-
     /**
      * Since we use [LiveData.observeForever] above (in [musicServiceConnection]), we want
      * to call [LiveData.removeObserver] here to prevent leaking resources when the [ViewModel]
@@ -193,6 +188,7 @@ class AlbumViewModel @AssistedInject constructor(
      */
     override fun onCleared() {
         super.onCleared()
+        Timber.d("onCleared")
 
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)

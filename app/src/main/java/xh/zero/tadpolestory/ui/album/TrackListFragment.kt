@@ -53,10 +53,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
 
     private var currentTrackListCoverScrollY = 0
 
-//    private lateinit var binding: FragmentTrackListBinding
     private lateinit var adapter: TrackAdapter
-//    private var currentPage = 1
-//    private var networkState = MediatorLiveData<NetworkState>()
     private var isInit = true
     private var listener: OnFragmentActionListener? = null
     private lateinit var layoutManager: LinearLayoutManager
@@ -86,7 +83,6 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
     override fun rootView(): View = binding.root
 
     override fun onFirstViewCreated(view: View, savedInstanceState: Bundle?) {
-        Timber.d("onFirstViewCreated")
         isInit = true
         selectedIndex = null
 
@@ -100,7 +96,9 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
                 // 显示正在播放页面
                 NowPlayingActivity.start(context, albumTitle)
             },
-            retry = {}
+            retry = {
+
+            }
         )
         binding.rcTrackList.adapter = adapter
         binding.rcTrackList.isSaveEnabled = true
@@ -108,8 +106,9 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 totalScrollY += dy
                 binding.vScrollCover.visibility = if (totalScrollY > 0) View.VISIBLE else View.INVISIBLE
-                // 加载更多
+                // 滑动到列表最后一个可见Item的顶部时，加载更多
                 if (layoutManager.findLastVisibleItemPosition() == adapter.itemCount - 1
+                    // 当前如果有选中的集数区间，那么不要加载更多
                     && selectedIndex == null
                     && viewModel.networkState.value != NetworkState.LOADING) {
                     if (!isInit) {
@@ -117,6 +116,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
                     }
                 }
 
+                // 滑动收起悬浮播放窗口
                 if (dy > 10) {
                     listener?.hideFloatWindow()
                 }
@@ -132,15 +132,15 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         }
 
         viewModel.loadMediaItems.observe(this) { items ->
-            Timber.d("加载的音频数量：${items.size}")
+            Timber.d("加载的音频数量：${items.size}， isInit: ${isInit}")
             // 加载结束
             if (items.isNotEmpty()) {
                 adapter.submitList(items)
 
                 if (isInit) {
-                    isInit = false
                     binding.rcTrackList.postDelayed({
                         binding.rcTrackList.scrollToPosition(0)
+                        isInit = false
                     }, 100)
                 }
 
@@ -158,6 +158,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         }
 
         viewModel.networkState.observe(this) {
+            Timber.d("setNetworkState: $it")
             adapter.setNetworkState(it)
         }
 

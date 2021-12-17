@@ -91,8 +91,8 @@ class Repository @Inject constructor(
         apiService.getRelativeAlbum(trackId)
     }
 
-    fun getVoiceListFormAlbum(albumId: String, page: Int, pageSize: Int? = null) =
-        apiService.getVoiceListFormAlbum(album_id = albumId, page = page, count = pageSize)
+    fun getVoiceListFormAlbum(albumId: String, page: Int) =
+        apiService.getVoiceListFormAlbum(album_id = albumId, page = page)
 
     fun subscribeAlbum(albumId: Int) = remoteRequestStrategy {
         tadpoleApiService.subscribeAlbum(albumId = albumId)

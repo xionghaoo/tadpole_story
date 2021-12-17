@@ -100,7 +100,13 @@ class MoreSubscribeFragment : BaseFragment<FragmentMoreSubscribeBinding>() {
      * TODO 最近更新
      */
     private fun loadRecentUpdate() {
-
+//        viewModel.getSubscribeAlbumsIds().observe(this) {
+//            handleResponse(it) { r ->
+//                if (r.data != null && r.data.isNotEmpty()) {
+//                    loadAlbums(r.data)
+//                }
+//            }
+//        }
     }
 
     /**

@@ -136,6 +136,7 @@ dependencies {
     implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
 
     implementation 'jp.wasabeef:glide-transformations:4.0.0'
+    implementation 'com.airbnb.android:lottie:4.2.2'
 
 
 }

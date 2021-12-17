@@ -104,13 +104,6 @@ class NowPlayingViewModel @Inject constructor(
         updateState(playbackState, it)
     }
 
-//    private val trackSwitchStateObserver = Observer<Int?> { state ->
-//        if (playbackState.isPlaying && state == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
-//            // 曲目自动切换监听
-//            if (autoStopCountIndex == 2) autoStopCount = 2
-//        }
-//    }
-
     private val musicServiceConnection = musicServiceConnection.also {
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)

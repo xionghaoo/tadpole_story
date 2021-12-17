@@ -78,6 +78,8 @@ import java.util.concurrent.TimeUnit
  * When a Cast session is active, playback commands are passed to a
  * [CastPlayer](https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/ext/cast/CastPlayer.html),
  * otherwise they are passed to an ExoPlayer for local playback.
+ *
+ * 媒体服务
  */
 abstract class MusicService : MediaBrowserServiceCompat() {
 
@@ -109,13 +111,13 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         BrowseTree(applicationContext, mediaSource)
     }
 
-    private val dataSourceFactory: DefaultDataSourceFactory by lazy {
-        DefaultDataSourceFactory(
-            /* context= */ this,
-            Util.getUserAgent(/* context= */ this, UAMP_USER_AGENT), /* listener= */
-            null
-        )
-    }
+//    private val dataSourceFactory: DefaultDataSourceFactory by lazy {
+//        DefaultDataSourceFactory(
+//            /* context= */ this,
+//            Util.getUserAgent(/* context= */ this, UAMP_USER_AGENT), /* listener= */
+//            null
+//        )
+//    }
 
     private lateinit var cacheDataSourceFactory: CacheDataSourceFactory
     private val extractorsFactory = DefaultExtractorsFactory()
@@ -195,18 +197,8 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
-//    @ExperimentalCoroutinesApi
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
-
-        // Build a PendingIntent that can be used to launch the UI.
-
-//        val sessionActivityPendingIntent = PendingIntent.getActivity(
-//            this,
-//            0,
-//            Intent(this, Nowplaying),
-//            Intent.FLAG_ACTIVITY_NEW_TASK)
 
         cacheDataSourceFactory = CacheDataSourceFactory(this, 100 * 1024 * 1024, 5 * 1024 * 1024)
 
@@ -354,20 +346,12 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         parentMediaId: String,
         result: Result<List<MediaItem>>
     ) {
-        Log.d(TAG, "onLoadChildren: $parentMediaId")
         /**
          * If the caller requests the recent root, return the most recently played song.
          */
         if (parentMediaId == UAMP_RECENT_ROOT) {
             result.sendResult(storage.loadRecentSong()?.let { song -> listOf(song) })
         } else {
-            /**
-             * mediaSource的创建和加载必须要在一起，不然内部state会缺少一个STATE_CREATED状态
-             */
-//            mediaSource = createMusicSource()
-//            serviceScope.launch {
-//                mediaSource.load(parentMediaId, null)
-//            }
             // If the media source is ready, the results will be set synchronously here.
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
@@ -393,8 +377,13 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             if (!resultsSent) {
                 result.detach()
             }
-//            result.detach()
 
+            /**
+             * 这里需要重置MediaSource的state状态，不然下次用户订阅时，会先直调用loadChildren方法，
+             * State此时为STATE_INITIALIZED，whenReady回调会直接调用，把上一次加载的数据返回给客户端
+             * 需要等到下次请求完成才会刷新客户端数据。
+             */
+            mediaSource.reset()
         }
     }
 
@@ -522,6 +511,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     }
 
     fun loadMedia(mediaId: String, page: Int, isRefresh: Boolean, isPaging: Boolean) {
+        /**
+         * 请求之前需要将请求重置为STATE_CREATED，不然loadChildren的whenReady回调会调用两次，
+         * 导致sendResult()两次，直接报错
+         */
         mediaSource.reset()
         serviceScope.launch {
             mediaSource.load(mediaId, page, isRefresh, isPaging)
@@ -543,7 +536,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
     fun playBackward15s() {
         var backPos = currentPlayer.currentPosition - 15_000
         if (backPos < 0) backPos = 0
-        Log.d(TAG, "playBackward15s: $backPos")
         currentPlayer.seekTo(backPos)
     }
 
@@ -611,32 +603,33 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             )
         }
 
+        /**
+         * 播放列表准备好，播放特定曲目时调用，这里不需要检查播放数据的加载状态
+         */
         override fun onPrepareFromMediaId(
             mediaId: String,
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
             Log.d(TAG, "UampPlaybackPreparer::onPrepareFromMediaId:$mediaId, $playWhenReady, $extras")
-            mediaSource.whenReady {
-                val itemToPlay: MediaMetadataCompat? = mediaSource.find { item ->
-                    item.id == mediaId
-                }
-                if (itemToPlay == null) {
-                    Log.w(TAG, "Content not found: MediaID=$mediaId")
-                    // TODO: Notify caller of the error.
-                } else {
+            val itemToPlay: MediaMetadataCompat? = mediaSource.find { item ->
+                item.id == mediaId
+            }
+            if (itemToPlay == null) {
+                Log.w(TAG, "Content not found: MediaID=$mediaId")
+                // TODO: Notify caller of the error.
+            } else {
 
-                    val playbackStartPositionMs =
-                        extras?.getLong(MEDIA_DESCRIPTION_EXTRAS_START_PLAYBACK_POSITION_MS, C.TIME_UNSET)
-                            ?: C.TIME_UNSET
+                val playbackStartPositionMs =
+                    extras?.getLong(MEDIA_DESCRIPTION_EXTRAS_START_PLAYBACK_POSITION_MS, C.TIME_UNSET)
+                        ?: C.TIME_UNSET
 
-                    preparePlaylist(
-                        buildPlaylist(itemToPlay),
-                        itemToPlay,
-                        playWhenReady,
-                        playbackStartPositionMs
-                    )
-                }
+                preparePlaylist(
+                    buildPlaylist(itemToPlay),
+                    itemToPlay,
+                    playWhenReady,
+                    playbackStartPositionMs
+                )
             }
         }
 

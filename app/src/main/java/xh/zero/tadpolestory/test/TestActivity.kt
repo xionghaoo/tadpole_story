@@ -17,9 +17,6 @@ import xh.zero.core.startPlainActivity
 import xh.zero.core.vo.Status
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityTestBinding
-import xh.zero.tadpolestory.ui.MainViewModel
-import xh.zero.tadpolestory.ui.MediaItemData
-import xh.zero.tadpolestory.ui.album.AlbumViewModel
 
 class TestActivity : AppCompatActivity() {
 
