@@ -180,9 +180,9 @@ class ChildStoryFragment : BaseFragment<FragmentChildStoryBinding>() {
         val rcAlbumList = layout.findViewById<FlexboxLayout>(R.id.rc_album_list)
         layout.findViewById<View>(R.id.btn_more).setOnClickListener {
             if (contentIndex == 0) {
-                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(Configs.CATEGORY_ID_LITERACY))
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToDayRecommendFragment(categoryId))
             } else {
-
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToGuessLikeFragment(categoryId))
             }
         }
         // 换一批

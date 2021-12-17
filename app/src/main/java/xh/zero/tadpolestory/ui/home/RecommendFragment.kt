@@ -34,7 +34,7 @@ class RecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
         binding.btnBack.setOnClickListener {
             activity?.onBackPressed()
         }
-
+        binding.tvPageTitle.text = "每日推荐"
         adapter = RecommendAlbumAdapter(
             onItemClick = { album ->
                 findNavController().navigate(RecommendFragmentDirections.actionDayRecommendFragmentToAlbumDetailFragment(album))
@@ -57,6 +57,6 @@ class RecommendFragment : BaseFragment<FragmentDayRecommendBinding>() {
         }
 
         viewModel.showList(listOf(args.categoryId.toString()))
-
     }
+
 }

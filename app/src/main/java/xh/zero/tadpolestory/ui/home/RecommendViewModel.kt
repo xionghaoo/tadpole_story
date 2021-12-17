@@ -13,9 +13,5 @@ class RecommendViewModel @Inject constructor(
     private val repo: Repository,
     private val recommendRepo: RecommendAlbumRepository
 ) : PagingViewModel<AlbumResponse, Album>(recommendRepo) {
-
-//    fun uploadPlayRecords() = repo.uploadPlayRecords()
-
-
-
+    fun getGuessLikeAlbums() = repo.getGuessLikeAlbums()
 }

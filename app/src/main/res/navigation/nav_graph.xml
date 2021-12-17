@@ -34,6 +34,11 @@
             app:destination="@id/dayRecommendFragment"
             app:enterAnim="@anim/page_enter"
             app:popExitAnim="@anim/page_exit" />
+        <action
+            android:id="@+id/action_mainFragment_to_guessLikeFragment"
+            app:destination="@id/guessLikeFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
     </fragment>
     <fragment
         android:id="@+id/albumDetailFragment"
@@ -108,8 +113,23 @@
         tools:layout="@layout/fragment_day_recommend" >
         <action
             android:id="@+id/action_dayRecommendFragment_to_albumDetailFragment"
-            app:destination="@id/albumDetailFragment" />
+            app:destination="@id/albumDetailFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
         <argument android:name="categoryId"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/guessLikeFragment"
+        android:name="xh.zero.tadpolestory.ui.home.GuessLikeFragment"
+        android:label="GuessLikeFragment" >
+        <argument
+            android:name="categoryId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_guessLikeFragment_to_albumDetailFragment"
+            app:destination="@id/albumDetailFragment"
+            app:enterAnim="@anim/page_enter"
+            app:popExitAnim="@anim/page_exit" />
     </fragment>
 </navigation>
