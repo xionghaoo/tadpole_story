@@ -7,20 +7,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
+import timber.log.Timber
 import xh.zero.core.adapter.PlainListAdapter
 import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
+import xh.zero.tadpolestory.repo.PreferenceStorage
 import xh.zero.tadpolestory.ui.MediaItemData
 import xh.zero.tadpolestory.ui.TadpoleNetworkStateViewHolder
 import xh.zero.tadpolestory.utils.TimeUtil
 
 class TrackAdapter(
     private val totalCount: Int,
+    private val prefs: PreferenceStorage,
     private val onItemClick: (MediaItemData) -> Unit,
     private val retry: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var networkState: NetworkState? = null
+    private var nowPlayingMediaId: String? = null
+    private var isPlaying: Boolean? = null
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v)
 
@@ -103,6 +109,20 @@ class TrackAdapter(
             v.findViewById<View>(R.id.v_first).setOnClickListener {
                 onItemClick(data)
             }
+
+            val animView = v.findViewById<LottieAnimationView>(R.id.anim_playing)
+            // 显示正在播放的状态
+            if (item.mediaId == nowPlayingMediaId) {
+                animView.visibility = View.VISIBLE
+                if (isPlaying == true) {
+                    animView.playAnimation()
+                } else {
+                    animView.cancelAnimation()
+                }
+            } else {
+                animView.cancelAnimation()
+                animView.visibility = View.GONE
+            }
         }
 
         val extraContainer = v.findViewById<View>(R.id.v_second)
@@ -114,11 +134,57 @@ class TrackAdapter(
             extraContainer.setOnClickListener {
                 onItemClick(data)
             }
+
+            val animView = v.findViewById<LottieAnimationView>(R.id.anim_playing_2)
+            // 显示正在播放的状态
+            if (data.mediaId == nowPlayingMediaId) {
+                animView.visibility = View.VISIBLE
+                if (isPlaying == true) {
+                    animView.playAnimation()
+                } else {
+                    animView.cancelAnimation()
+                }
+            } else {
+                animView.cancelAnimation()
+                animView.visibility = View.GONE
+            }
         }
 
     }
 
-//    fun itemLayoutId(): Int = R.layout.list_item_tracks
+    /**
+     * 更新当前正在播放的音轨
+     * TODO 待优化
+     */
+    fun updateNowPlayingItem(item: MediaItemData) {
+//        var lastPlayingItem: MediaItemData? = null
+//        var lastPlayingItemIndex: Int = 0
+//        mDiffer.currentList.forEachIndexed { index, mediaItemData ->
+//            if (mediaItemData.playbackRes == 1) {
+//                lastPlayingItem = mediaItemData
+//                return@forEachIndexed
+//            }
+//        }
+//        if (item.mediaId == lastPlayingItem?.mediaId) {
+//            return
+//        }
+//        lastPlayingItem?.playbackRes = 0
+//        notifyItemChanged(lastPlayingItemIndex)
+//        var nowPlayingItem: MediaItemData? = null
+//        var nowPlayingItemIndex: Int = 0
+//        mDiffer.currentList.forEachIndexed { index, mediaItemData ->
+//            if (mediaItemData.mediaId == item.mediaId) {
+//                nowPlayingItem = mediaItemData
+//                return@forEachIndexed
+//            }
+//        }
+//        nowPlayingItem?.playbackRes = 1
+//        notifyItemChanged(nowPlayingItemIndex)
+        nowPlayingMediaId = item.mediaId
+        isPlaying = item.isPlaying
+        notifyDataSetChanged()
+        Timber.d("updateNowPlayingItem: ${item.title}, ${item.mediaId}, ${item.trackNumber}")
+    }
 
     companion object {
         private const val TYPE_CONTENT = 0

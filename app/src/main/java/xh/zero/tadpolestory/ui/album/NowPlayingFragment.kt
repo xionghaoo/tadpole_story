@@ -246,6 +246,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         // 播放状态发生变化时，会触发mediaItem的变化
         if (currentPlayMediaId == mediaItem.id) return
         currentPlayMediaId = mediaItem.id
+        viewModel.repo.prefs.nowPlayingTrackId = mediaItem.id
+
         binding.tvMediaDuration.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(mediaItem.duration)
         binding.tvMediaAlbumTitle.text = albumTitle
         binding.tvMediaTitle.text = mediaItem.title

@@ -8,13 +8,9 @@ import androidx.lifecycle.*
 import com.example.android.uamp.common.EMPTY_PLAYBACK_STATE
 import com.example.android.uamp.common.MusicServiceConnection
 import com.example.android.uamp.common.NOTHING_PLAYING
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.isPlayEnabled
-import com.example.android.uamp.media.extensions.isPlaying
-import com.example.android.uamp.media.extensions.isPrepared
+import com.example.android.uamp.media.extensions.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
 import timber.log.Timber
 import xh.zero.core.vo.NetworkState
 import xh.zero.tadpolestory.R
@@ -31,6 +27,7 @@ class AlbumViewModel @AssistedInject constructor(
     private val _mediaItems = MutableLiveData<List<MediaItemData>>()
     val loadMediaItems = MutableLiveData<List<MediaItemData>>()
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
+    val nowPlayingItem = MutableLiveData<MediaItemData>()
     val networkState = MutableLiveData<NetworkState>()
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
@@ -109,6 +106,15 @@ class AlbumViewModel @AssistedInject constructor(
         playbackState: PlaybackStateCompat,
         mediaMetadata: MediaMetadataCompat
     ): List<MediaItemData> {
+        nowPlayingItem.postValue(
+            MediaItemData(
+                mediaId = mediaMetadata.id!!,
+                title = mediaMetadata.description.title.toString(),
+                subtitle = mediaMetadata.toString(),
+                albumArtUri = mediaMetadata.description.iconUri,
+                isPlaying = playbackState.isPlaying
+            )
+        )
 
         val newResId = when (playbackState.isPlaying) {
             true -> R.drawable.ic_pause_black_24dp

@@ -17,6 +17,7 @@ interface PreferenceStorage {
     var accessToken: String?
     var serialNumber: String?
     var nowPlayingAlbumId: String?
+    var nowPlayingTrackId: String?
     var nowPlayingAlbumTitle: String?
     var selectedMultipleIndex: Int
     var selectedTimingIndex: Int
@@ -37,6 +38,7 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
     override var accessToken by StringPreference(prefs, PREF_ACCESS_TOKEN, null)
     override var serialNumber: String? by StringPreference(prefs, PREF_SERIAL_NUMBER, null)
     override var nowPlayingAlbumId: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_ID, null)
+    override var nowPlayingTrackId: String? by StringPreference(prefs, PREF_NOW_PLAYING_TRACK_ID, null)
     override var nowPlayingAlbumTitle: String? by StringPreference(prefs, PREF_NOW_PLAYING_ALBUM_TITLE, null)
     override var selectedMultipleIndex: Int by IntPreference(prefs, PREF_SELECTED_MULTIPLE_INDEX, 2)
     override var selectedTimingIndex: Int by IntPreference(prefs, PREF_SELECTED_TIMING_INDEX, 0)
@@ -57,6 +59,7 @@ class SharedPreferenceStorage @Inject constructor(@ApplicationContext context: C
         const val PREF_ACCESS_TOKEN = "pref_access_token"
         const val PREF_SERIAL_NUMBER = "pref_serial_number"
         const val PREF_NOW_PLAYING_ALBUM_ID = "pref_now_playing_album_id"
+        const val PREF_NOW_PLAYING_TRACK_ID = "pref_now_playing_track_id"
         const val PREF_NOW_PLAYING_ALBUM_TITLE = "pref_now_playing_album_title"
         const val PREF_SELECTED_MULTIPLE_INDEX = "pref_selected_multiple_index"
         const val PREF_SELECTED_TIMING_INDEX = "pref_selected_timing_index"

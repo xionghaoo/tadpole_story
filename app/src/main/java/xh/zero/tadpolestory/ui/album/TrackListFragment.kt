@@ -12,11 +12,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import xh.zero.core.vo.NetworkState
@@ -91,6 +89,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
         binding.rcTrackList.layoutManager = layoutManager
         adapter = TrackAdapter(
             totalCount = total.toInt(),
+            prefs = viewModel.repo.prefs,
             onItemClick = { item ->
                 viewModel.playMedia(item, pauseAllowed = false)
                 // 显示正在播放页面
@@ -130,7 +129,9 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             currentTrackListCoverScrollY = scrollY
             binding.vScrollCoverTrackList.visibility = if (scrollY > 0) View.VISIBLE else View.INVISIBLE
         }
-
+        viewModel.nowPlayingItem.observe(this) { item ->
+            adapter.updateNowPlayingItem(item)
+        }
         viewModel.loadMediaItems.observe(this) { items ->
             Timber.d("加载的音频数量：${items.size}， isInit: ${isInit}")
             // 加载结束
