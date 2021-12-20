@@ -1,6 +1,7 @@
 package xh.zero.tadpolestory.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -141,7 +142,7 @@ class MainActivity : BaseActivity(),
 
     private fun initialFloatWindow(view: View?) {
         if (view == null) return
-        val floatRoot = view.findViewById<View>(R.id.float_root)
+//        val vTrackInfo = view.findViewById<View>(R.id.container_track_info)
         val viewExpand = view.findViewById<View>(R.id.float_player_view_expand)
         val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
 
@@ -177,6 +178,10 @@ class MainActivity : BaseActivity(),
                 viewModel.uploadRecords(mediaItem)
             }
         }
+
+//        vTrackInfo.setOnClickListener {
+//            startNowPlayingPage(null, true)
+//        }
 
         // 播放按钮
         viewModel.mediaButtonRes.observe(this) { res ->
@@ -258,6 +263,7 @@ class MainActivity : BaseActivity(),
             return@setOnTouchListener true
         }
 
+        // 悬浮窗展开事件监听
         viewExpand?.setOnTouchListener { v, e ->
             val viewExpand = view?.findViewById<View>(R.id.float_player_view_expand)
             if (!viewExpand.isVisible) return@setOnTouchListener true
@@ -266,13 +272,19 @@ class MainActivity : BaseActivity(),
                     expandStartX = e.x
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    /**
+                     * 向右滑动收起悬浮窗
+                     */
                     val diff = e.x - expandStartX
-                    if (diff >= 20) {
+                    if (diff >= 30) {
                         hideFloatWindow()
                     }
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (e.x - expandStartX < 20) {
+                    /**
+                     * 点击事件，去掉播放器的部分 60(marginEnd) + 80 = 140
+                     */
+                    if (e.x - expandStartX < 10 && e.x < viewExpand.width - resources.getDimension(R.dimen._140dp)) {
                         startNowPlayingPage(null, true)
                     }
                 }
@@ -365,6 +377,7 @@ class MainActivity : BaseActivity(),
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    @SuppressLint("MissingPermission")
     @AfterPermissionGranted(RC_READ_PHONE_STATE_PERMISSION)
     fun getSerialNumberTask() {
         if (repo.prefs.serialNumber == null) {
