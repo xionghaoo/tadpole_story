@@ -1,7 +1,6 @@
 package xh.zero.tadpolestory.ui.album
 
-import android.content.BroadcastReceiver
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.*
 import android.os.Bundle
@@ -38,7 +37,6 @@ import kotlin.math.roundToLong
 
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import xh.zero.tadpolestory.repo.ACTION_MEDIA_STOP
 import xh.zero.tadpolestory.ui.PopWindowDialog
 import java.util.*
 
@@ -109,71 +107,21 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             viewModel.uploadRecords(mediaItem)
         }
 
+        // 播放时间 - 进度条左边的时间
         viewModel.mediaPosition.observe(viewLifecycleOwner) { pos ->
             binding.tvMeidaPlayPosition.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(pos)
-        }
-        viewModel.mediaButtonRes.observe(viewLifecycleOwner) { res ->
-            binding.btnMediaPlay.setImageResource(res)
-        }
-        viewModel.topMediaButtonRes.observe(viewLifecycleOwner) { res ->
-            binding.topBtnMediaPlay.setImageResource(res)
         }
 
         initialProgressBar()
 
-        binding.btnMediaPlay.setOnClickListener {
-            viewModel.mediaMetadata.value?.let {
-                viewModel.playMediaId(it.id)
-            }
-        }
-        binding.topBtnMediaPlay.setOnClickListener {
-            viewModel.mediaMetadata.value?.let {
-                viewModel.playMediaId(it.id)
-            }
-        }
+        initialControllerButton()
 
-        binding.btnMediaPre.setOnClickListener {
-            viewModel.prev()
-        }
+        initialMultiplePlay()
 
-        binding.btnMediaNext.setOnClickListener {
-            viewModel.next()
-        }
-
-        binding.btnMediaNext15s.setOnClickListener {
-            viewModel.playForward15s()
-        }
-        binding.topBtnMediaNext15s.setOnClickListener {
-            viewModel.playForward15s()
-        }
-        binding.btnMediaPrev15s.setOnClickListener {
-            viewModel.playBackward15s()
-        }
-
-        binding.btnMediaMultiple.setOnClickListener {
-            showMultiplePlayDialog()
-        }
-        binding.topBtnMediaMultiple.setOnClickListener {
-            showMultiplePlayDialog()
-        }
         initialTiming()
 
-        // 曲目列表
-        nowPlayingTrackAdapter = NowPlayingTrackAdapter { index ->
-            viewModel.seekTo(index)
-        }
-        viewModel.nowPlayingItem.observe(viewLifecycleOwner) { item ->
-            nowPlayingTrackAdapter.updateNowPlayingItem(item)
-        }
-        viewModel.trackList.observe(viewLifecycleOwner) { items ->
-            nowPlayingTrackAdapter.updateData(items)
-        }
-        viewModel.subscribeService(albumId)
+        initialTrackList()
 
-        binding.btnMediaCatelog.setOnClickListener {
-            // 跳转到曲目列表
-            showTrackListDialog()
-        }
         loadIsSubscribe()
 
         // TODO 更多相关专辑
@@ -184,12 +132,49 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             ToastUtil.show(context, "显示更多相关专辑")
         }
 
-        // 上一曲，下一曲按钮状态
-        viewModel.switchState.observe(viewLifecycleOwner) {
-            binding.btnMediaPre.isEnabled = it.first
-            binding.btnMediaNext.isEnabled = it.second
+        initialViewPosition()
+
+        binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            handleTransform(scrollY)
         }
 
+        autoStopScroll()
+    }
+
+    /**
+     * 滑动停止后，自动滚动到终止位置
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun autoStopScroll() {
+
+        binding.scrollView.setOnTouchListener { v, event ->
+            if (event?.action == MotionEvent.ACTION_UP
+                || event?.action == MotionEvent.ACTION_CANCEL) {
+//                Timber.d("current scroll y = $currentScrollY, $progressBarScrollDiff, $relativeAlbumExtra1ScrollDiff")
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(100)
+                    withContext(Dispatchers.Main) {
+                        if (currentScrollY < progressBarScrollDiff / 3) {
+                            binding.scrollView.smoothScrollTo(0, 0)
+                        } else if (currentScrollY >= progressBarScrollDiff / 3 && currentScrollY < progressBarScrollDiff) {
+                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
+                        } else if (currentScrollY < progressBarScrollDiff + (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff) / 3) {
+                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
+                        } else if (currentScrollY < relativeAlbumExtra1ScrollDiff) {
+                            binding.scrollView.smoothScrollTo(0, relativeAlbumExtra1ScrollDiff.toInt())
+
+                        }
+                    }
+                }
+            }
+            return@setOnTouchListener false
+        }
+    }
+
+    /**
+     * 初始化视图的位置参数
+     */
+    private fun initialViewPosition() {
         // 初始化View位置参数
         binding.root.viewTreeObserver.addOnGlobalLayoutListener {
             if (!hasInit) {
@@ -216,32 +201,79 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                         binding.layoutRelativeAlbums.root.y - binding.topTvMediaRelativeExtra1.y
             }
         }
+    }
 
-        binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            handleTransform(scrollY)
+    /**
+     * 初始化播放器控制按钮
+     */
+    private fun initialControllerButton() {
+        // 播放/暂停按钮icon
+        viewModel.mediaButtonRes.observe(viewLifecycleOwner) { res ->
+            binding.btnMediaPlay.setImageResource(res)
+        }
+        viewModel.topMediaButtonRes.observe(viewLifecycleOwner) { res ->
+            binding.topBtnMediaPlay.setImageResource(res)
         }
 
-        binding.scrollView.setOnTouchListener { v, event ->
-            if (event?.action == MotionEvent.ACTION_UP
-                || event?.action == MotionEvent.ACTION_CANCEL) {
-//                Timber.d("current scroll y = $currentScrollY, $progressBarScrollDiff, $relativeAlbumExtra1ScrollDiff")
-                CoroutineScope(Dispatchers.Default).launch {
-                    delay(100)
-                    withContext(Dispatchers.Main) {
-                        if (currentScrollY < progressBarScrollDiff / 3) {
-                            binding.scrollView.smoothScrollTo(0, 0)
-                        } else if (currentScrollY >= progressBarScrollDiff / 3 && currentScrollY < progressBarScrollDiff) {
-                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
-                        } else if (currentScrollY < progressBarScrollDiff + (relativeAlbumExtra1ScrollDiff - progressBarScrollDiff) / 3) {
-                            binding.scrollView.smoothScrollTo(0, progressBarScrollDiff.toInt())
-                        } else if (currentScrollY < relativeAlbumExtra1ScrollDiff) {
-                            binding.scrollView.smoothScrollTo(0, relativeAlbumExtra1ScrollDiff.toInt())
-
-                        }
-                    }
-                }
+        // 播放/暂停按钮
+        binding.btnMediaPlay.setOnClickListener {
+            viewModel.mediaMetadata.value?.let {
+                viewModel.playMediaId(it.id)
             }
-            return@setOnTouchListener false
+        }
+        binding.topBtnMediaPlay.setOnClickListener {
+            viewModel.mediaMetadata.value?.let {
+                viewModel.playMediaId(it.id)
+            }
+        }
+
+        // 上一曲
+        binding.btnMediaPre.setOnClickListener {
+            viewModel.prev()
+        }
+        // 下一曲
+        binding.btnMediaNext.setOnClickListener {
+            viewModel.next()
+        }
+
+        // 前进15s
+        binding.btnMediaNext15s.setOnClickListener {
+            viewModel.playForward15s()
+        }
+        binding.topBtnMediaNext15s.setOnClickListener {
+            viewModel.playForward15s()
+        }
+        // 后退15s
+        binding.btnMediaPrev15s.setOnClickListener {
+            viewModel.playBackward15s()
+        }
+
+        // 上一曲，下一曲按钮状态
+        viewModel.switchState.observe(viewLifecycleOwner) {
+            binding.btnMediaPre.isEnabled = it.first
+            binding.btnMediaNext.isEnabled = it.second
+        }
+    }
+
+    /**
+     * 初始化曲目列表
+     */
+    private fun initialTrackList() {
+        // 曲目列表
+        nowPlayingTrackAdapter = NowPlayingTrackAdapter { index ->
+            viewModel.seekTo(index)
+        }
+        viewModel.nowPlayingItem.observe(viewLifecycleOwner) { item ->
+            nowPlayingTrackAdapter.updateNowPlayingItem(item)
+        }
+        viewModel.trackList.observe(viewLifecycleOwner) { items ->
+            nowPlayingTrackAdapter.updateData(items)
+        }
+        viewModel.subscribeService(albumId)
+
+        binding.btnMediaCatelog.setOnClickListener {
+            // 跳转到曲目列表
+            showTrackListDialog()
         }
     }
 
@@ -380,6 +412,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 进度条初始化
+     */
     private fun initialProgressBar() {
         binding.pbMediaProgress.max = MAX_PROGRESS
         binding.topPbMediaProgress.max = MAX_PROGRESS
@@ -456,11 +491,23 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     }
 
     /**
+     * 倍数播放初始化
+     */
+    private fun initialMultiplePlay() {
+        binding.btnMediaMultiple.setOnClickListener {
+            showMultiplePlayDialog()
+        }
+        binding.topBtnMediaMultiple.setOnClickListener {
+            showMultiplePlayDialog()
+        }
+    }
+
+    /**
      * 定时器初始化
      */
     private fun initialTiming() {
         binding.btnMediaTiming.setOnClickListener {
-            showTimingPlay()
+            showTimingPlayDialog()
         }
         showTimingClock()
     }
@@ -655,6 +702,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 变换封面图片
+     */
     private fun transformCoverImage(percent: Float) {
         val coverImg = binding.ivMediaCoverImg
         val topCoverImg = binding.topIvMediaCoverImg
@@ -672,6 +722,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
     }
 
+    /**
+     * 变换专辑标题
+     */
     private fun transformAlbumTitle(percent: Float) {
         val tvAlbumTitle = binding.tvMediaAlbumTitle
         val topTvAlbumTitle = binding.topTvMediaAlbumTitle
@@ -686,6 +739,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         topTvAlbumTitle.translationX = -(if (xDiff > 0f) xDiff else 0f) * percent
     }
 
+    /**
+     * 变换进度条
+     */
     private fun transformProgressBar(percent: Float) {
         val pbMediaProgress = binding.pbMediaProgress
         val topPbMediaProgress = binding.topPbMediaProgress
@@ -742,7 +798,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                                 else -> 1f
                             }
                         )
-                        changeMultipleButton(index)
+                        updateMultipleButton(index)
                         requestDismiss.invoke()
                         container.children.forEach {
                             selectPlayTag(it as TextView, selectedMultipleIndex)
@@ -755,7 +811,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .show()
     }
 
-    private fun changeMultipleButton(index: Int) {
+    private fun updateMultipleButton(index: Int) {
         binding.btnMediaMultiple.setImageResource(
             when(index) {
                 0 -> R.mipmap.ic_media_multiple_0dot5
@@ -783,7 +839,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     /**
      * 定时播放
      */
-    private fun showTimingPlay() {
+    private fun showTimingPlayDialog() {
         selectedTimingIndex = viewModel.repo.prefs.selectedTimingIndex
         PromptDialog.Builder(requireContext())
             .setViewId(R.layout.dialog_multiple_play)
@@ -853,6 +909,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 订阅专辑
+     */
     private fun subscribe() {
         val id = viewModel.repo.prefs.nowPlayingAlbumId
         if (id?.isNotEmpty() == true) {
@@ -869,6 +928,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
     }
 
+    /**
+     * 取消订阅专辑
+     */
     private fun unsubscribe() {
         val id = viewModel.repo.prefs.nowPlayingAlbumId
         if (id == null || id.isEmpty()) return

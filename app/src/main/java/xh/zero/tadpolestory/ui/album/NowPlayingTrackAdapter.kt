@@ -63,31 +63,17 @@ class NowPlayingTrackAdapter(
      * TODO 待优化
      */
     fun updateNowPlayingItem(item: MediaItemData) {
-//        var lastPlayingItem: MediaItemData? = null
-//        var lastPlayingItemIndex: Int = 0
-//        mDiffer.currentList.forEachIndexed { index, mediaItemData ->
-//            if (mediaItemData.playbackRes == 1) {
-//                lastPlayingItem = mediaItemData
-//                return@forEachIndexed
-//            }
-//        }
-//        if (item.mediaId == lastPlayingItem?.mediaId) {
-//            return
-//        }
-//        lastPlayingItem?.playbackRes = 0
-//        notifyItemChanged(lastPlayingItemIndex)
-//        var nowPlayingItem: MediaItemData? = null
-//        var nowPlayingItemIndex: Int = 0
-//        mDiffer.currentList.forEachIndexed { index, mediaItemData ->
-//            if (mediaItemData.mediaId == item.mediaId) {
-//                nowPlayingItem = mediaItemData
-//                return@forEachIndexed
-//            }
-//        }
-//        nowPlayingItem?.playbackRes = 1
-//        notifyItemChanged(nowPlayingItemIndex)
         nowPlayingMediaId = item.mediaId
         isPlaying = item.isPlaying
+//        var position = 0
+//        items.forEachIndexed { index, data ->
+//            if (data.mediaId == item.mediaId) {
+//                position = index
+//                return@forEachIndexed
+//            }
+//        }
+////        notifyItemChanged(nowPlayingIndex)
+//        notifyItemChanged(position)
         notifyDataSetChanged()
         Timber.d("updateNowPlayingItem: ${item.title}, ${item.mediaId}, ${item.trackNumber}")
     }
