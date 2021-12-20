@@ -21,7 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.*
 import timber.log.Timber
-import xh.zero.core.utils.ImageUtil
 import xh.zero.core.utils.SystemUtil
 import xh.zero.core.utils.ToastUtil
 import xh.zero.tadpolestory.GlideApp
@@ -101,6 +100,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
         viewModel.mediaButtonRes.observe(viewLifecycleOwner) { res ->
             binding.btnMediaPlay.setImageResource(res)
+        }
+        viewModel.topMediaButtonRes.observe(viewLifecycleOwner) { res ->
             binding.topBtnMediaPlay.setImageResource(res)
         }
 
@@ -179,7 +180,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     R.mipmap.ic_media_next
                 } else {
                     binding.btnMediaNext.isEnabled = false
-                    R.mipmap.ic_media_pre_disable
+                    R.mipmap.ic_media_next_disable
                 }
             )
         }
@@ -652,6 +653,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                                 else -> 1f
                             }
                         )
+                        changeMultipleButton(index)
                         requestDismiss.invoke()
                         container.children.forEach {
                             selectPlayTag(it as TextView, selectedMultipleIndex)
@@ -662,6 +664,31 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .addOperation(OperationType.CANCEL, R.id.btn_dialog_cancel, true, null)
             .build()
             .show()
+    }
+
+    private fun changeMultipleButton(index: Int) {
+        binding.btnMediaMultiple.setImageResource(
+            when(index) {
+                0 -> R.mipmap.ic_media_multiple_0dot5
+                1 -> R.mipmap.ic_media_multiple_0dot75
+                2 -> R.mipmap.ic_media_multiple
+                3 -> R.mipmap.ic_media_multiple_1dot25
+                4 -> R.mipmap.ic_media_multiple_1dot5
+                5 -> R.mipmap.ic_media_multiple_2
+                else -> R.mipmap.ic_media_multiple
+            }
+        )
+        binding.topBtnMediaMultiple.setImageResource(
+            when(index) {
+                0 -> R.mipmap.ic_media_multiple_0dot5
+                1 -> R.mipmap.ic_media_multiple_0dot75
+                2 -> R.mipmap.ic_media_multiple
+                3 -> R.mipmap.ic_media_multiple_1dot25
+                4 -> R.mipmap.ic_media_multiple_1dot5
+                5 -> R.mipmap.ic_media_multiple_2
+                else -> R.mipmap.ic_media_multiple
+            }
+        )
     }
 
     /**

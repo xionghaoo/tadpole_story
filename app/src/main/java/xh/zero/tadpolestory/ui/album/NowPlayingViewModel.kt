@@ -74,6 +74,9 @@ class NowPlayingViewModel @Inject constructor(
     val mediaButtonRes = MutableLiveData<Int>().apply {
         postValue(R.mipmap.ic_media_play)
     }
+    val topMediaButtonRes = MutableLiveData<Int>().apply {
+        postValue(R.mipmap.ic_media_play_top)
+    }
     val switchState = MutableLiveData<Pair<Boolean, Boolean>>().apply {
         postValue(Pair(first = false, second = true))
     }
@@ -295,8 +298,14 @@ class NowPlayingViewModel @Inject constructor(
         // Update the media button resource ID
         mediaButtonRes.postValue(
             when (playbackState.isPlaying) {
-                true -> R.drawable.ic_pause_black_24dp
+                true -> R.mipmap.ic_media_pause
                 else -> R.mipmap.ic_media_play
+            }
+        )
+        topMediaButtonRes.postValue(
+            when (playbackState.isPlaying) {
+                true -> R.mipmap.ic_media_pause_top
+                else -> R.mipmap.ic_media_play_top
             }
         )
         isPlaying = playbackState.isPlaying

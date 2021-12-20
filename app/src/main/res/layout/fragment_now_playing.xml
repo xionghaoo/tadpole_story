@@ -396,7 +396,7 @@
             android:layout_width="@dimen/_74dp"
             android:layout_height="@dimen/_74dp"
             android:layout_marginEnd="@dimen/_32dp"
-            android:src="@mipmap/ic_media_play"
+            android:src="@mipmap/ic_media_play_top"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/top_btn_media_next_15s"
             app:layout_constraintEnd_toStartOf="@+id/top_btn_media_next_15s"

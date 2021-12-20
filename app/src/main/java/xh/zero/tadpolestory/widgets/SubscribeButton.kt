@@ -22,8 +22,8 @@ class SubscribeButton : LinearLayoutCompat {
         if (isSubscribe) {
             binding.tvSubscribeTitle.text = "已订阅"
             binding.tvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
-            binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-            binding.root.setBackgroundResource(R.drawable.shape_album_tag)
+            binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribed)
+            binding.root.setBackgroundResource(R.drawable.shape_btn_random)
             binding.root.setOnClickListener {
 //                unsubscribe()
                 onUnsubscribeCall()
@@ -31,7 +31,7 @@ class SubscribeButton : LinearLayoutCompat {
         } else {
             binding.tvSubscribeTitle.text = "订阅"
             binding.tvSubscribeTitle.setTextColor(Color.WHITE)
-//                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
+            binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
             binding.root.setBackgroundResource(R.drawable.shape_btn_subscribe)
             binding.root.setOnClickListener {
 //                subscribe()
