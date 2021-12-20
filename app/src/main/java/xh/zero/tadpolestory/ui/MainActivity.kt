@@ -133,9 +133,9 @@ class MainActivity : BaseActivity(),
         super.onDestroy()
     }
 
-    private fun startNowPlayingPage(intent: Intent?) {
-        if (intent?.action == ACTION_NOTIFICATION_PLAYER) {
-            NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
+    private fun startNowPlayingPage(intent: Intent?, isFloatWindow: Boolean = false) {
+        if (intent?.action == ACTION_NOTIFICATION_PLAYER || isFloatWindow ) {
+            NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle, viewModel.repo.prefs.nowPlayingAlbumId ?: "")
         }
     }
 
@@ -273,7 +273,7 @@ class MainActivity : BaseActivity(),
                 }
                 MotionEvent.ACTION_UP -> {
                     if (e.x - expandStartX < 20) {
-                        NowPlayingActivity.start(this, viewModel.repo.prefs.nowPlayingAlbumTitle)
+                        startNowPlayingPage(null, true)
                     }
                 }
             }

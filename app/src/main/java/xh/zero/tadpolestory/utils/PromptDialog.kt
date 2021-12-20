@@ -130,7 +130,7 @@ class PromptDialog private constructor(
             }
             return PromptDialog(
                 context = context,
-                    theme = theme,
+                theme = theme,
                 layoutId = layoutId!!,
                 isTransparent = isTransparent,
                 isCancelable = isCancelable,

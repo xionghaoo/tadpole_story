@@ -28,6 +28,7 @@ class PopWindowDialog private constructor(
         private var gravity: Int = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         private var animation: Int = R.style.pop_animation
         private var isFade: Boolean = true
+        private var onDismissListener: (() -> Unit)? = null
 
         fun width(w: Int): Builder {
             width = w
@@ -90,6 +91,11 @@ class PopWindowDialog private constructor(
             return this
         }
 
+        fun setOnDismissListener(listener: () -> Unit) : Builder {
+            onDismissListener = listener
+            return this
+        }
+
         fun build(): PopWindowDialog {
             val popupWindow = PopupWindow(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             val container = LayoutInflater.from(context).inflate(R.layout.dialog_popwindow_dialog_container, null) as FrameLayout
@@ -116,6 +122,7 @@ class PopWindowDialog private constructor(
                 popupWindow.animationStyle = animation
             }
             popupWindow.isOutsideTouchable = isOutsideTouchable
+            popupWindow.setOnDismissListener(onDismissListener)
 //            if (isFade) {
 //                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 //                    popupWindow.setBackgroundDrawable(BitmapDrawable())

@@ -18,10 +18,12 @@ class NowPlayingActivity : BaseActivity() {
     companion object {
 
         const val EXTRA_ALBUM_TITLE = "${Configs.PACKAGE_NAME}.NowPlayingActivity.EXTRA_ALBUM_TITLE"
+        const val EXTRA_ALBUM_ID = "${Configs.PACKAGE_NAME}.NowPlayingActivity.EXTRA_ALBUM_ID"
 
-        fun start(context: Context?, albumTitle: String?) {
+        fun start(context: Context?, albumTitle: String?, id: String) {
             context?.startActivity(Intent(context, NowPlayingActivity::class.java).apply {
                 putExtra(EXTRA_ALBUM_TITLE, albumTitle)
+                putExtra(EXTRA_ALBUM_ID, id)
             })
         }
     }
@@ -29,6 +31,9 @@ class NowPlayingActivity : BaseActivity() {
     private lateinit var binding: ActivityNowPlayingBinding
     private val albumTitle: String by lazy {
         intent.getStringExtra(EXTRA_ALBUM_TITLE) ?: ""
+    }
+    private val albumId: String by lazy {
+        intent.getStringExtra(EXTRA_ALBUM_ID)  ?: ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +47,7 @@ class NowPlayingActivity : BaseActivity() {
             onBackPressed()
         }
 
-        replaceFragment(NowPlayingFragment.newInstance(albumTitle), R.id.fragment_container)
+        replaceFragment(NowPlayingFragment.newInstance(albumTitle, albumId), R.id.fragment_container)
     }
 
     override fun finish() {

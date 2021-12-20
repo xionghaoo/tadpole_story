@@ -103,16 +103,20 @@ class TrackAdapter(
 
     private fun bindView(v: View, item: MediaItemData, position: Int) {
         item.also { data ->
-            v.findViewById<TextView>(R.id.tv_track_index).text = "${data.trackNumber + 1}"
-            v.findViewById<TextView>(R.id.tv_track_title).text = data.title
-            v.findViewById<TextView>(R.id.tv_track_time_count).text = TimeUtil.secondsFormat(data.duration)
+            val tvTrackIndex = v.findViewById<TextView>(R.id.tv_track_index)
+            val tvTrackTitle = v.findViewById<TextView>(R.id.tv_track_title)
+            val tvTrackTime = v.findViewById<TextView>(R.id.tv_track_time_count)
+
+            tvTrackIndex.text = "${data.trackNumber + 1}"
+            tvTrackTitle.text = data.title
+            tvTrackTime.text = TimeUtil.secondsFormat(data.duration)
             v.findViewById<View>(R.id.v_first).setOnClickListener {
                 onItemClick(data)
             }
 
             val animView = v.findViewById<LottieAnimationView>(R.id.anim_playing)
             // 显示正在播放的状态
-            if (item.mediaId == nowPlayingMediaId) {
+            if (data.mediaId == nowPlayingMediaId) {
                 animView.visibility = View.VISIBLE
                 if (isPlaying == true) {
                     animView.playAnimation()
@@ -123,14 +127,29 @@ class TrackAdapter(
                 animView.cancelAnimation()
                 animView.visibility = View.GONE
             }
+
+            // 高亮
+            if (data.mediaId == nowPlayingMediaId) {
+                val color = v.context.resources.getColor(R.color.color_FF9F00)
+                tvTrackIndex.setTextColor(color)
+                tvTrackTitle.setTextColor(color)
+            } else {
+                val color = v.context.resources.getColor(R.color.color_0A1A2A)
+                tvTrackIndex.setTextColor(color)
+                tvTrackTitle.setTextColor(color)
+            }
         }
 
         val extraContainer = v.findViewById<View>(R.id.v_second)
         extraContainer.visibility = if (item.extraItem == null) View.GONE else View.VISIBLE
         item.extraItem?.also { data ->
-            v.findViewById<TextView>(R.id.tv_track_index_2).text = "${data.trackNumber + 1}"
-            v.findViewById<TextView>(R.id.tv_track_title_2).text = data.title
-            v.findViewById<TextView>(R.id.tv_track_time_count_2).text = TimeUtil.secondsFormat(data.duration)
+            val tvTrackIndex = v.findViewById<TextView>(R.id.tv_track_index_2)
+            val tvTrackTitle = v.findViewById<TextView>(R.id.tv_track_title_2)
+            val tvTrackTime = v.findViewById<TextView>(R.id.tv_track_time_count_2)
+
+            tvTrackIndex.text = "${data.trackNumber + 1}"
+            tvTrackTitle.text = data.title
+            tvTrackTime.text = TimeUtil.secondsFormat(data.duration)
             extraContainer.setOnClickListener {
                 onItemClick(data)
             }
@@ -147,6 +166,17 @@ class TrackAdapter(
             } else {
                 animView.cancelAnimation()
                 animView.visibility = View.GONE
+            }
+
+            // 高亮
+            if (data.mediaId == nowPlayingMediaId) {
+                val color = v.context.resources.getColor(R.color.color_FF9F00)
+                tvTrackIndex.setTextColor(color)
+                tvTrackTitle.setTextColor(color)
+            } else {
+                val color = v.context.resources.getColor(R.color.color_0A1A2A)
+                tvTrackIndex.setTextColor(color)
+                tvTrackTitle.setTextColor(color)
             }
         }
 

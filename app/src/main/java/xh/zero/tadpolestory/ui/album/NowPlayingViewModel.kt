@@ -4,8 +4,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -13,7 +15,6 @@ import com.example.android.uamp.common.EMPTY_PLAYBACK_STATE
 import com.example.android.uamp.common.MusicServiceConnection
 import com.example.android.uamp.common.NOTHING_PLAYING
 import com.example.android.uamp.media.extensions.*
-import com.google.android.exoplayer2.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -24,8 +25,8 @@ import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.repo.*
 import xh.zero.tadpolestory.repo.data.PlainData
 import xh.zero.tadpolestory.repo.data.TrackPlayRecord
+import xh.zero.tadpolestory.ui.MediaItemData
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.roundToInt
 
 @HiltViewModel
@@ -81,6 +82,7 @@ class NowPlayingViewModel @Inject constructor(
         postValue(Pair(first = false, second = true))
     }
 
+    val nowPlayingItem = MutableLiveData<MediaItemData>()
     var isPlaying: Boolean = false
 
     fun getRelativeAlbum(trackId: Int) = repo.getRelativeAlbum(trackId)
@@ -112,6 +114,48 @@ class NowPlayingViewModel @Inject constructor(
         it.nowPlaying.observeForever(mediaMetadataObserver)
         checkPlaybackPosition()
     }
+
+    val trackList = MediatorLiveData<List<MediaItemData>>()
+    private var albumId: String? = null
+
+    private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(
+            parentId: String,
+            children: MutableList<MediaBrowserCompat.MediaItem>
+        ) {
+            val itemsList = children.map { child ->
+                val subtitle = child.description.subtitle ?: ""
+                val duration = child.description.extras?.getLong("duration")
+                val trackNumber = child.description.extras?.getLong("trackNumber")
+                MediaItemData(
+                    mediaId = child.mediaId!!,
+                    title = child.description.title.toString(),
+                    subtitle = subtitle.toString(),
+                    albumArtUri = child.description.iconUri,
+                    browsable = child.isBrowsable,
+//                        playbackRes = getResourceForMediaId(child.mediaId!!),
+                    duration = duration ?: 0,
+                    trackNumber = trackNumber ?: 0L
+                )
+            }
+            trackList.postValue(itemsList)
+        }
+    }
+
+    fun subscribeService(albumId: String) {
+        this.albumId = albumId
+        musicServiceConnection.subscribe(albumId, subscriptionCallback)
+    }
+
+    fun loadTrackList(albumId: String) {
+        musicServiceConnection.sendCommand(USE_CURRENT_LIST, Bundle().apply {
+            putString("mediaId", albumId)
+        })
+    }
+
+//    fun unsubscribeService(albumId: String) {
+//        musicServiceConnection.unsubscribe(albumId, subscriptionCallback)
+//    }
 
     /**
      * Internal function that recursively calls itself every [POSITION_UPDATE_INTERVAL_MILLIS] ms
@@ -186,6 +230,13 @@ class NowPlayingViewModel @Inject constructor(
     fun prev() {
         musicServiceConnection.sendCommand(PLAY_PREV, Bundle.EMPTY) { code, bundle ->
             rePlay()
+        }
+    }
+
+    fun seekTo(index: Int) {
+        musicServiceConnection.sendCommand(SEEK_TO_TRACK_INDEX, Bundle().apply {
+            putInt("index", index)
+        }) { _, _ ->
         }
     }
 
@@ -268,6 +319,9 @@ class NowPlayingViewModel @Inject constructor(
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
+        if (albumId != null) {
+            musicServiceConnection.unsubscribe(albumId!!, subscriptionCallback)
+        }
 //        musicServiceConnection.trackSwitchState.removeObserver(trackSwitchStateObserver)
 
         // Stop updating the position
@@ -279,6 +333,15 @@ class NowPlayingViewModel @Inject constructor(
         playbackState: PlaybackStateCompat,
         mediaMetadata: MediaMetadataCompat
     ) {
+        nowPlayingItem.postValue(
+            MediaItemData(
+                mediaId = mediaMetadata.id!!,
+                title = mediaMetadata.description.title.toString(),
+                subtitle = mediaMetadata.toString(),
+                albumArtUri = mediaMetadata.description.iconUri,
+                isPlaying = playbackState.isPlaying
+            )
+        )
         // Only update media item once we have duration available
         if (mediaMetadata.duration != 0L && mediaMetadata.id != null) {
             val nowPlayingMetadata = NowPlayingMetadata(

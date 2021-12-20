@@ -1,12 +1,16 @@
 package xh.zero.tadpolestory.utils
 
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import xh.zero.tadpolestory.GlideApp
 import xh.zero.tadpolestory.R
+import xh.zero.tadpolestory.ui.MediaItemData
 import kotlin.math.roundToInt
 
 class TadpoleUtil {

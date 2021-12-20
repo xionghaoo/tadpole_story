@@ -35,6 +35,8 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import xh.zero.tadpolestory.ui.PopWindowDialog
 
 /**
  * 播放页面
@@ -70,8 +72,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private var selectedMultipleIndex = 2
     private var selectedTimingIndex = 0
 
+    private lateinit var nowPlayingTrackAdapter: NowPlayingTrackAdapter
+
     private val albumTitle: String by lazy {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
+    }
+
+    private val albumId: String by lazy {
+        arguments?.getString(ARG_ALBUM_ID) ?: ""
     }
 
     override fun onCreateBindLayout(
@@ -145,13 +153,22 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         binding.btnMediaTiming.setOnClickListener {
             showTimingPlay()
         }
+
+        // 曲目列表
+        nowPlayingTrackAdapter = NowPlayingTrackAdapter { index ->
+            viewModel.seekTo(index)
+        }
+        viewModel.nowPlayingItem.observe(viewLifecycleOwner) { item ->
+            nowPlayingTrackAdapter.updateNowPlayingItem(item)
+        }
+        viewModel.trackList.observe(viewLifecycleOwner) { items ->
+            nowPlayingTrackAdapter.updateData(items)
+        }
+        viewModel.subscribeService(albumId)
+
         binding.btnMediaCatelog.setOnClickListener {
             // 跳转到曲目列表
-            ToastUtil.show(context, "跳转到曲目列表")
-            // TODO 交互存在问题
-//            viewModel.repo.findCurrentAlbum { album ->
-//                if (album != null) MainActivity.startToAlbumDetail(context, album)
-//            }
+            showTrackListDialog()
         }
         loadIsSubscribe()
 
@@ -165,26 +182,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
         // 上一曲，下一曲按钮状态
         viewModel.switchState.observe(viewLifecycleOwner) {
-//            binding.btnMediaPre.setImageResource(
-//                if (it.first) {
-//                    binding.btnMediaPre.isEnabled = true
-//                    R.mipmap.ic_media_pre
-//                } else {
-//                    binding.btnMediaPre.isEnabled = false
-//                    R.mipmap.ic_media_pre_disable
-//                }
-//            )
             binding.btnMediaPre.isEnabled = it.first
             binding.btnMediaNext.isEnabled = it.second
-//            binding.btnMediaNext.setImageResource(
-//                if (it.second) {
-//                    binding.btnMediaNext.isEnabled = true
-//                    R.mipmap.ic_media_next
-//                } else {
-//                    binding.btnMediaNext.isEnabled = false
-//                    R.mipmap.ic_media_next_disable
-//                }
-//            )
         }
 
         // 初始化View位置参数
@@ -240,6 +239,27 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             }
             return@setOnTouchListener false
         }
+    }
+
+    /**
+     * 显示曲目列表
+     */
+    private fun showTrackListDialog() {
+        val v = layoutInflater.inflate(R.layout.dialog_track_list, null)
+        val rcTrackList = v.findViewById<RecyclerView>(R.id.rc_track_list)
+        rcTrackList.adapter = nowPlayingTrackAdapter
+        PopWindowDialog.Builder(requireActivity())
+            .animation(R.style.right_pop_animation)
+            .contentView(v)
+            .width(resources.getDimension(R.dimen._400dp).toInt())
+            .height(ViewGroup.LayoutParams.MATCH_PARENT)
+            .setGravity(Gravity.END or Gravity.CENTER_HORIZONTAL)
+            .isShowAnimation(true)
+            .isCancellable(true)
+            .build()
+            .show(isFullScreen = true)
+
+        viewModel.loadTrackList(albumId)
     }
 
     /**
@@ -868,12 +888,14 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
     companion object {
         const val ARG_ALBUM_TITLE = "ARG_ALBUM_TITLE"
+        const val ARG_ALBUM_ID = "ARG_ALBUM_ID"
         private const val SCROLL_THRESHOLD = 0
         const val MAX_PROGRESS = 1000
 
-        fun newInstance(albumTitle: String) = NowPlayingFragment().apply {
+        fun newInstance(albumTitle: String,albumId: String) = NowPlayingFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ALBUM_TITLE, albumTitle)
+                putString(ARG_ALBUM_ID, albumId)
             }
         }
     }

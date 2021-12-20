@@ -55,6 +55,9 @@ interface MusicSource : Iterable<MediaMetadataCompat> {
     fun search(query: String, extras: Bundle): List<MediaMetadataCompat>
 
     fun reset()
+
+    fun useCurrentData()
+
 }
 
 @IntDef(
@@ -128,6 +131,10 @@ abstract class AbstractMusicSource : MusicSource {
     override fun reset() {
         state = STATE_CREATED
         onReadyListeners.clear()
+    }
+
+    override fun useCurrentData() {
+        state = STATE_INITIALIZED
     }
 
     /**

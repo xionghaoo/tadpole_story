@@ -496,6 +496,10 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         currentPlayer.seekTo(posMs)
     }
 
+    fun seekTo(index: Int) {
+        currentPlayer.seekTo(index, 0)
+    }
+
     fun toPrev() : Boolean {
         if (currentPlayer.hasPreviousMediaItem()) {
             currentPlayer.seekToPrevious()
@@ -520,6 +524,11 @@ abstract class MusicService : MediaBrowserServiceCompat() {
             mediaSource.load(mediaId, page, isRefresh, isPaging)
             notifyChildrenChanged(mediaId)
         }
+    }
+
+    fun useCurrentList(mediaId: String) {
+        mediaSource.useCurrentData()
+        notifyChildrenChanged(mediaId)
     }
 
     fun setPlaybackSpeed(speed: Float) {

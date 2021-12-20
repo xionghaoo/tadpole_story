@@ -24,8 +24,10 @@ const val HAS_NEXT = "${Configs.PACKAGE_NAME}.COMMAND.HAS_NEXT"
 const val PLAY_PREV = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_PREV"
 const val HAS_PREV = "${Configs.PACKAGE_NAME}.COMMAND.HAS_PREV"
 const val EXTRA_MEDIA_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.EXTRA_MEDIA_POSITION"
+const val SEEK_TO_TRACK_INDEX = "${Configs.PACKAGE_NAME}.COMMAND.SEEK_TO_TRACK_INDEX"
 
 const val LOAD_SONG_FOR_PAGE = "${Configs.PACKAGE_NAME}.COMMAND.LOAD_SONG_FOR_PAGE"
+const val USE_CURRENT_LIST = "${Configs.PACKAGE_NAME}.COMMAND.USE_CURRENT_LIST"
 const val SET_PLAY_SPEED = "${Configs.PACKAGE_NAME}.COMMAND.SET_PLAY_SPEED"
 const val PLAY_SEEK = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_SEEK"
 const val AUTO_STOP = "${Configs.PACKAGE_NAME}.COMMAND.AUTO_STOP"
@@ -152,9 +154,11 @@ class TadpoleMusicService : MusicService() {
             cb: ResultReceiver?
         ): Boolean = when (command) {
             SEEK_TO_POSITION -> seekToPositionCommand(extras ?: Bundle.EMPTY, cb)
+            SEEK_TO_TRACK_INDEX -> seekToTrackIndex(extras ?: Bundle.EMPTY, cb)
             PLAY_PREV -> playPrevCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_NEXT -> playNextCommand(extras ?: Bundle.EMPTY, cb)
             LOAD_SONG_FOR_PAGE -> loadSongForPageCommand(extras ?: Bundle.EMPTY, cb)
+            USE_CURRENT_LIST -> useCurrentListCommand(extras ?: Bundle.EMPTY, cb)
             SET_PLAY_SPEED -> setPlaySpeedCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_SEEK -> playSeekCommand(extras ?: Bundle.EMPTY, cb)
             AUTO_STOP -> autoStopCommand(extras ?: Bundle.EMPTY, cb)
@@ -167,6 +171,11 @@ class TadpoleMusicService : MusicService() {
     private val seekToPositionCommand: CommandHandler = { extras, callback ->
         seekToPosition(extras.getLong(EXTRA_MEDIA_POSITION))
         callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
+        true
+    }
+
+    private val seekToTrackIndex: CommandHandler = { extras, callback ->
+        seekTo(extras.getInt("index"))
         true
     }
 
@@ -197,6 +206,14 @@ class TadpoleMusicService : MusicService() {
         val isPaging = extras.getBoolean("isPaging", true)
         if (mediaId != null) {
             loadMedia(mediaId, page, isRefresh, isPaging)
+        }
+        true
+    }
+
+    private val useCurrentListCommand: CommandHandler = { extras, callback ->
+        val mediaId = extras.getString("mediaId")
+        if (mediaId != null) {
+            useCurrentList(mediaId)
         }
         true
     }

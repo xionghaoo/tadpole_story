@@ -93,7 +93,7 @@ class TrackListFragment : BaseFragment<FragmentTrackListBinding>() {
             onItemClick = { item ->
                 viewModel.playMedia(item, pauseAllowed = false)
                 // 显示正在播放页面
-                NowPlayingActivity.start(context, albumTitle)
+                NowPlayingActivity.start(context, albumTitle, albumId)
             },
             retry = {
 
