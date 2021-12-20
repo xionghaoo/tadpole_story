@@ -41,7 +41,7 @@ import xh.zero.tadpolestory.ui.PopWindowDialog
 import java.util.*
 
 /**
- * 播放页面
+ * 当前曲目播放页面
  */
 @AndroidEntryPoint
 class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
@@ -537,9 +537,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 override fun run() {
                     if (clockTime <= 0) {
                         stopTimer()
-                        activity?.runOnUiThread {
-                            binding.tvMediaTiming.visibility = View.GONE
-                        }
                     }
                     val totalSeconds = clockTime / 1000
                     val minutes = totalSeconds / 60
@@ -559,6 +556,10 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     fun stopTimer() {
         timer?.cancel()
         timer = null
+
+        activity?.runOnUiThread {
+            binding.tvMediaTiming.visibility = View.GONE
+        }
     }
 
     private fun seekToPosition(seekBar: SeekBar?, complete: () -> Unit) {
@@ -781,7 +782,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     tv.setTextColor(resources.getColor(R.color.color_42444B))
                     tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._22dp))
 
-                    selectPlayTag(tv, selectedMultipleIndex)
+                    selectTimingPlayTag(tv, selectedMultipleIndex)
 
                     tv.setOnClickListener { v ->
                         val vIndex = v.tag as Int
@@ -801,7 +802,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                         updateMultipleButton(index)
                         requestDismiss.invoke()
                         container.children.forEach {
-                            selectPlayTag(it as TextView, selectedMultipleIndex)
+                            selectTimingPlayTag(it as TextView, selectedMultipleIndex)
                         }
                     }
                 }
@@ -867,7 +868,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                     tv.setTextColor(resources.getColor(R.color.color_42444B))
                     tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._22dp))
 
-                    selectPlayTag(tv, selectedTimingIndex)
+                    selectTimingPlayTag(tv, selectedTimingIndex)
 
                     tv.setOnClickListener { v ->
                         val vIndex = v.tag as Int
@@ -886,7 +887,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                         showTimingClock()
                         requestDismiss.invoke()
                         container.children.forEach {
-                            selectPlayTag(it as TextView, selectedTimingIndex)
+                            selectTimingPlayTag(it as TextView, selectedTimingIndex)
                         }
                     }
                 }
@@ -896,7 +897,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .show()
     }
 
-    private fun selectPlayTag(view: TextView, selectedIndex: Int) {
+    private fun selectTimingPlayTag(view: TextView, selectedIndex: Int) {
         val vIndex = view.tag as Int
         if (vIndex == selectedIndex) {
             // 选中
@@ -985,7 +986,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         const val MAX_PROGRESS = 1000
 
         // 定时时间段
-        const val TIMING_10 = 1
+        const val TIMING_10 = 10
         const val TIMING_20 = 20
         const val TIMING_30 = 30
         const val TIMING_60 = 60

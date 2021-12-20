@@ -4,15 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import xh.zero.core.replaceFragment
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.ActivityNowPlayingBinding
-import xh.zero.tadpolestory.repo.ACTION_MEDIA_STOP
+import xh.zero.tadpolestory.repo.ACTION_MEDIA_TIMING_STOP
 import xh.zero.tadpolestory.ui.BaseActivity
 
 @AndroidEntryPoint
@@ -43,7 +41,7 @@ class NowPlayingActivity : BaseActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when(intent?.action) {
-                ACTION_MEDIA_STOP -> {
+                ACTION_MEDIA_TIMING_STOP -> {
                     // 定时播放结束
                     if (nowPlayingFragment.isAdded) {
                         nowPlayingFragment.stopTimer()
@@ -67,7 +65,7 @@ class NowPlayingActivity : BaseActivity() {
         nowPlayingFragment = NowPlayingFragment.newInstance(albumTitle, albumId)
         replaceFragment(nowPlayingFragment, R.id.fragment_container)
 
-        val filter = IntentFilter(ACTION_MEDIA_STOP)
+        val filter = IntentFilter(ACTION_MEDIA_TIMING_STOP)
         registerReceiver(receiver, filter)
     }
 

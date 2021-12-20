@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import com.example.android.uamp.media.MusicService
-import com.example.android.uamp.media.extensions.isPlaying
 import com.example.android.uamp.media.library.MusicSource
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -36,7 +35,7 @@ const val STOP_AFTER_TIME = "${Configs.PACKAGE_NAME}.COMMAND.STOP_AFTER_TIME"
 const val GET_TIMING_START_TIME = "${Configs.PACKAGE_NAME}.COMMAND.GET_TIMING_START_TIME"
 const val RESET_TIMING_CONFIG = "${Configs.PACKAGE_NAME}.COMMAND.RESET_TIMING_CONFIG"
 
-const val ACTION_MEDIA_STOP = "${Configs.PACKAGE_NAME}.ACTION.ACTION_MEDIA_STOP"
+const val ACTION_MEDIA_TIMING_STOP = "${Configs.PACKAGE_NAME}.ACTION.ACTION_MEDIA_TIMING_STOP"
 
 typealias CommandHandler = (parameters: Bundle, callback: ResultReceiver?) -> Boolean
 
@@ -90,6 +89,8 @@ class TadpoleMusicService : MusicService() {
      * 播放完当前曲目自动停止
      */
     private fun stopOnThisEnd() {
+        sendBroadcast(Intent(ACTION_MEDIA_TIMING_STOP))
+
         resetTimingConfig()
         isTiming = true
         autoStopCount = 1
@@ -102,6 +103,8 @@ class TadpoleMusicService : MusicService() {
      * 播放完下一曲目自动停止
      */
     private fun stopOnNextEnd() {
+        sendBroadcast(Intent(ACTION_MEDIA_TIMING_STOP))
+
         resetTimingConfig()
         isTiming = true
         autoStopCount = 1
@@ -135,7 +138,7 @@ class TadpoleMusicService : MusicService() {
                     resetTimingConfig()
                     repo.prefs.selectedTimingIndex = 0
 
-                    sendBroadcast(Intent(ACTION_MEDIA_STOP))
+                    sendBroadcast(Intent(ACTION_MEDIA_TIMING_STOP))
                 }
             }
         }

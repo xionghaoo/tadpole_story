@@ -12,9 +12,11 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_30dp"
-        android:layout_marginBottom="@dimen/_20dp"
-        android:text="曲目列表"/>
+        android:layout_marginTop="@dimen/_15dp"
+        android:layout_marginBottom="@dimen/_15dp"
+        android:textSize="@dimen/_20sp"
+        android:textColor="@color/color_0A1A2A"
+        android:text="播放列表"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rc_track_list"
