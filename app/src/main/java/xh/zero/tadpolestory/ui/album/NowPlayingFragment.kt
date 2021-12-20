@@ -1,5 +1,7 @@
 package xh.zero.tadpolestory.ui.album
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.os.Bundle
@@ -36,7 +38,9 @@ import kotlin.math.roundToLong
 
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import xh.zero.tadpolestory.repo.ACTION_MEDIA_STOP
 import xh.zero.tadpolestory.ui.PopWindowDialog
+import java.util.*
 
 /**
  * 播放页面
@@ -73,6 +77,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private var selectedTimingIndex = 0
 
     private lateinit var nowPlayingTrackAdapter: NowPlayingTrackAdapter
+
+    private var timer: Timer? = null
 
     private val albumTitle: String by lazy {
         arguments?.getString(ARG_ALBUM_TITLE) ?: ""
@@ -150,9 +156,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         binding.topBtnMediaMultiple.setOnClickListener {
             showMultiplePlayDialog()
         }
-        binding.btnMediaTiming.setOnClickListener {
-            showTimingPlay()
-        }
+        initialTiming()
 
         // 曲目列表
         nowPlayingTrackAdapter = NowPlayingTrackAdapter { index ->
@@ -449,6 +453,65 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                 }
             }
         })
+    }
+
+    /**
+     * 定时器初始化
+     */
+    private fun initialTiming() {
+        binding.btnMediaTiming.setOnClickListener {
+            showTimingPlay()
+        }
+        showTimingClock()
+    }
+
+    private fun showTimingClock() {
+        viewModel.getTimingStartTime { startTime ->
+            val totalTiming = when (viewModel.repo.prefs.selectedTimingIndex) {
+                3 -> TIMING_10
+                4 -> TIMING_20
+                5 -> TIMING_30
+                6 -> TIMING_60
+                7 -> TIMING_90
+                else -> 0
+            } * 60 * 1000
+            val elapsedTime = System.currentTimeMillis() - startTime
+            startTimer(totalTiming - elapsedTime)
+        }
+    }
+
+    private fun startTimer(time: Long) {
+        if (time <= 0) return
+        if (timer == null) {
+            binding.tvMediaTiming.visibility = View.VISIBLE
+            timer = Timer()
+            timer?.scheduleAtFixedRate(object : TimerTask() {
+                var clockTime = time
+                override fun run() {
+                    if (clockTime <= 0) {
+                        stopTimer()
+                        activity?.runOnUiThread {
+                            binding.tvMediaTiming.visibility = View.GONE
+                        }
+                    }
+                    val totalSeconds = clockTime / 1000
+                    val minutes = totalSeconds / 60
+                    val seconds = totalSeconds % 60
+                    val secondTxt = if (seconds < 10) "0${seconds}" else "$seconds"
+                    val minuteTxt = if (minutes < 10) "0${minutes}" else "$minutes"
+                    activity?.runOnUiThread {
+                        binding.tvMediaTiming.text = "${minuteTxt}:$secondTxt"
+                    }
+                    clockTime -= 1000
+
+                }
+            }, 0, 1000)
+        }
+    }
+
+    fun stopTimer() {
+        timer?.cancel()
+        timer = null
     }
 
     private fun seekToPosition(seekBar: SeekBar?, complete: () -> Unit) {
@@ -758,12 +821,13 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                             0 -> viewModel.resetTimingConfig()
                             1 -> viewModel.stopOnThisEnd()
                             2 -> viewModel.stopOnNextEnd()
-                            3 -> viewModel.stopAfterTime(10)
-                            4 -> viewModel.stopAfterTime(20)
-                            5 -> viewModel.stopAfterTime(30)
-                            6 -> viewModel.stopAfterTime(60)
-                            7 -> viewModel.stopAfterTime(90)
+                            3 -> viewModel.stopAfterTime(TIMING_10)
+                            4 -> viewModel.stopAfterTime(TIMING_20)
+                            5 -> viewModel.stopAfterTime(TIMING_30)
+                            6 -> viewModel.stopAfterTime(TIMING_60)
+                            7 -> viewModel.stopAfterTime(TIMING_90)
                         }
+                        showTimingClock()
                         requestDismiss.invoke()
                         container.children.forEach {
                             selectPlayTag(it as TextView, selectedTimingIndex)
@@ -848,40 +912,6 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
                         }
                     )
                 }
-
-//                if (r.data == true) {
-//                    binding.tvSubscribeTitle.text = "已订阅"
-//                    binding.tvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
-//                    binding.ivSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
-//                    binding.btnSubscribe.setOnClickListener {
-//                        unsubscribe()
-//                    }
-//
-//                    binding.topTvSubscribeTitle.text = "已订阅"
-//                    binding.topTvSubscribeTitle.setTextColor(resources.getColor(R.color.color_6F6F72))
-//                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.topBtnSubscribe.setBackgroundResource(R.drawable.shape_album_tag)
-//                    binding.topBtnSubscribe.setOnClickListener {
-//                        unsubscribe()
-//                    }
-//                } else if (r.data == false) {
-//                    binding.tvSubscribeTitle.text = "订阅"
-//                    binding.tvSubscribeTitle.setTextColor(Color.WHITE)
-////                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.btnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
-//                    binding.btnSubscribe.setOnClickListener {
-//                        subscribe()
-//                    }
-//
-//                    binding.topTvSubscribeTitle.text = "订阅"
-//                    binding.topTvSubscribeTitle.setTextColor(Color.WHITE)
-////                    binding.topIvSubscribeIcon.setImageResource(R.mipmap.ic_subscribe_30)
-//                    binding.topBtnSubscribe.setBackgroundResource(R.drawable.shape_btn_subscribe)
-//                    binding.topBtnSubscribe.setOnClickListener {
-//                        subscribe()
-//                    }
-//                }
             }
         }
     }
@@ -891,6 +921,13 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         const val ARG_ALBUM_ID = "ARG_ALBUM_ID"
         private const val SCROLL_THRESHOLD = 0
         const val MAX_PROGRESS = 1000
+
+        // 定时时间段
+        const val TIMING_10 = 1
+        const val TIMING_20 = 20
+        const val TIMING_30 = 30
+        const val TIMING_60 = 60
+        const val TIMING_90 = 90
 
         fun newInstance(albumTitle: String,albumId: String) = NowPlayingFragment().apply {
             arguments = Bundle().apply {

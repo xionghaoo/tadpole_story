@@ -294,6 +294,12 @@ class NowPlayingViewModel @Inject constructor(
         }
     }
 
+    fun getTimingStartTime(complete: (time: Long) -> Unit) {
+        musicServiceConnection.sendCommand(GET_TIMING_START_TIME, Bundle.EMPTY) { code, bundle ->
+            complete(bundle?.getLong("startTime") ?: 0L)
+        }
+    }
+
     fun resetTimingConfig() {
         musicServiceConnection.sendCommand(RESET_TIMING_CONFIG, Bundle.EMPTY) { code, bundle ->
         }

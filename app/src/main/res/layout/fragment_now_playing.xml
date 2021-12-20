@@ -229,15 +229,31 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/btn_media_multiple" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <FrameLayout
                     android:id="@+id/btn_media_timing"
                     android:layout_width="@dimen/_52dp"
                     android:layout_height="@dimen/_52dp"
                     android:layout_marginEnd="@dimen/_16dp"
-                    android:src="@mipmap/ic_media_clock_52"
                     app:layout_constraintBottom_toBottomOf="@+id/btn_media_catelog"
                     app:layout_constraintEnd_toStartOf="@+id/btn_media_catelog"
-                    app:layout_constraintTop_toTopOf="@+id/btn_media_catelog" />
+                    app:layout_constraintTop_toTopOf="@+id/btn_media_catelog" >
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/ic_media_clock_52"/>
+                    <TextView
+                        android:id="@+id/tv_media_timing"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/_4dp"
+                        android:textSize="@dimen/_16sp"
+                        android:visibility="gone"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/color_0A1A2A"
+                        android:layout_gravity="bottom|center_horizontal"
+                        tools:text="10:10"/>
+                </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView

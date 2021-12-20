@@ -2,6 +2,7 @@ package xh.zero.tadpolestory.repo
 
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,7 +33,10 @@ const val SET_PLAY_SPEED = "${Configs.PACKAGE_NAME}.COMMAND.SET_PLAY_SPEED"
 const val PLAY_SEEK = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_SEEK"
 const val AUTO_STOP = "${Configs.PACKAGE_NAME}.COMMAND.AUTO_STOP"
 const val STOP_AFTER_TIME = "${Configs.PACKAGE_NAME}.COMMAND.STOP_AFTER_TIME"
+const val GET_TIMING_START_TIME = "${Configs.PACKAGE_NAME}.COMMAND.GET_TIMING_START_TIME"
 const val RESET_TIMING_CONFIG = "${Configs.PACKAGE_NAME}.COMMAND.RESET_TIMING_CONFIG"
+
+const val ACTION_MEDIA_STOP = "${Configs.PACKAGE_NAME}.ACTION.ACTION_MEDIA_STOP"
 
 typealias CommandHandler = (parameters: Bundle, callback: ResultReceiver?) -> Boolean
 
@@ -47,6 +51,7 @@ class TadpoleMusicService : MusicService() {
     private var autoStopCount = 0
     private var stopAfterTimeJob: Job? = null
     private var isTiming = false
+    private var timingStartTime = 0L
 
     override fun onCreate() {
         super.onCreate()
@@ -119,6 +124,7 @@ class TadpoleMusicService : MusicService() {
     private fun stopAfterTime(minute: Int) {
         resetTimingConfig()
         if (stopAfterTimeJob == null) {
+            timingStartTime = System.currentTimeMillis()
             stopAfterTimeJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(minute * 60 * 1000L)
                 Timber.d("停止曲目")
@@ -128,6 +134,8 @@ class TadpoleMusicService : MusicService() {
                     stopAfterTimeJob = null
                     resetTimingConfig()
                     repo.prefs.selectedTimingIndex = 0
+
+                    sendBroadcast(Intent(ACTION_MEDIA_STOP))
                 }
             }
         }
@@ -163,6 +171,7 @@ class TadpoleMusicService : MusicService() {
             PLAY_SEEK -> playSeekCommand(extras ?: Bundle.EMPTY, cb)
             AUTO_STOP -> autoStopCommand(extras ?: Bundle.EMPTY, cb)
             STOP_AFTER_TIME -> stopAfterTimeCommand(extras ?: Bundle.EMPTY, cb)
+            GET_TIMING_START_TIME -> getTimingStartTimeCommand(extras ?: Bundle.EMPTY, cb)
             RESET_TIMING_CONFIG -> resetTimingConfigCommand(extras ?: Bundle.EMPTY, cb)
             else -> false
         }
@@ -249,7 +258,16 @@ class TadpoleMusicService : MusicService() {
     private val stopAfterTimeCommand: CommandHandler = { extras, callback ->
         val minute = extras.getInt("minute")
         stopAfterTime(minute)
-        callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
+        callback?.send(Activity.RESULT_OK, Bundle().apply {
+            putLong("startTime", timingStartTime)
+        })
+        true
+    }
+
+    private val getTimingStartTimeCommand: CommandHandler = { extras, callback ->
+        callback?.send(Activity.RESULT_OK, Bundle().apply {
+            putLong("startTime", timingStartTime)
+        })
         true
     }
 
