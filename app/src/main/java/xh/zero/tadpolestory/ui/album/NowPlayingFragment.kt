@@ -165,24 +165,26 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
         // 上一曲，下一曲按钮状态
         viewModel.switchState.observe(viewLifecycleOwner) {
-            binding.btnMediaPre.setImageResource(
-                if (it.first) {
-                    binding.btnMediaPre.isEnabled = true
-                    R.mipmap.ic_media_pre
-                } else {
-                    binding.btnMediaPre.isEnabled = false
-                    R.mipmap.ic_media_pre_disable
-                }
-            )
-            binding.btnMediaNext.setImageResource(
-                if (it.second) {
-                    binding.btnMediaNext.isEnabled = true
-                    R.mipmap.ic_media_next
-                } else {
-                    binding.btnMediaNext.isEnabled = false
-                    R.mipmap.ic_media_next_disable
-                }
-            )
+//            binding.btnMediaPre.setImageResource(
+//                if (it.first) {
+//                    binding.btnMediaPre.isEnabled = true
+//                    R.mipmap.ic_media_pre
+//                } else {
+//                    binding.btnMediaPre.isEnabled = false
+//                    R.mipmap.ic_media_pre_disable
+//                }
+//            )
+            binding.btnMediaPre.isEnabled = it.first
+            binding.btnMediaNext.isEnabled = it.second
+//            binding.btnMediaNext.setImageResource(
+//                if (it.second) {
+//                    binding.btnMediaNext.isEnabled = true
+//                    R.mipmap.ic_media_next
+//                } else {
+//                    binding.btnMediaNext.isEnabled = false
+//                    R.mipmap.ic_media_next_disable
+//                }
+//            )
         }
 
         // 初始化View位置参数
@@ -271,23 +273,27 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         if (mediaItem.albumArtUri.toString().isNotEmpty()) {
             // 加载背景
             CoroutineScope(Dispatchers.IO).launch {
-                val img: Bitmap = GlideApp.with(requireContext()).asBitmap().load(mediaItem.albumArtUri).submit().get()
-                // 给背景加上白色
-                val paint = Paint()
-                val filter: ColorFilter = PorterDuffColorFilter(
-                    ContextCompat.getColor(requireContext(), R.color.white_62),
-                    PorterDuff.Mode.SRC_IN
-                )
-                paint.colorFilter = filter
-                val canvas = Canvas(img)
-                canvas.drawBitmap(img, 0f, 0f, paint)
+                try {
+                    val img: Bitmap = GlideApp.with(requireContext()).asBitmap().load(mediaItem.albumArtUri).submit().get()
+                    // 给背景加上白色
+                    val paint = Paint()
+                    val filter: ColorFilter = PorterDuffColorFilter(
+                        ContextCompat.getColor(requireContext(), R.color.white_62),
+                        PorterDuff.Mode.SRC_IN
+                    )
+                    paint.colorFilter = filter
+                    val canvas = Canvas(img)
+                    canvas.drawBitmap(img, 0f, 0f, paint)
 
-                withContext(Dispatchers.Main) {
-                    GlideApp.with(requireContext())
-                        .load(img)
-                        // 背景虚化
-                        .apply(RequestOptions.bitmapTransform(BlurTransformation(50)))
-                        .into(binding.ivBackground)
+                    withContext(Dispatchers.Main) {
+                        GlideApp.with(requireContext())
+                            .load(img)
+                            // 背景虚化
+                            .apply(RequestOptions.bitmapTransform(BlurTransformation(50)))
+                            .into(binding.ivBackground)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

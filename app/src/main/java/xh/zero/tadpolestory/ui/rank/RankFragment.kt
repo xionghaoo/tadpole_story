@@ -46,6 +46,10 @@ class RankFragment : BaseFragment<FragmentRankBinding>() {
             binding.btnRankNew.setBackgroundResource(R.drawable.shape_rank_tag)
             binding.btnRankEvaluate.setBackgroundResource(R.drawable.shape_rank_tag)
 
+            binding.btnRankHotIcon.setImageResource(R.mipmap.ic_rank_top_hot_selected)
+            binding.btnRankNewIcon.setImageResource(R.mipmap.ic_rank_top_new_normal)
+            binding.btnRankEvaluateIcon.setImageResource(R.mipmap.ic_rank_top_evaluate_normal)
+
             loadData(1)
         }
         binding.btnRankNew.setOnClickListener {
@@ -58,6 +62,10 @@ class RankFragment : BaseFragment<FragmentRankBinding>() {
             binding.btnRankNew.setBackgroundResource(R.drawable.shape_album_tag_selected)
             binding.btnRankEvaluate.setBackgroundResource(R.drawable.shape_rank_tag)
 
+            binding.btnRankHotIcon.setImageResource(R.mipmap.ic_rank_top_hot_normal)
+            binding.btnRankNewIcon.setImageResource(R.mipmap.ic_rank_top_new_selected)
+            binding.btnRankEvaluateIcon.setImageResource(R.mipmap.ic_rank_top_evaluate_normal)
+
             loadData(2)
         }
         binding.btnRankEvaluate.setOnClickListener {
@@ -68,6 +76,10 @@ class RankFragment : BaseFragment<FragmentRankBinding>() {
             binding.btnRankHot.setBackgroundResource(R.drawable.shape_rank_tag)
             binding.btnRankNew.setBackgroundResource(R.drawable.shape_rank_tag)
             binding.btnRankEvaluate.setBackgroundResource(R.drawable.shape_album_tag_selected)
+
+            binding.btnRankHotIcon.setImageResource(R.mipmap.ic_rank_top_hot_normal)
+            binding.btnRankNewIcon.setImageResource(R.mipmap.ic_rank_top_new_normal)
+            binding.btnRankEvaluateIcon.setImageResource(R.mipmap.ic_rank_top_evaluate_selected)
 
             loadData(3)
         }

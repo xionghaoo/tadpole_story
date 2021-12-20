@@ -20,11 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/textView13"
             android:layout_width="@dimen/_20dp"
             android:layout_height="@dimen/_20dp"
-            android:background="@android:color/holo_red_dark" />
+            android:src="@mipmap/ic_album_track_list"/>
 
         <TextView
             android:id="@+id/tv_total_album"
