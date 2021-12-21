@@ -28,7 +28,7 @@ const val EXTRA_MEDIA_POSITION = "${Configs.PACKAGE_NAME}.COMMAND.EXTRA_MEDIA_PO
 const val SEEK_TO_TRACK_INDEX = "${Configs.PACKAGE_NAME}.COMMAND.SEEK_TO_TRACK_INDEX"
 
 const val LOAD_SONG_FOR_PAGE = "${Configs.PACKAGE_NAME}.COMMAND.LOAD_SONG_FOR_PAGE"
-const val USE_CURRENT_LIST = "${Configs.PACKAGE_NAME}.COMMAND.USE_CURRENT_LIST"
+const val GET_CURRENT_TRACK_LIST = "${Configs.PACKAGE_NAME}.COMMAND.USE_CURRENT_LIST"
 const val SET_PLAY_SPEED = "${Configs.PACKAGE_NAME}.COMMAND.SET_PLAY_SPEED"
 const val PLAY_SEEK = "${Configs.PACKAGE_NAME}.COMMAND.PLAY_SEEK"
 const val AUTO_STOP = "${Configs.PACKAGE_NAME}.COMMAND.AUTO_STOP"
@@ -170,7 +170,7 @@ class TadpoleMusicService : MusicService() {
             PLAY_PREV -> playPrevCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_NEXT -> playNextCommand(extras ?: Bundle.EMPTY, cb)
             LOAD_SONG_FOR_PAGE -> loadSongForPageCommand(extras ?: Bundle.EMPTY, cb)
-            USE_CURRENT_LIST -> useCurrentListCommand(extras ?: Bundle.EMPTY, cb)
+            GET_CURRENT_TRACK_LIST -> getCurrentTrackListCommand(extras ?: Bundle.EMPTY, cb)
             SET_PLAY_SPEED -> setPlaySpeedCommand(extras ?: Bundle.EMPTY, cb)
             PLAY_SEEK -> playSeekCommand(extras ?: Bundle.EMPTY, cb)
             AUTO_STOP -> autoStopCommand(extras ?: Bundle.EMPTY, cb)
@@ -223,11 +223,11 @@ class TadpoleMusicService : MusicService() {
         true
     }
 
-    private val useCurrentListCommand: CommandHandler = { extras, callback ->
+    private val getCurrentTrackListCommand: CommandHandler = { extras, callback ->
         val mediaId = extras.getString("mediaId")
         if (mediaId != null) {
             callback?.send(Activity.RESULT_OK, Bundle().apply {
-                putParcelableArrayList("trackList", useCurrentList(mediaId).toArrayList())
+                putParcelableArrayList("trackList", getCurrentTrackList(mediaId).toArrayList())
             })
         }
         true

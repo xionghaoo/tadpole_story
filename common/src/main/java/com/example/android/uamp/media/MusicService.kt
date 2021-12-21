@@ -526,7 +526,7 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
-    fun useCurrentList(mediaId: String): List<MediaItem> {
+    fun getCurrentTrackList(mediaId: String): List<MediaItem> {
         val children = mediaSource.map { item ->
             item.description.extras?.putLong("duration", item.duration)
             item.description.extras?.putLong("trackNumber", item.trackNumber)

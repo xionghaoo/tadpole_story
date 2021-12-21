@@ -7,7 +7,6 @@ import android.os.Looper
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -116,7 +115,7 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun loadTrackList(albumId: String, complete: (List<MediaItemData>) -> Unit) {
-        musicServiceConnection.sendCommand(USE_CURRENT_LIST, Bundle().apply {
+        musicServiceConnection.sendCommand(GET_CURRENT_TRACK_LIST, Bundle().apply {
             putString("mediaId", albumId)
         }) { code, bundle ->
             val children = bundle?.getParcelableArrayList<MediaBrowserCompat.MediaItem>("trackList")
