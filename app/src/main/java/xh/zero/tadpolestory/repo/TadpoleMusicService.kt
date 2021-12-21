@@ -14,6 +14,7 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
+import xh.zero.core.toArrayList
 import xh.zero.tadpolestory.Configs
 import xh.zero.tadpolestory.ui.MainActivity
 import javax.inject.Inject
@@ -225,7 +226,9 @@ class TadpoleMusicService : MusicService() {
     private val useCurrentListCommand: CommandHandler = { extras, callback ->
         val mediaId = extras.getString("mediaId")
         if (mediaId != null) {
-            useCurrentList(mediaId)
+            callback?.send(Activity.RESULT_OK, Bundle().apply {
+                putParcelableArrayList("trackList", useCurrentList(mediaId).toArrayList())
+            })
         }
         true
     }

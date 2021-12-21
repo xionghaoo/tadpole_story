@@ -115,15 +115,12 @@ class NowPlayingViewModel @Inject constructor(
         checkPlaybackPosition()
     }
 
-    val trackList = MediatorLiveData<List<MediaItemData>>()
-    private var albumId: String? = null
-
-    private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
-        override fun onChildrenLoaded(
-            parentId: String,
-            children: MutableList<MediaBrowserCompat.MediaItem>
-        ) {
-            val itemsList = children.map { child ->
+    fun loadTrackList(albumId: String, complete: (List<MediaItemData>) -> Unit) {
+        musicServiceConnection.sendCommand(USE_CURRENT_LIST, Bundle().apply {
+            putString("mediaId", albumId)
+        }) { code, bundle ->
+            val children = bundle?.getParcelableArrayList<MediaBrowserCompat.MediaItem>("trackList")
+            val itemsList = children?.map { child ->
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong("duration")
                 val trackNumber = child.description.extras?.getLong("trackNumber")
@@ -132,30 +129,15 @@ class NowPlayingViewModel @Inject constructor(
                     title = child.description.title.toString(),
                     subtitle = subtitle.toString(),
                     albumArtUri = child.description.iconUri,
-                    browsable = child.isBrowsable,
+//                    browsable = child.isBrowsable,
 //                        playbackRes = getResourceForMediaId(child.mediaId!!),
                     duration = duration ?: 0,
                     trackNumber = trackNumber ?: 0L
                 )
             }
-            trackList.postValue(itemsList)
+            complete(itemsList ?: emptyList())
         }
     }
-
-    fun subscribeService(albumId: String) {
-        this.albumId = albumId
-        musicServiceConnection.subscribe(albumId, subscriptionCallback)
-    }
-
-    fun loadTrackList(albumId: String) {
-        musicServiceConnection.sendCommand(USE_CURRENT_LIST, Bundle().apply {
-            putString("mediaId", albumId)
-        })
-    }
-
-//    fun unsubscribeService(albumId: String) {
-//        musicServiceConnection.unsubscribe(albumId, subscriptionCallback)
-//    }
 
     /**
      * Internal function that recursively calls itself every [POSITION_UPDATE_INTERVAL_MILLIS] ms
@@ -325,11 +307,6 @@ class NowPlayingViewModel @Inject constructor(
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
-        if (albumId != null) {
-            musicServiceConnection.unsubscribe(albumId!!, subscriptionCallback)
-        }
-//        musicServiceConnection.trackSwitchState.removeObserver(trackSwitchStateObserver)
-
         // Stop updating the position
         updatePosition = false
         updateBufferPosition = false

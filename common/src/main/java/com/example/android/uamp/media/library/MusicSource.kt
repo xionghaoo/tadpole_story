@@ -64,7 +64,8 @@ interface MusicSource : Iterable<MediaMetadataCompat> {
     STATE_CREATED,
     STATE_INITIALIZING,
     STATE_INITIALIZED,
-    STATE_ERROR
+    STATE_ERROR,
+    STATE_USE_CURRENT,
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class State
@@ -88,6 +89,8 @@ const val STATE_INITIALIZED = 3
  * State indicating an error has occurred.
  */
 const val STATE_ERROR = 4
+
+const val STATE_USE_CURRENT = 5
 
 /**
  * Base class for music sources in UAMP.
@@ -122,6 +125,10 @@ abstract class AbstractMusicSource : MusicSource {
                 onReadyListeners += performAction
                 false
             }
+            STATE_USE_CURRENT -> {
+                performAction(true)
+                true
+            }
             else -> {
                 performAction(state != STATE_ERROR)
                 true
@@ -134,7 +141,7 @@ abstract class AbstractMusicSource : MusicSource {
     }
 
     override fun useCurrentData() {
-        state = STATE_INITIALIZED
+        state = STATE_USE_CURRENT
     }
 
     /**

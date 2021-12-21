@@ -32,6 +32,7 @@ class AlbumViewModel @AssistedInject constructor(
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
+            Timber.d("onChildrenLoaded: $parentId, ${children.size}")
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong("duration")

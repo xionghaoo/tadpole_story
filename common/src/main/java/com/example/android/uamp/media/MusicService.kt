@@ -526,9 +526,14 @@ abstract class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
-    fun useCurrentList(mediaId: String) {
-        mediaSource.useCurrentData()
-        notifyChildrenChanged(mediaId)
+    fun useCurrentList(mediaId: String): List<MediaItem> {
+        val children = mediaSource.map { item ->
+            item.description.extras?.putLong("duration", item.duration)
+            item.description.extras?.putLong("trackNumber", item.trackNumber)
+            // MediaMetaData -> MediaItem
+            MediaItem(item.description, item.flag)
+        }
+        return children
     }
 
     fun setPlaybackSpeed(speed: Float) {

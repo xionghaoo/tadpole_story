@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import timber.log.Timber
 import xh.zero.core.vo.NetworkState
 import xh.zero.core.vo.Status
@@ -19,11 +20,9 @@ class TadpoleNetworkStateViewHolder(
     private val retryCallback: () -> Unit
 ) : RecyclerView.ViewHolder(view) {
     private val progressBar = view.findViewById<View>(R.id.progress_bar)
-//    private val retry = view.findViewById<Button>(R.id.retry_button)
     private val errorMsg = view.findViewById<TextView>(R.id.error_msg)
     private val noMoreData = view.findViewById<View>(R.id.no_more_data)
-    private val ivLoading = view.findViewById<ImageView>(R.id.iv_loading)
-    private val anim = AnimationUtils.loadAnimation(view.context, R.anim.rotate)
+    private val ivLoading = view.findViewById<LottieAnimationView>(R.id.iv_loading)
 
     init {
         errorMsg.setOnClickListener {
@@ -34,11 +33,10 @@ class TadpoleNetworkStateViewHolder(
     fun bindTo(networkState: NetworkState?, isNoMoreData: Boolean = true) {
         progressBar.visibility = toVisibility(networkState?.status == Status.LOADING)
         if (progressBar.isVisible) {
-            ivLoading.startAnimation(anim)
+            ivLoading.playAnimation()
         } else {
-            anim.cancel()
+            ivLoading.cancelAnimation()
         }
-//        retry.visibility = toVisibility(networkState?.status == Status.ERROR)
         errorMsg.visibility = toVisibility(networkState?.msg != null)
         errorMsg.text = "加载失败, 点击重试"
         noMoreData.visibility = toVisibility(networkState?.status == Status.SUCCESS && isNoMoreData)

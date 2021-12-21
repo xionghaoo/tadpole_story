@@ -266,18 +266,10 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             currentPlayTrackIndex = index
             viewModel.seekTo(index)
         }
+        // 更新当前播放的曲目
         viewModel.nowPlayingItem.observe(viewLifecycleOwner) { item ->
             nowPlayingTrackAdapter.updateNowPlayingItem(item)
         }
-        viewModel.trackList.observe(viewLifecycleOwner) { items ->
-            nowPlayingTrackAdapter.updateData(items)
-
-            rcTrackList?.post {
-                rcTrackList?.smoothScrollToPosition(currentPlayTrackIndex + 3)
-            }
-        }
-        viewModel.subscribeService(albumId)
-
         binding.btnMediaCatelog.setOnClickListener {
             // 跳转到曲目列表
             showTrackListDialog()
@@ -305,7 +297,13 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .build()
             .show(isFullScreen = true)
 
-        viewModel.loadTrackList(albumId)
+        viewModel.loadTrackList(albumId) { items ->
+            nowPlayingTrackAdapter.updateData(items)
+
+            rcTrackList?.post {
+                rcTrackList?.smoothScrollToPosition(currentPlayTrackIndex + 3)
+            }
+        }
     }
 
     /**
