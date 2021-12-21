@@ -74,6 +74,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private var selectedMultipleIndex = 2
     private var selectedTimingIndex = 0
 
+    private var currentPlayTrackIndex = 0
+    private var rcTrackList: RecyclerView? = null
     private lateinit var nowPlayingTrackAdapter: NowPlayingTrackAdapter
 
     private var timer: Timer? = null
@@ -261,6 +263,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private fun initialTrackList() {
         // 曲目列表
         nowPlayingTrackAdapter = NowPlayingTrackAdapter { index ->
+            currentPlayTrackIndex = index
             viewModel.seekTo(index)
         }
         viewModel.nowPlayingItem.observe(viewLifecycleOwner) { item ->
@@ -268,6 +271,10 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         }
         viewModel.trackList.observe(viewLifecycleOwner) { items ->
             nowPlayingTrackAdapter.updateData(items)
+
+            rcTrackList?.post {
+                rcTrackList?.smoothScrollToPosition(currentPlayTrackIndex + 3)
+            }
         }
         viewModel.subscribeService(albumId)
 
@@ -282,8 +289,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
      */
     private fun showTrackListDialog() {
         val v = layoutInflater.inflate(R.layout.dialog_track_list, null)
-        val rcTrackList = v.findViewById<RecyclerView>(R.id.rc_track_list)
-        rcTrackList.adapter = nowPlayingTrackAdapter
+        rcTrackList = v.findViewById<RecyclerView>(R.id.rc_track_list)
+        rcTrackList?.adapter = nowPlayingTrackAdapter
         PopWindowDialog.Builder(requireActivity())
             .animation(R.style.right_pop_animation)
             .contentView(v)
@@ -292,6 +299,9 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
             .setGravity(Gravity.END or Gravity.CENTER_HORIZONTAL)
             .isShowAnimation(true)
             .isCancellable(true)
+            .setOnDismissListener {
+                rcTrackList = null
+            }
             .build()
             .show(isFullScreen = true)
 
@@ -306,6 +316,8 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
         if (currentPlayMediaId == mediaItem.id) return
         currentPlayMediaId = mediaItem.id
         viewModel.repo.prefs.nowPlayingTrackId = mediaItem.id
+
+        currentPlayTrackIndex = mediaItem.orderNum.toInt()
 
         binding.tvMediaDuration.text = NowPlayingViewModel.NowPlayingMetadata.timestampToMSS(mediaItem.duration)
         binding.tvMediaAlbumTitle.text = albumTitle
