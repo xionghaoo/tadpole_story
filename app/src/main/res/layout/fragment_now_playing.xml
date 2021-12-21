@@ -238,6 +238,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/btn_media_catelog"
                     app:layout_constraintTop_toTopOf="@+id/btn_media_catelog" >
                     <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_media_timing"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@mipmap/ic_media_clock_52"/>
@@ -250,7 +251,7 @@
                         android:textSize="@dimen/_16sp"
                         android:visibility="gone"
                         android:includeFontPadding="false"
-                        android:textColor="@color/color_0A1A2A"
+                        android:textColor="@color/color_42444B"
                         android:layout_gravity="bottom|center_horizontal"
                         tools:text="10:10"/>
                 </FrameLayout>

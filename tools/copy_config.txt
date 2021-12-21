@@ -1,14 +1,1 @@
-kd／4.bt／下一首-小(1).png;ic_media_next_disable.png
-kd／4.bt／小-暂停（听故事）.png;ic_media_pause.png
-kd／4.bt／播放-38（听故事悬浮）.png;ic_media_play_top.png
-kd／4.bt／播放暂停-38（听故事悬浮）.png;ic_media_pause_top.png
-kd／4.bt／倍数x0.5.png;ic_media_multiple_0dot5.png
-kd／4.bt／倍数x0.75.png;ic_media_multiple_0dot75.png
-kd／4.bt／倍数x1.5.png;ic_media_multiple_1dot5.png
-kd／4.bt／倍数x1.25.png;ic_media_multiple_1dot25.png
-kd／4.bt／倍数x2.png;ic_media_multiple_2.png
-kd／1通用／功能按钮／iocn-热播深.png;ic_subscribed.png
-kd／1通用／ioc-集数.png;ic_album_track_list.png
-kd／1通用／功能按钮／iocn-热播深(1).png;ic_rank_top_hot_normal.png
-kd／1通用／功能按钮／iocn-精品白备份 2.png;ic_rank_top_new_selected.png
-kd／1通用／功能按钮／iocn-口碑白.png;ic_rank_top_evaluate_selected.png
+kd／4.bt／定时器备份 2.png;ic_media_clock_timing.png

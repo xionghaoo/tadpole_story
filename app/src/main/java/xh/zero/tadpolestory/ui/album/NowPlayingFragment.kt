@@ -540,6 +540,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
     private fun startTimer(time: Long) {
         if (time <= 0) return
         if (timer == null) {
+            binding.ivMediaTiming.setImageResource(R.mipmap.ic_media_clock_timing)
             binding.tvMediaTiming.visibility = View.VISIBLE
             timer = Timer()
             timer?.scheduleAtFixedRate(object : TimerTask() {
@@ -569,6 +570,7 @@ class NowPlayingFragment : BaseFragment<FragmentNowPlayingBinding>() {
 
         activity?.runOnUiThread {
             binding.tvMediaTiming.visibility = View.GONE
+            binding.ivMediaTiming.setImageResource(R.mipmap.ic_media_clock_52)
         }
     }
 

@@ -278,6 +278,7 @@ class TadpoleMusicService : MusicService() {
     }
 
     private val resetTimingConfigCommand: CommandHandler = { extras, callback ->
+        sendBroadcast(Intent(ACTION_MEDIA_TIMING_STOP))
         resetTimingConfig()
         callback?.send(Activity.RESULT_OK, Bundle.EMPTY)
         true

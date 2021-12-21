@@ -6,6 +6,7 @@
     android:gravity="center_horizontal"
     android:layout_gravity="end"
     android:orientation="vertical"
+    android:paddingTop="@dimen/status_bar_height"
     android:background="@color/white">
 
     <TextView
