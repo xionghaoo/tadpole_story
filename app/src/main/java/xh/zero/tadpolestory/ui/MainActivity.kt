@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.lzf.easyfloat.EasyFloat
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -81,23 +80,7 @@ class MainActivity : BaseActivity(),
 
         startNowPlayingPage(intent)
 
-        EasyFloat.with(this)
-            .setDragEnable(false)
-            .setGravity(
-                Gravity.END or Gravity.BOTTOM,
-                0,
-                offsetY = -resources.getDimension(R.dimen._34dp).toInt()
-            )
-            .setTag("float_window")
-            .setLayout(R.layout.float_player_view)
-            .registerCallback {
-                createResult { b, s, view ->
-                    initialFloatWindow(view)
-                }
-                touchEvent { view, e ->
-                }
-            }
-            .show()
+        initialFloatWindow(binding.floatPlayerView.root)
 
         attachKeyboardListeners()
 
@@ -130,7 +113,6 @@ class MainActivity : BaseActivity(),
 
     override fun onDestroy() {
         unregisterReceiver(receiver)
-        EasyFloat.dismiss("float_window")
         super.onDestroy()
     }
 
@@ -157,9 +139,9 @@ class MainActivity : BaseActivity(),
         expandProgressBar.progressMax = NowPlayingFragment.MAX_PROGRESS.toFloat()
         collapseProgressBar.progressMax = NowPlayingFragment.MAX_PROGRESS.toFloat()
 
-        EasyFloat.getFloatView("float_window")?.visibility = View.GONE
+        binding.floatPlayerView.root.visibility = View.GONE
         viewModel.mediaMetadata.observe(this) { mediaItem ->
-            EasyFloat.getFloatView("float_window")?.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
+            binding.floatPlayerView.root.visibility = if (viewModel.repo.prefs.nowPlayingAlbumId != null) View.VISIBLE else View.GONE
             expandTitle.text = mediaItem.title
             expandDesc.text = mediaItem.subtitle
 
@@ -178,10 +160,6 @@ class MainActivity : BaseActivity(),
                 viewModel.uploadRecords(mediaItem)
             }
         }
-
-//        vTrackInfo.setOnClickListener {
-//            startNowPlayingPage(null, true)
-//        }
 
         // 播放按钮
         viewModel.mediaButtonRes.observe(this) { res ->
@@ -202,7 +180,6 @@ class MainActivity : BaseActivity(),
 
         // 播放位置
         viewModel.mediaProgress.observe(this) { progress ->
-//            if (!floatRoot.isVisible) floatRoot.visibility = View.VISIBLE
             collapseProgressBar.progress = progress.toFloat()
             expandProgressBar.progress = progress.toFloat()
 
@@ -219,14 +196,14 @@ class MainActivity : BaseActivity(),
         val viewBackground = view.findViewById<CardView>(R.id.expand_root)
         if (Build.VERSION.SDK_INT >= 28) {
             viewBackground?.outlineAmbientShadowColor =
-                ContextCompat.getColor(this@MainActivity, R.color.colorAccent)
+                ContextCompat.getColor(this@MainActivity, R.color.color_FF9F00)
             viewBackground?.outlineSpotShadowColor =
-                ContextCompat.getColor(this@MainActivity, R.color.colorAccent)
+                ContextCompat.getColor(this@MainActivity, R.color.color_FF9F00)
         }
 
         viewCollapse?.setOnTouchListener { v, e ->
-            val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
-            if (!viewCollapse.isVisible) return@setOnTouchListener true
+//            val viewCollapse = view.findViewById<CardView>(R.id.float_player_view_collapse)
+            if (!v.isVisible) return@setOnTouchListener false
             val collapseExpandSpace = view.findViewById<View>(R.id.collapse_extra_space)
 //            Timber.d("${e.x}, ${e.y}")
             when (e.action) {
@@ -265,8 +242,10 @@ class MainActivity : BaseActivity(),
 
         // 悬浮窗展开事件监听
         viewExpand?.setOnTouchListener { v, e ->
-            val viewExpand = view?.findViewById<View>(R.id.float_player_view_expand)
-            if (!viewExpand.isVisible) return@setOnTouchListener true
+//            val viewExpand = view?.findViewById<View>(R.id.float_player_view_expand)
+            Timber.d("viewExpand touch: ${v.isVisible}")
+
+            if (!v.isVisible) return@setOnTouchListener false
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
                     expandStartX = e.x
@@ -294,11 +273,12 @@ class MainActivity : BaseActivity(),
     }
 
     override fun hideFloatWindow() {
-        showFloatPlayer(false, EasyFloat.getFloatView("float_window"))
+        showFloatPlayer(false, binding.floatPlayerView.root)
     }
 
     private fun showFloatPlayer(isExpand: Boolean, view: View?) {
         if (view == null) return
+        val floatRoot = view.findViewById<View>(R.id.float_root)
         val viewExpand = view.findViewById<View>(R.id.float_player_view_expand)
         val viewCollapse = view.findViewById<View>(R.id.float_player_view_collapse)
         val viewBackground = view.findViewById<CardView>(R.id.expand_root)
@@ -309,6 +289,7 @@ class MainActivity : BaseActivity(),
             Timber.d("showFloatPlayer: 展开")
             // 展开
             viewBackground.visibility = View.VISIBLE
+//            viewExpand.visibility = View.VISIBLE
             viewCollapse?.visibility = View.INVISIBLE
 
             viewExpand.animate()
@@ -340,6 +321,8 @@ class MainActivity : BaseActivity(),
                                 .translationX(resources.getDimension(R.dimen._42dp))
                                 .withEndAction {
                                     viewBackground.visibility = View.INVISIBLE
+//                                    (floatRoot.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.END
+//                                    viewExpand.visibility = View.GONE
                                     viewBackground.translationX = 0f
                                     viewCollapse?.translationX = 0f
                                     viewCollapse?.visibility = View.VISIBLE
