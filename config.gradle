@@ -18,59 +18,5 @@ ext {
     domain.tadpole_uat = '\"http://10.10.18.95:8081\"'
     domain.tadpole_pre = '\"https://testjimu.ubtrobot.com:8443\"'
     domain.tadpole_prod = '\"https://xxx.ubtrobot.com\"'
-
-    tecentStorageHostUat = '\"https://cdn-vesta-dev.pgyscm.com\"'
-    tecentStorageHost = '\"https://cdn-vesta-pro.pgyscm.com\"'
     // ----------- 项目环境配置 end -----------
-
-    def today = new Date().format('yyMMdd').toString()
-    // 计算版本名称最后一个字符
-    versionLastCharacter = { String path ->
-        if (path.contains('debug')) return
-        def fileNames = fileTree(path).filter { it.name.contains('.apk') }.files.name
-        def lastChars = []
-        fileNames.forEach { name ->
-            def matcher = name =~ /_[uat|pre]*([0-9]+[a-z])_/
-            if (matcher.find()) {
-                def fileDate = matcher.findAll().first()[1]
-                if (fileDate.contains(today)) {
-                    // 列出今天创建的文件
-                    def dateMatcher = fileDate =~ /[\d]+([a-z])/
-                    def lastChar = dateMatcher.findAll().first()[1]
-                    lastChars << (int) (lastChar.charAt(0))
-                }
-            }
-        }
-        if (lastChars.size() > 0) {
-            return (char) (lastChars.max() + 1)
-        } else {
-            return 'a'
-        }
-    }
-
-    // 重命名输出的apk文件，对测试环境和预发布环境apk文件自动命名
-    renameApk = {
-        android.applicationVariants.all { variant ->
-            variant.outputs.all { path ->
-                // example: uatRelease_v1.0.0_20200101a_1.apk
-                outputFileName = "${variant.name}_v${variant.versionName}_${variant.versionCode}.apk"
-            }
-        }
-    }
-
-    // ----------- 版本管理 start ---------------
-    def lastUatReleaseCharacter = versionLastCharacter("./uat/release")
-    def lastPreReleaseCharacter = versionLastCharacter("./pre/release")
-    // 正式环境
-    prodVersionCode = 1
-    prodVersionName = "1.0.0"
-
-    // 测试环境
-    uatVersionCode = 2
-    uatVersionName = "${prodVersionName}_uat${today}${lastUatReleaseCharacter}"
-
-    // 预发布环境
-    preVerisonCode = 1
-    preVersionName = "${prodVersionName}_pre${today}${lastPreReleaseCharacter}"
-    // ----------- 版本管理 end ---------------
 }

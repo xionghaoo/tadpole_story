@@ -1,0 +1,75 @@
+apply plugin: AssistPlugin
+
+/**
+ * 辅助插件
+ * 1. 对输出文件按时间和版本重命名
+ */
+abstract class AssistPlugin implements Plugin<Project> {
+
+    @Input
+    abstract Property<String> getTest()
+    @Input
+    abstract Property<String> getPre()
+    @Input
+    abstract Property<String> getProd()
+
+    @Override
+    void apply(Project project) {
+        // 对ApplicationVariantImpl所有项目进行配置
+        project.android.applicationVariants.all { variant ->
+            // 对ApkVariantOutputImpl进行设置，只循环一次
+            variant.outputs.all { apk ->
+                def today = new Date().format('yyMMdd').toString()
+                def names = apk.variantOutput.baseName.split('-')
+                def flavor = names[0]
+                if (flavor != 'prod') {
+                    def letter = calcLastCharacter(project, today, "./${flavor}/${names[1]}", "dev|pre")
+                    // 重命名输出的apk文件，对测试环境和预发布环境apk文件自动命名
+                    // e.g: uatRelease_v1.0.0_20200101a_1.apk
+                    apk.outputFileName = "${variant.name}_v${variant.versionName}_${today}${letter}_${variant.versionCode}.apk"
+                } else {
+                    // 正式环境
+                    apk.outputFileName = "${variant.name}_v${variant.versionName}_${variant.versionCode}.apk"
+                }
+                print("output apk file name: ${apk.outputFileName}\n\n")
+            }
+        }
+    }
+
+    // 计算最后一个字符
+    static def calcLastCharacter(Project project, String today, String path, String flavors) {
+        def fileNames = project.fileTree(path).filter { it.name.contains('.apk') }.files.name
+        def lastChars = []
+        fileNames.forEach { name ->
+            def matcher = name =~ /_[${flavors}]*([0-9]+[a-z])_/
+            if (matcher.find()) {
+                def fileDate = matcher.findAll().first()[1]
+                if (fileDate.contains(today)) {
+                    // 列出今天创建的文件
+                    def dateMatcher = fileDate =~ /[\d]+([a-z])/
+                    def lastChar = dateMatcher.findAll().first()[1]
+                    lastChars << (int) (lastChar.charAt(0))
+                }
+            }
+        }
+        if (lastChars.size() > 0) {
+            return (char) (lastChars.max() + 1)
+        } else {
+            return 'a'
+        }
+    }
+}
+
+//project.extensions.create('assistFlavor', FlavorExtension)
+//
+//interface FlavorExtension {
+//    Property<String> getTest()
+//    Property<String> getPre()
+//    Property<String> getProd()
+//}
+//
+//assistFlavor {
+//    prod = "prod"
+//    test = "uat"
+//    pre = "pre"
+//}
