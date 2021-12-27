@@ -47,6 +47,7 @@
         <entry key="app/src/main/res/layout/dialog_multiple_play.xml" value="0.3540436668121587" />
         <entry key="app/src/main/res/layout/dialog_timing_play.xml" value="0.25905797101449274" />
         <entry key="app/src/main/res/layout/dialog_track_list.xml" value="0.2703125" />
+        <entry key="app/src/main/res/layout/dialog_update.xml" value="0.2884963768115942" />
         <entry key="app/src/main/res/layout/dialog_version_update.xml" value="0.5034816974437403" />
         <entry key="app/src/main/res/layout/float_player_view.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/layout/fragment_album_detail.xml" value="0.5079225352112676" />

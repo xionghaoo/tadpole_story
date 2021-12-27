@@ -10,6 +10,8 @@ import xh.zero.tadpolestory.BuildConfig
 import xh.zero.tadpolestory.R
 import xh.zero.tadpolestory.databinding.FragmentMoreUpdateBinding
 import xh.zero.tadpolestory.ui.BaseFragment
+import xh.zero.tadpolestory.update.VersionUpdateManager
+import xh.zero.tadpolestory.utils.OperationCallback
 import xh.zero.tadpolestory.utils.OperationType
 import xh.zero.tadpolestory.utils.PromptDialog
 
@@ -17,6 +19,10 @@ import xh.zero.tadpolestory.utils.PromptDialog
  * App更新管理
  */
 class MoreUpdateFragment : BaseFragment<FragmentMoreUpdateBinding>() {
+
+    private val updateManager: VersionUpdateManager by lazy {
+        VersionUpdateManager(requireActivity())
+    }
 
     override fun onCreateBindLayout(
         inflater: LayoutInflater,
@@ -40,6 +46,9 @@ class MoreUpdateFragment : BaseFragment<FragmentMoreUpdateBinding>() {
                     tvMessage.text = "版本号：V1.0.0\n版本特性：xxx"
                 }
                 .addOperation(OperationType.CANCEL, R.id.btn_cancel, true, null)
+                .addOperation(OperationType.CONFIRM, R.id.btn_confirm, true) {
+
+                }
                 .build()
                 .show()
         }

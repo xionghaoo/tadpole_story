@@ -9,6 +9,7 @@ interface AssistPluginExtension {
  * 辅助插件
  * 1. 对输出文件按时间和版本重命名
  * 命名规则：{flavor}[Debug|Release]_v{VERSION_NAME}_{TIME}{SUFFIX}_{VERSION_CODE}.apk
+ * flavor名称需要和android的flavor一致，如果不一致后缀字母不会递增
  */
 abstract class AssistPlugin implements Plugin<Project> {
 
@@ -26,6 +27,7 @@ abstract class AssistPlugin implements Plugin<Project> {
                 if (prod == null) prod = "prod"
                 if (pre == null) pre = "pre"
                 if (dev == null) dev = "dev"
+                println("flavors: prod = $prod, pre = $pre, dev = $dev")
 
                 def today = new Date().format('yyMMdd').toString()
                 def names = apk.variantOutput.baseName.split('-')
@@ -42,6 +44,8 @@ abstract class AssistPlugin implements Plugin<Project> {
                 print("output apk file name: ${apk.outputFileName}\n\n")
             }
         }
+
+
     }
 
     // 计算最后一个字符
