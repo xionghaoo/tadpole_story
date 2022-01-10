@@ -51,15 +51,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import okhttp3.OkHttpClient
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -119,7 +112,9 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 //        )
 //    }
 
-    private lateinit var cacheDataSourceFactory: CacheDataSourceFactory
+    private val cacheDataSourceFactory: CacheDataSourceFactory by lazy {
+        CacheDataSourceFactory(this, 100 * 1024 * 1024, 5 * 1024 * 1024)
+    }
     private val extractorsFactory = DefaultExtractorsFactory()
         .setConstantBitrateSeekingEnabled(true)
 //        .setConstantBitrateSeekingAlwaysEnabled(true)
@@ -199,8 +194,6 @@ abstract class MusicService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
-
-        cacheDataSourceFactory = CacheDataSourceFactory(this, 100 * 1024 * 1024, 5 * 1024 * 1024)
 
         // Create a new MediaSession.
         mediaSession = MediaSessionCompat(this, "MusicService")
