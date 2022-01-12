@@ -1,7 +1,7 @@
 
 interface AssistPluginExtension {
     Property<String> getDev()
-    Property<String> getPre()
+    Property<String> getUat()
     Property<String> getProd()
 }
 
@@ -22,18 +22,18 @@ abstract class AssistPlugin implements Plugin<Project> {
             variant.outputs.all { apk ->
                 // 执行flavor对应的环境，如果没有指定，那么使用默认值
                 String prod = extension.prod.getOrNull()
-                String pre = extension.pre.getOrNull()
+                String uat = extension.uat.getOrNull()
                 String dev = extension.dev.getOrNull()
                 if (prod == null) prod = "prod"
-                if (pre == null) pre = "pre"
+                if (uat == null) uat = "uat"
                 if (dev == null) dev = "dev"
-                println("flavors: prod = $prod, pre = $pre, dev = $dev")
+                println("flavors: prod = $prod, uat = $uat, dev = $dev")
 
                 def today = new Date().format('yyMMdd').toString()
                 def names = apk.variantOutput.baseName.split('-')
                 def flavor = names[0]
                 if (flavor != prod) {
-                    def suffix = calcSuffix(project, today, "./${flavor}/${names[1]}", "${dev}|${pre}")
+                    def suffix = calcSuffix(project, today, "./${flavor}/${names[1]}", "${dev}|${uat}")
                     // 重命名输出的apk文件，对测试环境和预发布环境apk文件自动命名
                     // e.g: uatRelease_v1.0.0_20200101a_1.apk
                     apk.outputFileName = "${variant.name}_v${variant.versionName}_${today}${suffix}_${variant.versionCode}.apk"

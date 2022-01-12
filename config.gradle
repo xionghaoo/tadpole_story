@@ -10,13 +10,13 @@ ext {
     // 本地缓存数据库版本
     cache_db_version = '1'
     domain = [:]
+    domain.dev = '\"https://api.ximalaya.com\"'
     domain.uat = '\"https://api.ximalaya.com\"'
-    domain.pre = '\"https://api.ximalaya.com\"'
     domain.prod = '\"https://api.ximalaya.com\"'
 
     // 桌面端接口
-    domain.tadpole_uat = '\"http://10.10.18.95:8081\"'
-    domain.tadpole_pre = '\"https://testjimu.ubtrobot.com:8443\"'
+    domain.tadpole_dev = '\"http://10.10.18.95:8081\"'
+    domain.tadpole_uat = '\"https://testjimu.ubtrobot.com:8443\"'
     domain.tadpole_prod = '\"https://xxx.ubtrobot.com\"'
     // ----------- 项目环境配置 end -----------
 }

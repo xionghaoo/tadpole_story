@@ -47,19 +47,15 @@ android {
             ndk {
                 abiFilters 'armeabi-v7a', 'arm64-v8a'
             }
-            buildConfigField('String', 'DOMAIN_RELEASE', domain.prod)
-            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_prod)
         }
         dev {
-            // 测试版本
-            buildConfigField('String', 'DOMAIN_RELEASE', domain.uat)
-            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_uat)
         }
-        pre {
-            // 预发布环境
-            buildConfigField('String', 'DOMAIN_RELEASE', domain.pre)
-            buildConfigField('String', 'TADPOLE_HOST', domain.tadpole_pre)
+        uat {
         }
+    }
+    productFlavors.all { flavor ->
+        buildConfigField('String', 'DOMAIN_RELEASE', domain[flavor.name])
+        buildConfigField('String', 'TADPOLE_HOST', domain["tadpole_${flavor.name}"])
     }
 }
 
